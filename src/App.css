@@ -1,0 +1,49 @@
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 48px 10%;
+  background: #f7f3ec;
+  color: #201f1c;
+}
+
+.brand-label {
+  margin: 0;
+  color: #b55335;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 2px;
+}
+
+h1 {
+  max-width: 800px;
+  margin: 20px 0;
+  font-family: Georgia, serif;
+  font-size: clamp(56px, 10vw, 120px);
+  line-height: 0.95;
+}
+
+.description {
+  max-width: 520px;
+  font-size: 18px;
+  line-height: 1.7;
+  color: #5f5a53;
+}
+
+button {
+  width: fit-content;
+  margin-top: 24px;
+  border: none;
+  border-radius: 999px;
+  padding: 14px 22px;
+  background: #b55335;
+  color: white;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #201f1c;
+}
