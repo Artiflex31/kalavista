@@ -11,6 +11,7 @@ import AboutPage from './pages/AboutPage'
 import CommissionsPage from './pages/CommissionsPage'
 import GalleryPage from './pages/GalleryPage'
 import HomePage from './pages/HomePage'
+import ArtworkDetailPage from './pages/ArtworkDetailPage'
 import './App.css'
 
 const navigationItems = [
@@ -137,6 +138,7 @@ function App() {
         <Route path="/gallery" element={<GalleryPage />} />
         <Route path="/about" element={<AboutPage />} />
         <Route path="/commissions" element={<CommissionsPage />} />
+        <Route path="/artworks/:slug" element={<ArtworkDetailPage />} />
         <Route path="*" element={<Navigate replace to="/" />} />
       </Routes>
     </main>
