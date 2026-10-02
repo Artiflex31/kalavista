@@ -1,0 +1,352 @@
+.about-zoom {
+  position: relative;
+  background: #03050a;
+  color: #fffaf3;
+}
+
+.about-zoom__stage {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  overflow: hidden;
+  isolation: isolate;
+  background: #03050a;
+}
+
+.about-zoom__layers,
+.about-zoom__scene-image,
+.about-zoom__overlay,
+.about-zoom__vignette {
+  position: absolute;
+  inset: 0;
+}
+
+.about-zoom__layers {
+  z-index: 0;
+  overflow: hidden;
+}
+
+.about-zoom__scene-image {
+  background-position: center;
+  background-size: cover;
+  will-change: opacity, transform;
+}
+
+.about-zoom__overlay {
+  z-index: 4;
+  background:
+    linear-gradient(
+      90deg,
+      rgba(3, 5, 10, 0.95) 0%,
+      rgba(3, 5, 10, 0.76) 38%,
+      rgba(3, 5, 10, 0.24) 72%,
+      rgba(3, 5, 10, 0.18) 100%
+    ),
+    linear-gradient(0deg, rgba(3, 5, 10, 0.62) 0%, transparent 55%);
+}
+
+.about-zoom__vignette {
+  z-index: 5;
+  background:
+    radial-gradient(
+      circle at 22% 72%,
+      rgba(232, 156, 101, 0.18),
+      transparent 31%
+    ),
+    radial-gradient(
+      circle at 86% 16%,
+      rgba(126, 151, 209, 0.14),
+      transparent 28%
+    );
+  pointer-events: none;
+}
+
+.about-zoom__copy {
+  position: absolute;
+  top: 50%;
+  left: clamp(142px, 17vw, 255px);
+  z-index: 10;
+  width: min(540px, calc(100vw - 330px));
+  transform: translateY(-50%);
+  animation: about-copy-enter 520ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.about-zoom__kicker,
+.about-zoom__scroll-cue,
+.about-zoom__counter,
+.about-zoom__navigation p,
+.about-zoom__nav-button {
+  font-family: 'Manrope Variable', sans-serif;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.about-zoom__kicker {
+  margin: 0 0 16px;
+  color: #efb078;
+}
+
+.about-zoom__copy h1 {
+  max-width: 10ch;
+  margin: 0;
+  font-family: 'Cormorant Garamond Variable', Georgia, serif;
+  font-size: clamp(3.6rem, 7.2vw, 7.8rem);
+  font-weight: 500;
+  line-height: 0.86;
+  letter-spacing: -0.05em;
+  text-wrap: balance;
+}
+
+.about-zoom__description {
+  max-width: 44ch;
+  margin: 28px 0 0;
+  color: rgba(255, 250, 243, 0.88);
+  font-family: 'Manrope Variable', sans-serif;
+  font-size: clamp(0.95rem, 1.2vw, 1.1rem);
+  line-height: 1.8;
+}
+
+.about-zoom__line {
+  max-width: 34ch;
+  margin: 24px 0 0;
+  color: #f5c28f;
+  font-family: 'Cormorant Garamond Variable', Georgia, serif;
+  font-size: clamp(1.28rem, 2vw, 1.75rem);
+  font-style: italic;
+  line-height: 1.1;
+}
+
+.about-zoom__scroll-cue {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin: 38px 0 0;
+  color: rgba(255, 250, 243, 0.7);
+}
+
+.about-zoom__scroll-cue span {
+  color: #efb078;
+  font-size: 1.1rem;
+  animation: about-scroll-cue 1.7s ease-in-out infinite;
+}
+
+.about-zoom__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 37px;
+  border-bottom: 1px solid rgba(255, 250, 243, 0.72);
+  padding-bottom: 8px;
+  color: #fffaf3;
+  font-family: 'Manrope Variable', sans-serif;
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-decoration: none;
+  text-transform: uppercase;
+  transition:
+    border-color 180ms ease,
+    color 180ms ease,
+    transform 180ms ease;
+}
+
+.about-zoom__cta:hover {
+  border-color: #efb078;
+  color: #efb078;
+  transform: translateX(5px);
+}
+
+.about-zoom__cta:focus-visible,
+.about-zoom__nav-button:focus-visible {
+  outline: 3px solid #efb078;
+  outline-offset: 5px;
+}
+
+.about-zoom__navigation {
+  position: absolute;
+  top: 50%;
+  left: clamp(22px, 3vw, 52px);
+  z-index: 12;
+  width: 108px;
+  transform: translateY(-50%);
+}
+
+.about-zoom__navigation p {
+  margin: 0 0 18px;
+  color: rgba(255, 250, 243, 0.55);
+}
+
+.about-zoom__navigation ol {
+  display: grid;
+  gap: 11px;
+  margin: 0;
+  border-left: 1px solid rgba(255, 250, 243, 0.25);
+  padding: 0 0 0 14px;
+  list-style: none;
+}
+
+.about-zoom__nav-button {
+  display: flex;
+  gap: 8px;
+  border: 0;
+  padding: 0;
+  color: rgba(255, 250, 243, 0.45);
+  background: transparent;
+  cursor: pointer;
+  transition:
+    color 180ms ease,
+    transform 180ms ease;
+}
+
+.about-zoom__nav-button span {
+  color: #efb078;
+  font-size: 0.58rem;
+  opacity: 0;
+  transition: opacity 180ms ease;
+}
+
+.about-zoom__nav-button:hover,
+.about-zoom__nav-button--active {
+  color: #ffffff;
+  transform: translateX(4px);
+}
+
+.about-zoom__nav-button--active span {
+  opacity: 1;
+}
+
+.about-zoom__counter {
+  position: absolute;
+  right: clamp(20px, 4vw, 64px);
+  bottom: clamp(22px, 4vh, 44px);
+  z-index: 12;
+  color: rgba(255, 250, 243, 0.72);
+}
+
+.app:has(.about-zoom) .site-header {
+  background: linear-gradient(180deg, rgba(3, 5, 10, 0.55), transparent);
+}
+
+.app:has(.about-zoom) .wordmark,
+.app:has(.about-zoom) .nav-link {
+  color: #fffaf3;
+}
+
+.app:has(.about-zoom) .wordmark-kala,
+.app:has(.about-zoom) .nav-link:hover,
+.app:has(.about-zoom) .nav-link.active {
+  color: #efb078;
+}
+
+.app:has(.about-zoom) .theme-toggle {
+  border-color: rgba(255, 250, 243, 0.36);
+  color: #fffaf3;
+  background: rgba(3, 5, 10, 0.25);
+}
+
+@keyframes about-copy-enter {
+  from {
+    opacity: 0;
+    transform: translateY(calc(-50% + 28px));
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(-50%);
+  }
+}
+
+@keyframes about-scroll-cue {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(6px);
+  }
+}
+
+@media (max-width: 920px) {
+  .about-zoom__navigation {
+    display: none;
+  }
+
+  .about-zoom__copy {
+    left: clamp(24px, 7vw, 70px);
+    width: min(520px, calc(100vw - 48px));
+  }
+}
+
+@media (max-width: 640px) {
+  .about-zoom__scene-image {
+    background-position: 69% center;
+  }
+
+  .about-zoom__overlay {
+    background: linear-gradient(
+      0deg,
+      rgba(3, 5, 10, 0.96) 0%,
+      rgba(3, 5, 10, 0.73) 49%,
+      rgba(3, 5, 10, 0.12) 100%
+    );
+  }
+
+  .about-zoom__copy {
+    top: auto;
+    right: 24px;
+    bottom: 52px;
+    left: 24px;
+    width: auto;
+    transform: none;
+  }
+
+  .about-zoom__copy h1 {
+    max-width: 11ch;
+    font-size: clamp(3.2rem, 16vw, 5.1rem);
+  }
+
+  .about-zoom__description {
+    line-height: 1.7;
+  }
+
+  .about-zoom__counter {
+    right: 24px;
+    bottom: 20px;
+  }
+
+  @keyframes about-copy-enter {
+    from {
+      opacity: 0;
+      transform: translateY(24px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .about-zoom__scene-image {
+    transform: none !important;
+  }
+
+  .about-zoom__copy,
+  .about-zoom__scroll-cue span {
+    animation: none;
+  }
+}
+/* Only Home / Gallery / About / Commissions on the bright final scene */
+
+.app:has(.about-zoom[data-nav-tone='dark']) .nav-link {
+  color: #3a2431 !important;
+}
+
+.app:has(.about-zoom[data-nav-tone='dark']) .nav-link:hover,
+.app:has(.about-zoom[data-nav-tone='dark']) .nav-link.active {
+  color: #a44639 !important;
+}

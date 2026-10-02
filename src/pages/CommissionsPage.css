@@ -1,0 +1,1561 @@
+.commissions-page {
+  --commission-page: #f4eadf;
+  --commission-ink: #34212d;
+  --commission-muted: #705d65;
+  --commission-surface: #fffaf3;
+  --commission-line: rgba(75, 43, 55, 0.18);
+  --commission-accent: #a44639;
+  --commission-accent-soft: #ecb174;
+  --commission-focus: #a44639;
+
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(
+      circle at 84% 78%,
+      rgba(221, 153, 114, 0.14),
+      transparent 24%
+    ),
+    var(--commission-page);
+  color: var(--commission-ink);
+}
+
+.app[data-theme='dark'] .commissions-page {
+  --commission-page: #090d15;
+  --commission-ink: #fff5e9;
+  --commission-muted: #c3b6ae;
+  --commission-surface: #131b28;
+  --commission-line: rgba(255, 244, 229, 0.18);
+  --commission-accent: #ef9a77;
+  --commission-accent-soft: #f4c27d;
+  --commission-focus: #f4c27d;
+}
+
+.commissions-page__hero {
+  position: relative;
+  min-height: min(850px, 100svh);
+  overflow: hidden;
+  padding: clamp(8rem, 15vw, 11rem) clamp(24px, 6vw, 86px)
+    clamp(4rem, 9vw, 7rem);
+  color: #fffaf3;
+  background:
+    radial-gradient(
+      circle at 76% 36%,
+      rgba(163, 73, 74, 0.38),
+      transparent 26%
+    ),
+    radial-gradient(
+      circle at 25% 85%,
+      rgba(89, 100, 168, 0.28),
+      transparent 35%
+    ),
+    #04060b;
+}
+
+.commissions-page__hero::before {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(100deg, rgba(4, 6, 11, 0.62), transparent 62%),
+    repeating-linear-gradient(
+      115deg,
+      transparent 0 42px,
+      rgba(255, 255, 255, 0.025) 43px 44px
+    );
+  content: '';
+  pointer-events: none;
+}
+
+.commissions-page__hero-inner {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 0.85fr) minmax(460px, 1fr);
+  align-items: center;
+  gap: clamp(18px, 4vw, 64px);
+  width: min(1280px, 100%);
+  margin: 0 auto;
+}
+
+.commissions-page__copy {
+  max-width: 600px;
+}
+
+.commissions-page__eyebrow {
+  margin: 0 0 18px;
+  color: var(--commission-accent-soft);
+  font-family: 'Manrope Variable', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.commissions-page__eyebrow span {
+  font-size: 1rem;
+  letter-spacing: 0;
+}
+
+.commissions-page__copy h1 {
+  max-width: 10ch;
+  margin: 0;
+  font-family: 'Cormorant Garamond Variable', Georgia, serif;
+  font-size: clamp(4rem, 7vw, 7.8rem);
+  font-weight: 500;
+  line-height: 0.84;
+  letter-spacing: -0.055em;
+}
+
+.commissions-page__copy h1 em {
+  display: block;
+  margin-top: 0.14em;
+  color: #efad77;
+  font-family: 'Lovers Quarrel', cursive;
+  font-size: 0.74em;
+  font-style: normal;
+  font-weight: 400;
+  letter-spacing: 0;
+  line-height: 0.8;
+}
+
+.commissions-page__intro {
+  max-width: 48ch;
+  margin: 30px 0 0;
+  color: rgba(255, 250, 243, 0.78);
+  font-family: 'Manrope Variable', sans-serif;
+  font-size: clamp(0.98rem, 1.25vw, 1.1rem);
+  line-height: 1.8;
+}
+
+.commissions-page__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 22px;
+  margin-top: 34px;
+}
+
+.commission-button,
+.commission-text-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 48px;
+  font-family: 'Manrope Variable', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.09em;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
+.commission-button {
+  border: 1px solid #efb078;
+  border-radius: 999px;
+  padding: 0 21px;
+  color: #241722;
+  background: #efb078;
+  transition:
+    background 180ms ease,
+    color 180ms ease,
+    transform 180ms ease;
+}
+
+.commission-button:hover {
+  color: #fffaf3;
+  background: transparent;
+  transform: translateY(-3px);
+}
+
+.commission-text-link {
+  border-bottom: 1px solid rgba(255, 250, 243, 0.54);
+  color: #fffaf3;
+  transition:
+    border-color 180ms ease,
+    color 180ms ease,
+    transform 180ms ease;
+}
+
+.commission-text-link:hover {
+  border-color: #efb078;
+  color: #efb078;
+  transform: translateX(4px);
+}
+
+.commissions-page__availability {
+  margin: 32px 0 0;
+  color: rgba(255, 250, 243, 0.48);
+  font-family: 'Manrope Variable', sans-serif;
+  font-size: 0.78rem;
+}
+
+/* 3D studio scene */
+
+.commission-stage {
+  --tilt-x: -5deg;
+  --tilt-y: 0deg;
+  --glow-x: 50%;
+  --glow-y: 50%;
+
+  position: relative;
+  width: min(100%, 650px);
+  min-height: 540px;
+  margin: -26px auto -44px;
+  perspective: 1450px;
+  perspective-origin: 50% 43%;
+}
+
+.commission-stage__glow {
+  position: absolute;
+  inset: 8%;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at var(--glow-x) var(--glow-y),
+    rgba(250, 193, 122, 0.32),
+    rgba(236, 111, 92, 0.1) 29%,
+    transparent 61%
+  );
+  pointer-events: none;
+}
+
+.commission-stage__world {
+  position: absolute;
+  inset: 0;
+  transform: rotateX(var(--tilt-x)) rotateY(var(--tilt-y));
+  transform-style: preserve-3d;
+  transition: transform 420ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.commission-stage--tilting .commission-stage__world {
+  will-change: transform;
+  transition-duration: 75ms;
+}
+
+.commission-stage__backdrop {
+  position: absolute;
+  inset: 10% 7% 15%;
+  border: 1px solid rgba(255, 240, 219, 0.16);
+  border-radius: 42% 48% 36% 52%;
+  background:
+    radial-gradient(
+      circle at 72% 23%,
+      rgba(233, 135, 106, 0.56),
+      transparent 17%
+    ),
+    radial-gradient(
+      circle at 20% 70%,
+      rgba(104, 117, 188, 0.55),
+      transparent 27%
+    ),
+    linear-gradient(145deg, #5e2e50, #171423 67%);
+  box-shadow: 0 34px 80px rgba(0, 0, 0, 0.45);
+  transform: translateZ(-100px) rotateZ(-7deg);
+}
+
+.commission-stage__plane {
+  position: absolute;
+  right: 10%;
+  bottom: 8%;
+  left: 10%;
+  height: 22%;
+  border-radius: 50%;
+  background: radial-gradient(
+    ellipse,
+    rgba(0, 0, 0, 0.8) 0%,
+    rgba(0, 0, 0, 0.32) 42%,
+    transparent 72%
+  );
+  transform: translateZ(-130px) rotateX(66deg);
+}
+
+.commission-stage__card {
+  position: absolute;
+  width: clamp(170px, 25vw, 258px);
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  border: 1px solid rgba(255, 244, 231, 0.28);
+  border-radius: 24px;
+  box-shadow: 0 28px 60px rgba(0, 0, 0, 0.4);
+  transform-style: preserve-3d;
+}
+
+.commission-stage__card-face {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+  padding: 22px;
+  background:
+    linear-gradient(140deg, rgba(255, 255, 255, 0.2), transparent 34%),
+    linear-gradient(150deg, #265e82, #263145 68%, #141724);
+  transform: translateZ(22px);
+}
+
+.commission-stage__card-face::after {
+  position: absolute;
+  right: -20%;
+  bottom: -22%;
+  width: 75%;
+  aspect-ratio: 1;
+  border: 1px solid rgba(255, 255, 255, 0.34);
+  border-radius: 50%;
+  content: '';
+}
+
+.commission-stage__card-face span,
+.commission-stage__card-face p {
+  position: relative;
+  z-index: 1;
+  margin: 0;
+  font-family: 'Manrope Variable', sans-serif;
+}
+
+.commission-stage__card-face span {
+  color: rgba(255, 250, 243, 0.7);
+  font-size: 0.58rem;
+  font-weight: 800;
+  letter-spacing: 0.11em;
+}
+
+.commission-stage__card-face strong {
+  position: relative;
+  z-index: 1;
+  color: #fffaf3;
+  font-family: 'Cormorant Garamond Variable', Georgia, serif;
+  font-size: clamp(2rem, 3.3vw, 3rem);
+  font-weight: 500;
+  line-height: 0.85;
+  letter-spacing: -0.05em;
+}
+
+.commission-stage__card-face p {
+  max-width: 17ch;
+  color: rgba(255, 250, 243, 0.7);
+  font-size: 0.68rem;
+  line-height: 1.55;
+}
+
+.commission-stage__card--idea {
+  bottom: 10%;
+  left: 1%;
+  opacity: 0.82;
+  transform: translate3d(0, 0, -12px) rotateY(18deg) rotateZ(-11deg);
+}
+
+.commission-stage__card--idea .commission-stage__card-face {
+  background:
+    repeating-linear-gradient(
+      135deg,
+      transparent 0 18px,
+      rgba(247, 198, 102, 0.18) 19px 22px
+    ),
+    linear-gradient(150deg, #b85a64, #473351 72%);
+}
+
+.commission-stage__card--final {
+  top: 10%;
+  right: 1%;
+  opacity: 0.8;
+  transform: translate3d(0, 0, -44px) rotateY(-18deg) rotateZ(9deg);
+}
+
+.commission-stage__card--final .commission-stage__card-face {
+  background:
+    radial-gradient(circle at 72% 32%, #f6c771 0 8%, transparent 9%),
+    linear-gradient(150deg, #223540, #192128 72%);
+}
+
+.commission-stage__main-float {
+  position: absolute;
+  inset: 0;
+  animation: commission-main-float 5.8s ease-in-out infinite;
+  transform-style: preserve-3d;
+}
+
+.commission-stage__card--brief {
+  top: 5%;
+  left: 50%;
+  z-index: 3;
+  width: clamp(225px, 31vw, 320px);
+  transform: translate3d(-50%, 0, 104px) rotateZ(-4deg);
+}
+
+.commission-stage__card-face--brief {
+  background:
+    radial-gradient(
+      circle at 78% 21%,
+      var(--commission-choice) 0 13%,
+      transparent 13.5%
+    ),
+    radial-gradient(
+      circle at 19% 76%,
+      rgba(255, 255, 255, 0.36) 0 9%,
+      transparent 9.5%
+    ),
+    linear-gradient(135deg, #fff4e6, #d9c3b1);
+}
+
+.commission-stage__card-face--brief::after {
+  right: -25%;
+  bottom: -14%;
+  width: 80%;
+  border-color: rgba(85, 50, 61, 0.22);
+}
+
+.commission-stage__card-face--brief span,
+.commission-stage__card-face--brief p,
+.commission-stage__card-face--brief strong {
+  color: #392532;
+}
+
+.commission-stage__card-face--brief span {
+  color: rgba(57, 37, 50, 0.64);
+}
+
+.commission-stage__type {
+  margin-top: auto !important;
+  color: var(--commission-choice) !important;
+  font-size: 0.64rem !important;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.commission-stage__card-face--brief strong {
+  margin-top: 8px;
+  font-size: clamp(3rem, 5vw, 4.5rem);
+}
+
+.commission-stage__caption {
+  margin-top: 16px !important;
+  font-size: 0.68rem !important;
+}
+
+.commission-stage__marks {
+  position: absolute;
+  right: 20px;
+  bottom: 21px;
+  display: flex;
+  gap: 6px;
+  align-items: end;
+}
+
+.commission-stage__marks i {
+  display: block;
+  width: 7px;
+  border-radius: 999px;
+  background: var(--commission-choice);
+}
+
+.commission-stage__marks i:nth-child(1) {
+  height: 16px;
+}
+
+.commission-stage__marks i:nth-child(2) {
+  height: 26px;
+}
+
+.commission-stage__marks i:nth-child(3) {
+  height: 10px;
+}
+
+.commission-stage__sun,
+.commission-stage__moon {
+  position: absolute;
+  z-index: 1;
+  top: 19%;
+  right: 17%;
+  width: 31px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: #f7c45d;
+}
+
+.commission-stage__moon {
+  background: #e3e6ff;
+  box-shadow: -8px 5px 0 #273246;
+}
+
+.commission-stage__palette {
+  position: absolute;
+  right: 11%;
+  bottom: 8%;
+  z-index: 5;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 7px;
+  width: 112px;
+  aspect-ratio: 1;
+  padding: 17px;
+  border-radius: 50% 42% 48% 46%;
+  background: #d4a177;
+  box-shadow: 0 18px 30px rgba(0, 0, 0, 0.28);
+  transform: translateZ(86px) rotateZ(15deg);
+}
+
+.commission-stage__palette span {
+  width: 22px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: #b84f51;
+  box-shadow: inset 2px 2px 4px rgba(0, 0, 0, 0.18);
+}
+
+.commission-stage__palette span:nth-child(2) {
+  background: #334c87;
+}
+
+.commission-stage__palette span:nth-child(3) {
+  background: #f3cb6f;
+}
+
+.commission-stage__palette span:nth-child(4) {
+  background: #547f73;
+}
+
+.commission-stage__palette span:nth-child(5) {
+  background: #faf0dc;
+}
+
+.commission-stage__brush {
+  position: absolute;
+  bottom: 13%;
+  left: 11%;
+  z-index: 4;
+  width: 210px;
+  height: 14px;
+  border-radius: 999px;
+  background: linear-gradient(
+    90deg,
+    #271b1c 0 18%,
+    #c68d62 18% 78%,
+    #261c20 78%
+  );
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+  transform: translateZ(64px) rotateZ(-14deg);
+}
+
+.commission-stage__brush::after {
+  position: absolute;
+  top: 0;
+  right: -20px;
+  width: 26px;
+  height: 14px;
+  clip-path: polygon(0 0, 100% 50%, 0 100%);
+  background: #29202a;
+  content: '';
+}
+
+.commission-stage__note {
+  position: absolute;
+  right: 0;
+  bottom: 3%;
+  z-index: 6;
+  padding: 14px 16px;
+  border-radius: 4px;
+  color: #33222b;
+  background: #f2be79;
+  box-shadow: 0 18px 26px rgba(0, 0, 0, 0.25);
+  font-family: 'Lovers Quarrel', cursive;
+  font-size: 1.9rem;
+  line-height: 0.7;
+  transform: translateZ(116px) rotateZ(7deg);
+}
+
+.commission-stage__hint {
+  position: absolute;
+  right: 5%;
+  bottom: 0;
+  margin: 0;
+  color: rgba(255, 250, 243, 0.45);
+  font-family: 'Manrope Variable', sans-serif;
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+}
+
+@keyframes commission-main-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-14px);
+  }
+}
+
+/* Form */
+
+.commissions-page__request {
+  display: grid;
+  grid-template-columns: minmax(0, 0.78fr) minmax(420px, 1fr);
+  gap: clamp(36px, 7vw, 110px);
+  width: min(1240px, calc(100% - 48px));
+  margin: 0 auto;
+  padding: clamp(72px, 11vw, 136px) 0;
+  scroll-margin-top: 92px;
+}
+
+.commissions-page__request-intro {
+  max-width: 470px;
+}
+
+.commissions-page__request h2,
+.commissions-page__process h2 {
+  margin: 0;
+  font-family: 'Cormorant Garamond Variable', Georgia, serif;
+  font-size: clamp(3rem, 5vw, 5.2rem);
+  font-weight: 500;
+  line-height: 0.9;
+  letter-spacing: -0.05em;
+}
+
+.commissions-page__request h2 span {
+  display: block;
+  color: var(--commission-accent);
+  font-family: 'Lovers Quarrel', cursive;
+  font-size: 0.72em;
+  font-weight: 400;
+  letter-spacing: 0;
+}
+
+.commissions-page__request-intro > p:not(.commissions-page__eyebrow) {
+  margin: 28px 0 0;
+  color: var(--commission-muted);
+  font-family: 'Manrope Variable', sans-serif;
+  font-size: 0.95rem;
+  line-height: 1.8;
+}
+
+.commission-options {
+  display: grid;
+  gap: 10px;
+  margin-top: 32px;
+}
+
+.commission-option {
+  display: grid;
+  grid-template-columns: 28px 1fr auto;
+  gap: 12px;
+  align-items: center;
+  width: 100%;
+  min-height: 78px;
+  border: 1px solid var(--commission-line);
+  border-radius: 16px;
+  padding: 14px 16px;
+  color: var(--commission-ink);
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    border-color 180ms ease,
+    background 180ms ease,
+    transform 180ms ease;
+}
+
+.commission-option:hover,
+.commission-option--selected {
+  border-color: var(--option-colour);
+  background: color-mix(in srgb, var(--option-colour) 11%, transparent);
+  transform: translateX(5px);
+}
+
+.commission-option > span {
+  color: var(--option-colour);
+  font-family: 'Manrope Variable', sans-serif;
+  font-size: 0.68rem;
+  font-weight: 800;
+}
+
+.commission-option strong,
+.commission-option p {
+  display: block;
+  margin: 0;
+  font-family: 'Manrope Variable', sans-serif;
+}
+
+.commission-option strong {
+  font-size: 0.82rem;
+}
+
+.commission-option p {
+  margin-top: 4px;
+  color: var(--commission-muted);
+  font-size: 0.68rem;
+  line-height: 1.45;
+}
+
+.commission-option i {
+  color: var(--option-colour);
+  font-size: 1.1rem;
+  font-style: normal;
+}
+
+.commission-form {
+  align-self: start;
+  border: 1px solid var(--commission-line);
+  border-radius: 28px;
+  padding: clamp(22px, 4vw, 42px);
+  background: var(--commission-surface);
+  box-shadow: 0 24px 60px rgba(48, 26, 39, 0.08);
+}
+
+.commission-form__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 21px 18px;
+}
+
+.commission-form__field {
+  display: grid;
+  gap: 8px;
+}
+
+.commission-form__field--wide {
+  grid-column: 1 / -1;
+}
+
+.commission-form label {
+  color: var(--commission-ink);
+  font-family: 'Manrope Variable', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.commission-form label span {
+  color: var(--commission-accent);
+}
+
+.commission-form input,
+.commission-form select,
+.commission-form textarea {
+  width: 100%;
+  border: 1px solid var(--commission-line);
+  border-radius: 12px;
+  padding: 13px 14px;
+  color: var(--commission-ink);
+  background: transparent;
+  font-family: 'Manrope Variable', sans-serif;
+  font-size: 0.9rem;
+  line-height: 1.45;
+  transition:
+    border-color 180ms ease,
+    box-shadow 180ms ease,
+    background 180ms ease;
+}
+
+.commission-form input,
+.commission-form select {
+  min-height: 50px;
+}
+
+.commission-form textarea {
+  min-height: 142px;
+  resize: vertical;
+}
+
+.commission-form input::placeholder,
+.commission-form textarea::placeholder {
+  color: var(--commission-muted);
+  opacity: 0.72;
+}
+
+.commission-form input:focus,
+.commission-form select:focus,
+.commission-form textarea:focus {
+  border-color: #f4c78d;
+  outline: none;
+  outline-offset: 0;
+  box-shadow: 0 0 0 3px rgba(244, 199, 141, 0.34);
+}
+
+.commission-form input[type='file'] {
+  padding: 9px;
+  font-size: 0.72rem;
+}
+
+.commission-form input[type='file']::file-selector-button {
+  margin-right: 10px;
+  border: 0;
+  border-radius: 8px;
+  padding: 8px 10px;
+  color: #fffaf3;
+  background: var(--commission-accent);
+  font-family: 'Manrope Variable', sans-serif;
+  font-size: 0.68rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.commission-form__file-name {
+  min-height: 1.2em;
+  margin: 0;
+  color: var(--commission-muted);
+  font-family: 'Manrope Variable', sans-serif;
+  font-size: 0.68rem;
+}
+
+.commission-form__submit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 52px;
+  width: 100%;
+  margin-top: 28px;
+  border: 1px solid var(--commission-accent);
+  border-radius: 999px;
+  color: #fffaf3;
+  background: var(--commission-accent);
+  font-family: 'Manrope Variable', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition:
+    background 180ms ease,
+    color 180ms ease,
+    transform 180ms ease;
+}
+
+.commission-form__submit:hover {
+  color: var(--commission-accent);
+  background: transparent;
+  transform: translateY(-2px);
+}
+
+.commission-form__status {
+  margin: 18px 0 0;
+  color: var(--commission-muted);
+  font-family: 'Manrope Variable', sans-serif;
+  font-size: 0.78rem;
+  line-height: 1.6;
+}
+
+.commission-form__note {
+  margin: 12px 0 0;
+  color: var(--commission-muted);
+  font-family: 'Manrope Variable', sans-serif;
+  font-size: 0.68rem;
+}
+
+/* Process */
+
+.commissions-page__process {
+  display: grid;
+  grid-template-columns: minmax(0, 0.68fr) minmax(0, 1fr);
+  gap: clamp(36px, 7vw, 96px);
+  padding: clamp(70px, 10vw, 120px) max(24px, calc((100% - 1240px) / 2));
+  color: #fffaf3;
+  background:
+    radial-gradient(
+      circle at 10% 80%,
+      rgba(153, 72, 78, 0.34),
+      transparent 28%
+    ),
+    #080a11;
+}
+
+.commissions-page__process h2 {
+  max-width: 9ch;
+  color: #fffaf3;
+}
+
+.commissions-page__process ol {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.commissions-page__process li {
+  min-height: 180px;
+  border: 1px solid rgba(255, 250, 243, 0.16);
+  border-radius: 20px;
+  padding: 22px;
+  background: rgba(255, 250, 243, 0.04);
+  transition:
+    border-color 180ms ease,
+    transform 180ms ease,
+    background 180ms ease;
+}
+
+.commissions-page__process li:hover {
+  border-color: rgba(239, 176, 120, 0.72);
+  background: rgba(255, 250, 243, 0.08);
+  transform: translateY(-6px);
+}
+
+.commissions-page__process li > span {
+  color: #efb078;
+  font-family: 'Manrope Variable', sans-serif;
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+}
+
+.commissions-page__process h3 {
+  margin: 28px 0 8px;
+  font-family: 'Cormorant Garamond Variable', Georgia, serif;
+  font-size: 2rem;
+  font-weight: 500;
+}
+
+.commissions-page__process li p {
+  margin: 0;
+  color: rgba(255, 250, 243, 0.62);
+  font-family: 'Manrope Variable', sans-serif;
+  font-size: 0.76rem;
+  line-height: 1.65;
+}
+
+/* Navbar only on this dark route */
+
+.app:has(.commissions-page) .site-header {
+  background: linear-gradient(180deg, rgba(4, 6, 11, 0.68), transparent);
+}
+
+.app:has(.commissions-page) .wordmark,
+.app:has(.commissions-page) .nav-link {
+  color: #fffaf3;
+}
+
+.app:has(.commissions-page) .wordmark-kala,
+.app:has(.commissions-page) .nav-link:hover,
+.app:has(.commissions-page) .nav-link.active {
+  color: #efb078;
+}
+
+.app:has(.commissions-page) .theme-toggle {
+  border-color: rgba(255, 250, 243, 0.34);
+  color: #fffaf3;
+  background: rgba(4, 6, 11, 0.2);
+}
+
+.commissions-page a:focus-visible,
+.commissions-page button:focus-visible,
+.commissions-page input:focus-visible,
+.commissions-page select:focus-visible,
+.commissions-page textarea:focus-visible {
+  outline: 3px solid var(--commission-focus);
+  outline-offset: 4px;
+}
+
+@media (max-width: 960px) {
+  .commissions-page__hero-inner,
+  .commissions-page__request,
+  .commissions-page__process {
+    grid-template-columns: 1fr;
+  }
+
+  .commissions-page__copy {
+    max-width: 650px;
+  }
+
+  .commission-stage {
+    max-width: 610px;
+    margin: -32px auto -58px;
+  }
+
+  .commissions-page__request-intro {
+    max-width: 620px;
+  }
+
+  .commissions-page__process h2 {
+    max-width: 12ch;
+  }
+}
+
+@media (max-width: 640px) {
+  .commissions-page__hero {
+    min-height: auto;
+    padding-top: 8rem;
+  }
+
+  .commissions-page__copy h1 {
+    font-size: clamp(3.7rem, 17vw, 5.4rem);
+  }
+
+  .commissions-page__actions {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .commission-stage {
+    min-height: 410px;
+    margin: -10px auto -42px;
+    transform: scale(0.92);
+    transform-origin: center top;
+  }
+
+  .commission-stage__card {
+    width: 156px;
+  }
+
+  .commission-stage__card--brief {
+    width: 220px;
+  }
+
+  .commission-stage__palette {
+    right: 8%;
+    width: 86px;
+    padding: 13px;
+  }
+
+  .commission-stage__palette span {
+    width: 17px;
+  }
+
+  .commission-stage__brush {
+    width: 150px;
+  }
+
+  .commission-stage__note {
+    right: 2%;
+    font-size: 1.5rem;
+  }
+
+  .commissions-page__request {
+    width: min(100% - 36px, 620px);
+  }
+
+  .commission-form__grid,
+  .commissions-page__process ol {
+    grid-template-columns: 1fr;
+  }
+
+  .commission-form__field--wide {
+    grid-column: auto;
+  }
+
+  .commissions-page__process {
+    padding-right: 24px;
+    padding-left: 24px;
+  }
+}
+
+@media (hover: none), (pointer: coarse) {
+  .commission-stage {
+    pointer-events: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .commission-stage__world,
+  .commission-stage__main-float,
+  .commission-option,
+  .commission-form__submit,
+  .commissions-page__process li,
+  .commission-button,
+  .commission-text-link {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+/* Real pond backdrop + glass commission form */
+
+.commissions-page__request {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  grid-template-columns: minmax(0, 0.78fr) minmax(420px, 1fr);
+  gap: clamp(36px, 7vw, 110px);
+  width: min(1240px, calc(100% - 48px));
+  margin: 0 auto;
+  padding: clamp(72px, 11vw, 136px) clamp(24px, 5vw, 64px);
+  border-radius: 42px;
+  scroll-margin-top: 92px;
+}
+
+.commissions-page__request .commission-form {
+  border-color: rgba(240, 255, 247, 0.48);
+  background: rgba(241, 250, 245, 0.18);
+  box-shadow: 0 24px 70px rgba(3, 34, 37, 0.24);
+  backdrop-filter: blur(14px) saturate(118%);
+}
+
+.commissions-page__request .commission-option {
+  border-color: rgba(239, 255, 246, 0.44);
+  background: rgba(240, 252, 245, 0.28);
+  backdrop-filter: blur(8px) saturate(115%);
+}
+
+.commissions-page__request .commission-option--selected {
+  background: color-mix(
+    in srgb,
+    var(--option-colour) 28%,
+    rgba(244, 255, 248, 0.46)
+  );
+}
+
+.commissions-page__request .commission-form input,
+.commissions-page__request .commission-form select,
+.commissions-page__request .commission-form textarea {
+  border-color: rgba(54, 99, 94, 0.24);
+  background: rgba(253, 255, 252, 0.7);
+  backdrop-filter: blur(8px);
+}
+
+.app[data-theme='dark'] .commissions-page__request .commission-form {
+  border-color: rgba(223, 255, 238, 0.24);
+  background: rgba(4, 27, 32, 0.42);
+}
+
+.app[data-theme='dark'] .commissions-page__request .commission-option {
+  background: rgba(4, 35, 40, 0.42);
+}
+
+.app[data-theme='dark'] .commissions-page__request .commission-form input,
+.app[data-theme='dark'] .commissions-page__request .commission-form select,
+.app[data-theme='dark'] .commissions-page__request .commission-form textarea {
+  background: rgba(6, 27, 32, 0.7);
+}
+
+@keyframes realistic-pond-ripple {
+  0% {
+    opacity: 0;
+    transform: scale(0.16);
+  }
+
+  14% {
+    opacity: 0.78;
+  }
+
+  100% {
+    opacity: 0;
+    transform: scale(1.42);
+  }
+}
+
+@media (max-width: 960px) {
+  .commissions-page__request {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .commissions-page__request,
+  .commission-pond {
+    border-radius: 28px;
+  }
+
+  .commissions-page__request {
+    width: min(100% - 32px, 620px);
+    padding: 62px 18px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .commission-pond__ripple i {
+    animation: none;
+  }
+}
+
+.commissions-page__request {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background: #0d4d52 !important;
+}
+
+/* This is the key layering rule: form elements always sit over the water. */
+.commissions-page__request > :not(.pond-water) {
+  position: relative;
+  z-index: 3;
+}
+
+/* Remove the previous large white/opaque form card completely. */
+.commissions-page__request .commission-form {
+  border: 0 !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+
+.commissions-page__request .commissions-page__request-intro,
+.commissions-page__request .commission-form label,
+.commissions-page__request .commission-form__file-name,
+.commissions-page__request .commission-form__note,
+.commissions-page__request .commission-form__status {
+  color: #fff7ea;
+}
+
+.commissions-page__request
+  .commissions-page__request-intro
+  > p:not(.commissions-page__eyebrow) {
+  color: rgba(255, 247, 234, 0.86);
+}
+
+.commissions-page__request .commission-option {
+  border-color: rgba(238, 255, 246, 0.5);
+  color: #fff8ec;
+  background: rgba(4, 35, 40, 0.12);
+  box-shadow: inset 0 1px rgba(255, 255, 255, 0.16);
+  -webkit-backdrop-filter: blur(3px);
+  backdrop-filter: blur(3px);
+}
+
+.commissions-page__request .commission-option p {
+  color: rgba(255, 248, 236, 0.78);
+}
+
+.commissions-page__request .commission-option--selected {
+  border-color: var(--option-colour);
+  background: color-mix(
+    in srgb,
+    var(--option-colour) 24%,
+    rgba(4, 36, 41, 0.17)
+  );
+}
+
+/* The only surfaces left are individual, readable input controls. */
+.commissions-page__request .commission-form input,
+.commissions-page__request .commission-form select,
+.commissions-page__request .commission-form textarea {
+  border-color: rgba(239, 255, 244, 0.48);
+  color: #fffaf0;
+  background: rgba(3, 29, 34, 0.3);
+  box-shadow: inset 0 1px rgba(255, 255, 255, 0.13);
+  -webkit-backdrop-filter: blur(5px);
+  backdrop-filter: blur(5px);
+}
+
+.commissions-page__request .commission-form input::placeholder,
+.commissions-page__request .commission-form textarea::placeholder {
+  color: rgba(255, 246, 231, 0.68);
+}
+
+.commissions-page__request .commission-form option {
+  color: #fff8ec;
+  background: #0e3c42;
+}
+
+.commissions-page__request .commission-form input:focus,
+.commissions-page__request .commission-form select:focus,
+.commissions-page__request .commission-form textarea:focus {
+  border-color: #f1c182;
+  box-shadow: 0 0 0 3px rgba(241, 193, 130, 0.32);
+}
+
+.commissions-page__request .commission-form__submit {
+  border-color: #f1c182;
+  background: #f1c182;
+  color: #153c3e;
+}
+
+@media (hover: hover) {
+  .commissions-page__request .commission-option:hover {
+    border-color: #f1c182;
+    background: rgba(3, 29, 34, 0.28);
+    transform: translateX(5px);
+  }
+
+  .commissions-page__request .commission-form__submit:hover {
+    border-color: #fff0d2;
+    background: #fff0d2;
+    transform: translateY(-2px);
+  }
+}
+
+@media (max-width: 780px) {
+  .commissions-page__request .commission-form {
+    max-width: none;
+  }
+}
+.commissions-page__request {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background: #0d4d52 !important;
+}
+
+.commissions-page__request > :not(.pond-water) {
+  position: relative;
+  z-index: 3;
+}
+
+.commissions-page__request .commission-form {
+  border: 0 !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+
+.commissions-page__request .commissions-page__request-intro,
+.commissions-page__request .commission-form label,
+.commissions-page__request .commission-form__file-name,
+.commissions-page__request .commission-form__note,
+.commissions-page__request .commission-form__status {
+  color: #fff7ea;
+}
+
+.commissions-page__request
+  .commissions-page__request-intro
+  > p:not(.commissions-page__eyebrow) {
+  color: rgba(255, 247, 234, 0.86);
+}
+
+.commissions-page__request .commission-option {
+  border-color: rgba(238, 255, 246, 0.5);
+  color: #fff8ec;
+  background: rgba(4, 35, 40, 0.12);
+  box-shadow: inset 0 1px rgba(255, 255, 255, 0.16);
+  -webkit-backdrop-filter: blur(3px);
+  backdrop-filter: blur(3px);
+}
+
+.commissions-page__request .commission-option p {
+  color: rgba(255, 248, 236, 0.78);
+}
+
+.commissions-page__request .commission-option--selected {
+  border-color: var(--option-colour);
+  background: color-mix(
+    in srgb,
+    var(--option-colour) 24%,
+    rgba(4, 36, 41, 0.17)
+  );
+}
+
+.commissions-page__request .commission-form input,
+.commissions-page__request .commission-form select,
+.commissions-page__request .commission-form textarea {
+  border-color: rgba(239, 255, 244, 0.48);
+  color: #fffaf0;
+  background: rgba(3, 29, 34, 0.3);
+  box-shadow: inset 0 1px rgba(255, 255, 255, 0.13);
+  -webkit-backdrop-filter: blur(5px);
+  backdrop-filter: blur(5px);
+}
+
+.commissions-page__request .commission-form input::placeholder,
+.commissions-page__request .commission-form textarea::placeholder {
+  color: rgba(255, 246, 231, 0.68);
+}
+
+.commissions-page__request .commission-form option {
+  color: #fff8ec;
+  background: #0e3c42;
+}
+
+.commissions-page__request .commission-form input:focus,
+.commissions-page__request .commission-form select:focus,
+.commissions-page__request .commission-form textarea:focus {
+  border-color: #f1c182;
+  box-shadow: 0 0 0 3px rgba(241, 193, 130, 0.32);
+}
+
+.commissions-page__request .commission-form__submit {
+  border-color: #f1c182;
+  background: #f1c182;
+  color: #153c3e;
+}
+
+@media (hover: hover) {
+  .commissions-page__request .commission-option:hover {
+    border-color: #f1c182;
+    background: rgba(3, 29, 34, 0.28);
+    transform: translateX(5px);
+  }
+
+  .commissions-page__request .commission-form__submit:hover {
+    border-color: #fff0d2;
+    background: #fff0d2;
+    transform: translateY(-2px);
+  }
+}
+
+@media (max-width: 780px) {
+  .commissions-page__request .commission-form {
+    max-width: none;
+  }
+}
+
+/*
+  Remove old .pond-water, .commission-pond and fake-ripple CSS.
+  Paste this at the very END of src/pages/CommissionsPage.css.
+*/
+
+/* The water host must not be a two-column grid itself. */
+.real-water-pond.commissions-page__request {
+  position: relative !important;
+  z-index: 0;
+  display: block !important;
+  grid-template-columns: none !important;
+  gap: 0 !important;
+  overflow: hidden;
+  padding: 0 !important;
+  min-height: 100svh;
+  isolation: isolate;
+  background-color: #0c4f53 !important;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  width: 100vw !important;
+  max-width: none !important;
+  margin-inline: calc(50% - 50vw) !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+/* jquery.ripples appends this real WebGL canvas to the section. */
+.real-water-pond > canvas {
+  position: absolute !important;
+  z-index: 0 !important;
+  inset: 0 !important;
+  display: block !important;
+  width: 100% !important;
+  height: 100% !important;
+  pointer-events: none !important;
+}
+
+/* Only this wrapper is the grid: content floats above the live water. */
+.commission-water__content {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 0.84fr) minmax(25rem, 1fr);
+  gap: clamp(2.5rem, 7vw, 8rem);
+  align-items: start;
+  min-height: 100svh;
+  box-sizing: border-box;
+  padding: clamp(3rem, 7vw, 7rem);
+}
+
+/* Remove the large solid form card. */
+.real-water-pond .commission-form {
+  width: 100%;
+  max-width: none !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+
+.real-water-pond .commissions-page__request-intro,
+.real-water-pond .commission-form label,
+.real-water-pond .commission-form__file-name,
+.real-water-pond .commission-form__note,
+.real-water-pond .commission-form__status {
+  color: #fff8eb;
+}
+
+.real-water-pond
+  .commissions-page__request-intro
+  > p:not(.commissions-page__eyebrow) {
+  color: rgba(255, 248, 235, 0.88);
+}
+
+.real-water-pond .commissions-page__request-intro h2 {
+  color: #fffaf0;
+}
+
+.real-water-pond .commission-option {
+  border-color: rgba(232, 255, 247, 0.56);
+  color: #fff9ef;
+  background: rgba(4, 35, 40, 0.22);
+  box-shadow: inset 0 1px rgba(255, 255, 255, 0.18);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+}
+
+.real-water-pond .commission-option p {
+  color: rgba(255, 249, 239, 0.8);
+}
+
+.real-water-pond .commission-option--selected {
+  border-color: var(--option-colour);
+  background: color-mix(
+    in srgb,
+    var(--option-colour) 30%,
+    rgba(4, 36, 41, 0.22)
+  );
+}
+
+.real-water-pond .commission-form input,
+.real-water-pond .commission-form select,
+.real-water-pond .commission-form textarea {
+  border-color: rgba(239, 255, 244, 0.5);
+  color: #fffdf6;
+  background: rgba(3, 30, 35, 0.34);
+  box-shadow: inset 0 1px rgba(255, 255, 255, 0.16);
+  -webkit-backdrop-filter: blur(5px);
+  backdrop-filter: blur(5px);
+}
+
+.real-water-pond .commission-form input::placeholder,
+.real-water-pond .commission-form textarea::placeholder {
+  color: rgba(255, 247, 234, 0.69);
+}
+
+.real-water-pond .commission-form option {
+  color: #fffaf0;
+  background: #0e3e43;
+}
+
+.real-water-pond .commission-form input:focus,
+.real-water-pond .commission-form select:focus,
+.real-water-pond .commission-form textarea:focus {
+  border-color: #f4c78d;
+  box-shadow: 0 0 0 3px rgba(244, 199, 141, 0.33);
+}
+
+.real-water-pond .commission-form__submit {
+  border-color: #f4c78d;
+  background: #f4c78d;
+  color: #153d3f;
+}
+
+@media (hover: hover) {
+  .real-water-pond .commission-option:hover {
+    border-color: #f4c78d;
+    background: rgba(3, 29, 34, 0.36);
+    transform: translateX(5px);
+  }
+
+  .real-water-pond .commission-form__submit:hover {
+    border-color: #fff0d2;
+    background: #fff0d2;
+    transform: translateY(-2px);
+  }
+}
+
+@media (max-width: 880px) {
+  .commission-water__content {
+    grid-template-columns: 1fr;
+    min-height: 100svh;
+    padding: clamp(4rem, 10vw, 6rem) clamp(1.25rem, 6vw, 3rem);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .real-water-pond > canvas {
+    display: none !important;
+  }
+}
+.real-water-pond .commission-form input:focus,
+.real-water-pond .commission-form select:focus,
+.real-water-pond .commission-form textarea:focus {
+  border-color: #f4c78d !important;
+  outline: none !important;
+  box-shadow: 0 0 0 3px rgba(244, 199, 141, 0.34) !important;
+}

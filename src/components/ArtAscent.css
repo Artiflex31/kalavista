@@ -1,0 +1,225 @@
+.art-ascent {
+  --ascent-text: #fff9ee;
+  --ascent-muted: rgba(255, 249, 238, 0.78);
+  --ascent-panel: rgba(17, 25, 48, 0.6);
+  --ascent-panel-hover: rgba(18, 28, 56, 0.78);
+  --ascent-border: rgba(255, 239, 197, 0.36);
+  --ascent-accent: #f2ca73;
+
+  position: relative;
+  isolation: isolate;
+  overflow: clip;
+  background: #15274c;
+  color: var(--ascent-text);
+}
+
+.app[data-theme='light'] .art-ascent {
+  --ascent-text: #2d2934;
+  --ascent-muted: rgba(45, 41, 52, 0.78);
+  --ascent-panel: rgba(255, 248, 236, 0.73);
+  --ascent-panel-hover: rgba(255, 250, 241, 0.9);
+  --ascent-border: rgba(73, 56, 48, 0.24);
+  --ascent-accent: #a84d3f;
+}
+
+.art-ascent__scene,
+.art-ascent__fallback {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  height: 100svh;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.art-ascent__canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.art-ascent__fallback {
+  background-color: #1d2d56;
+  background-position: center;
+  background-size: cover;
+}
+
+.art-ascent__story {
+  position: relative;
+  z-index: 2;
+  margin-top: -100svh;
+  pointer-events: none;
+}
+
+.art-ascent__stop {
+  display: flex;
+  min-height: 135svh;
+  padding: clamp(1.25rem, 5vw, 5rem);
+  padding-bottom: clamp(2.2rem, 9vh, 7rem);
+  align-items: flex-end;
+}
+
+.art-ascent__stop--left {
+  justify-content: flex-start;
+}
+
+.art-ascent__stop--right {
+  justify-content: flex-end;
+}
+
+.art-ascent__stop--chapter {
+  align-items: flex-start;
+  padding-top: clamp(5rem, 16svh, 11rem);
+}
+
+.art-ascent__card,
+.art-ascent__chapter {
+  pointer-events: auto;
+}
+
+.art-ascent__card {
+  width: min(20.5rem, calc(100vw - 2rem));
+  padding: 1.1rem 1.15rem 1.2rem;
+  border: 1px solid var(--ascent-border);
+  border-radius: 1.1rem;
+  background: var(--ascent-panel);
+  box-shadow: 0 1.2rem 4rem rgba(5, 10, 25, 0.2);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  transition:
+    transform 180ms ease,
+    background-color 180ms ease,
+    border-color 180ms ease;
+}
+
+.art-ascent__card:hover,
+.art-ascent__card:focus-within {
+  transform: translateY(-0.3rem);
+  border-color: var(--ascent-accent);
+  background: var(--ascent-panel-hover);
+}
+
+.art-ascent__eyebrow,
+.art-ascent__chapter span {
+  margin: 0 0 0.7rem;
+  color: var(--ascent-accent);
+  font-family: 'Manrope Variable', sans-serif;
+  font-size: 0.58rem;
+  font-weight: 800;
+  letter-spacing: 0.17em;
+  text-transform: uppercase;
+}
+
+.art-ascent__card h1,
+.art-ascent__card h2 {
+  margin: 0;
+  font-family: 'Cormorant Garamond Variable', Georgia, serif;
+  font-size: clamp(2.45rem, 4vw, 4rem);
+  font-weight: 560;
+  letter-spacing: -0.055em;
+  line-height: 0.88;
+}
+
+.art-ascent__card h2 {
+  font-size: clamp(2.15rem, 3.35vw, 3.35rem);
+}
+
+.art-ascent__card p:not(.art-ascent__eyebrow) {
+  margin: 0.85rem 0 1rem;
+  color: var(--ascent-muted);
+  font-family: 'Manrope Variable', sans-serif;
+  font-size: 0.82rem;
+  line-height: 1.65;
+}
+
+.art-ascent__link {
+  display: inline-flex;
+  gap: 0.55rem;
+  align-items: center;
+  color: var(--ascent-text);
+  font-family: 'Manrope Variable', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
+.art-ascent__link span {
+  color: var(--ascent-accent);
+  font-size: 1rem;
+  transition: transform 180ms ease;
+}
+
+.art-ascent__link:hover span,
+.art-ascent__link:focus-visible span {
+  transform: translate(0.22rem, -0.22rem);
+}
+
+.art-ascent__link:focus-visible {
+  outline: 2px solid var(--ascent-accent);
+  outline-offset: 0.35rem;
+  border-radius: 0.15rem;
+}
+
+.art-ascent__scroll-cue {
+  display: inline-block;
+  color: var(--ascent-accent);
+  font-family: 'Manrope Variable', sans-serif;
+  font-size: 0.63rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.art-ascent__chapter {
+  width: min(16rem, calc(100vw - 2rem));
+  padding-left: 0.9rem;
+  border-left: 1px solid var(--ascent-accent);
+}
+
+.art-ascent__chapter span {
+  display: block;
+}
+
+.art-ascent__chapter p {
+  margin: 0;
+  color: var(--ascent-text);
+  font-family: 'Cormorant Garamond Variable', Georgia, serif;
+  font-size: clamp(1.35rem, 2vw, 1.8rem);
+  font-weight: 520;
+  letter-spacing: -0.035em;
+  line-height: 0.96;
+}
+
+@media (max-width: 760px), (pointer: coarse) {
+  .art-ascent__stop {
+    min-height: 108svh;
+    padding: 1.25rem;
+    padding-bottom: 2.5rem;
+  }
+
+  .art-ascent__stop--chapter {
+    min-height: 76svh;
+    padding-top: 5.5rem;
+  }
+
+  .art-ascent__stop--right {
+    justify-content: flex-start;
+  }
+
+  .art-ascent__card {
+    width: min(100%, 22rem);
+  }
+
+  .art-ascent__card h1 {
+    font-size: clamp(2.65rem, 13vw, 3.7rem);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .art-ascent__card,
+  .art-ascent__link span {
+    transition: none;
+  }
+}

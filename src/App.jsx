@@ -48,8 +48,8 @@ function ScrollToTop() {
 }
 
 function App() {
-  const [isGalleryVisible, setIsGalleryVisible] = useState(false)
   const [theme, setTheme] = useState(getInitialTheme)
+  const { pathname } = useLocation()
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme
@@ -62,25 +62,6 @@ function App() {
     }
   }, [theme])
 
-  function toggleGallery() {
-    if (isGalleryVisible) {
-      setIsGalleryVisible(false)
-      return
-    }
-
-    setIsGalleryVisible(true)
-
-    const shouldReduceMotion = window.matchMedia(
-      '(prefers-reduced-motion: reduce)',
-    ).matches
-
-    window.setTimeout(() => {
-      document.getElementById('gallery')?.scrollIntoView({
-        behavior: shouldReduceMotion ? 'auto' : 'smooth',
-        block: 'start',
-      })
-    }, 0)
-  }
 
   function toggleTheme() {
     setTheme((currentTheme) =>
@@ -92,49 +73,47 @@ function App() {
     <main className="app" data-theme={theme} id="top">
       <ScrollToTop />
 
-      <header className="site-header">
-        <Link className="wordmark" to="/" aria-label="KalaVista home">
-          <span className="wordmark-kala">कला</span>
-          <span>KalaVista</span>
-        </Link>
+      <header
+  className={`site-header ${
+    pathname === '/' ? 'site-header--overlay' : 'site-header--page'
+  }`}
+>
+  <Link className="wordmark" to="/" aria-label="KalaVista home">
+    <span className="wordmark-kala">कला</span>
+    <span className="wordmark-name">KalaVista</span>
+  </Link>
 
-        <nav className="site-navigation" aria-label="Primary navigation">
-          {navigationItems.map(({ to, label, end }) => (
-            <NavLink
-              className="nav-link"
-              end={end}
-              key={to}
-              to={to}
-            >
-              {label}
-            </NavLink>
-          ))}
-        </nav>
+  <nav className="site-navigation" aria-label="Primary navigation">
+    {navigationItems.map(({ to, label, end }) => (
+      <NavLink
+        className={({ isActive }) =>
+          `nav-link${isActive ? ' nav-link--active' : ''}`
+        }
+        end={end}
+        key={to}
+        to={to}
+      >
+        {label}
+      </NavLink>
+    ))}
+  </nav>
 
-        <button
-          className="theme-toggle"
-          type="button"
-          onClick={toggleTheme}
-          aria-pressed={theme === 'dark'}
-          aria-label={`Switch to ${
-            theme === 'light' ? 'dark' : 'light'
-          } theme`}
-        >
-          <span aria-hidden="true">{theme === 'light' ? '☾' : '☀'}</span>
-          {theme === 'light' ? 'Night' : 'Light'}
-        </button>
-      </header>
-
+  <button
+    className="theme-toggle"
+    type="button"
+    onClick={toggleTheme}
+    aria-pressed={theme === 'dark'}
+    aria-label={`Switch to ${
+      theme === 'light' ? 'dark' : 'light'
+    } theme`}
+  >
+    <span aria-hidden="true">{theme === 'light' ? '☾' : '☀'}</span>
+    {theme === 'light' ? 'Night' : 'Light'}
+  </button>
+</header>
+      
       <Routes>
-        <Route
-          path="/"
-          element={
-            <HomePage
-              isGalleryVisible={isGalleryVisible}
-              onToggleGallery={toggleGallery}
-            />
-          }
-        />
+        <Route path="/" element={<HomePage />} />
         <Route path="/gallery" element={<GalleryPage />} />
         <Route path="/about" element={<AboutPage />} />
         <Route path="/commissions" element={<CommissionsPage />} />

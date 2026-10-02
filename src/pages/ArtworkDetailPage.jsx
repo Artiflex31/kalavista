@@ -15,8 +15,11 @@ function ArtworkDetailPage() {
             <p>
               This work may have moved, or the link may be incorrect.
             </p>
-            <Link className="page-action" to="/gallery">
-              Back to gallery
+            <Link
+            className="page-action"
+            to={`/commissions?artwork=${encodeURIComponent(artwork.slug)}`}
+            >
+            Enquire about this artwork
             </Link>
           </div>
         </div>
