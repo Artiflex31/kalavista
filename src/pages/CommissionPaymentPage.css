@@ -1,0 +1,255 @@
+.commission-payment-page {
+  display: grid;
+  min-height: 100svh;
+  place-items: center;
+  padding: 140px 24px 64px;
+  background:
+    radial-gradient(
+      circle at 18% 18%,
+      rgba(174, 91, 76, 0.18),
+      transparent 34%
+    ),
+    radial-gradient(
+      circle at 84% 76%,
+      rgba(244, 197, 125, 0.19),
+      transparent 31%
+    ),
+    #f6efe5;
+}
+
+.commission-payment-page__panel {
+  width: min(100%, 700px);
+  border: 1px solid rgba(78, 44, 52, 0.14);
+  border-radius: 28px;
+  padding: clamp(28px, 6vw, 56px);
+  color: #30232b;
+  background: rgba(255, 252, 247, 0.88);
+  box-shadow: 0 28px 70px rgba(55, 31, 36, 0.12);
+}
+
+.commission-payment-page__eyebrow {
+  margin: 0;
+  color: #a84d3f;
+  font-family: 'Manrope Variable', sans-serif;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+}
+
+.commission-payment-page h1 {
+  max-width: 12ch;
+  margin: 15px 0 0;
+  font-family: 'Cormorant Garamond Variable', Georgia, serif;
+  font-size: clamp(2.8rem, 7vw, 5rem);
+  font-weight: 550;
+  letter-spacing: -0.06em;
+  line-height: 0.86;
+}
+
+.commission-payment-page__intro,
+.commission-payment-page__panel > p {
+  color: #705f63;
+  font-family: 'Manrope Variable', sans-serif;
+  font-size: 0.92rem;
+  line-height: 1.75;
+}
+
+.commission-payment-page__intro {
+  max-width: 55ch;
+  margin: 24px 0 0;
+}
+
+.commission-payment-page__quote {
+  display: grid;
+  gap: 7px;
+  margin-top: 30px;
+  border-radius: 18px;
+  padding: 20px;
+  background: #31242c;
+  color: #fffaf3;
+}
+
+.commission-payment-page__quote span {
+  color: #f2ca73;
+  font-family: 'Manrope Variable', sans-serif;
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.commission-payment-page__quote strong {
+  font-family: 'Cormorant Garamond Variable', Georgia, serif;
+  font-size: clamp(2.1rem, 5vw, 3rem);
+  font-weight: 600;
+  line-height: 0.9;
+}
+
+.commission-payment-page__quote p {
+  margin: 0;
+  color: rgba(255, 250, 243, 0.7);
+  font-family: 'Manrope Variable', sans-serif;
+  font-size: 0.75rem;
+}
+
+.commission-payment-page__choices {
+  display: grid;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.commission-payment-choice {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 15px;
+  align-items: center;
+  width: 100%;
+  border: 1px solid rgba(78, 44, 52, 0.18);
+  border-radius: 18px;
+  padding: 17px;
+  color: #30232b;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    border-color 180ms ease,
+    background 180ms ease,
+    transform 180ms ease;
+}
+
+.commission-payment-choice:hover,
+.commission-payment-choice--selected {
+  border-color: #a84d3f;
+  background: rgba(168, 77, 63, 0.07);
+  transform: translateY(-2px);
+}
+
+.commission-payment-choice__number {
+  display: grid;
+  width: 47px;
+  height: 47px;
+  place-items: center;
+  border-radius: 50%;
+  color: #fffaf3;
+  background: #a84d3f;
+  font-family: 'Manrope Variable', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+.commission-payment-choice__copy {
+  display: grid;
+  gap: 3px;
+}
+
+.commission-payment-choice__copy strong {
+  font-family: 'Manrope Variable', sans-serif;
+  font-size: 0.84rem;
+}
+
+.commission-payment-choice__copy small {
+  color: #705f63;
+  font-family: 'Manrope Variable', sans-serif;
+  font-size: 0.7rem;
+  line-height: 1.45;
+}
+
+.commission-payment-choice__amount {
+  font-family: 'Manrope Variable', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.commission-payment-page__pay-button {
+  width: 100%;
+  margin-top: 18px;
+  border: 1px solid #a84d3f;
+  border-radius: 999px;
+  padding: 16px 20px;
+  color: #fffaf3;
+  background: #a84d3f;
+  font-family: 'Manrope Variable', sans-serif;
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.commission-payment-page__pay-button:disabled {
+  cursor: wait;
+  opacity: 0.7;
+}
+
+.commission-payment-page__note {
+  margin: 18px 0 0;
+  color: #8b777a;
+  font-family: 'Manrope Variable', sans-serif;
+  font-size: 0.71rem;
+  line-height: 1.6;
+  text-align: center;
+}
+
+.commission-payment-page__message {
+  margin: 14px 0 0;
+  color: #a84d3f !important;
+  text-align: center;
+}
+
+.commission-payment-page__state {
+  color: #30232b;
+  font-family: 'Manrope Variable', sans-serif;
+}
+
+.commission-payment-page__panel--success {
+  text-align: center;
+}
+
+.commission-payment-page__panel--success h1 {
+  max-width: none;
+}
+
+.commission-payment-page__success-mark {
+  display: grid;
+  width: 68px;
+  height: 68px;
+  place-items: center;
+  margin: 26px auto 0;
+  border-radius: 50%;
+  color: #fffaf3;
+  background: #4b8a65;
+  font-size: 2rem;
+}
+
+.commission-payment-page__back-link {
+  display: inline-block;
+  margin-top: 25px;
+  border-bottom: 1px solid currentColor;
+  padding-bottom: 4px;
+  color: #a84d3f;
+  font-family: 'Manrope Variable', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
+@media (max-width: 560px) {
+  .commission-payment-page {
+    padding: 112px 16px 40px;
+  }
+
+  .commission-payment-page__panel {
+    border-radius: 22px;
+  }
+
+  .commission-payment-choice {
+    grid-template-columns: auto 1fr;
+  }
+
+  .commission-payment-choice__amount {
+    grid-column: 2;
+  }
+}

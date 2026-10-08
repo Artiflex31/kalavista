@@ -1,0 +1,236 @@
+.checkout-page {
+  min-height: 100svh;
+  padding: clamp(110px, 12vw, 150px) clamp(22px, 7vw, 110px) 70px;
+  color: var(--ink);
+  background:
+    radial-gradient(
+      circle at 84% 15%,
+      rgba(196, 123, 83, 0.15),
+      transparent 28%
+    ),
+    var(--canvas);
+}
+
+.checkout-back-link {
+  display: inline-flex;
+  margin-bottom: 30px;
+  color: var(--muted);
+  font-family: 'Manrope Variable', sans-serif;
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.07em;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
+.checkout-back-link:hover {
+  color: var(--accent);
+}
+
+.checkout-layout {
+  display: grid;
+  grid-template-columns: minmax(240px, 0.75fr) minmax(0, 1fr);
+  gap: clamp(36px, 8vw, 110px);
+  max-width: 1240px;
+  margin: 0 auto;
+}
+
+.checkout-summary {
+  align-self: start;
+}
+
+.checkout-summary img,
+.checkout-summary__fallback {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  border-radius: 20px;
+  box-shadow: 0 25px 55px rgba(48, 33, 22, 0.18);
+}
+
+.checkout-summary__fallback {
+  display: grid;
+  place-items: center;
+  color: #fffaf3;
+  background: linear-gradient(135deg, #9c4135, #28364e);
+  font-family: 'Cormorant Garamond Variable', Georgia, serif;
+  font-size: 4rem;
+}
+
+.checkout-eyebrow {
+  margin: 24px 0 0;
+  color: var(--accent);
+  font-family: 'Manrope Variable', sans-serif;
+  font-size: 0.67rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+}
+
+.checkout-summary h1,
+.checkout-form-wrap h2,
+.checkout-success h1 {
+  margin: 10px 0 0;
+  font-family: 'Cormorant Garamond Variable', Georgia, serif;
+  font-size: clamp(2.5rem, 5vw, 4.7rem);
+  font-weight: 550;
+  letter-spacing: -0.055em;
+  line-height: 0.9;
+}
+
+.checkout-summary > p:not(.checkout-eyebrow),
+.checkout-form-wrap__intro,
+.checkout-success > p {
+  color: var(--muted);
+  font-family: 'Manrope Variable', sans-serif;
+  line-height: 1.7;
+}
+
+.checkout-summary strong {
+  display: block;
+  margin-top: 18px;
+  color: var(--accent);
+  font-family: 'Manrope Variable', sans-serif;
+  font-size: 1.05rem;
+}
+
+.checkout-form-wrap {
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  padding: clamp(24px, 5vw, 52px);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.checkout-form-wrap .checkout-eyebrow {
+  margin-top: 0;
+}
+
+.checkout-form {
+  margin-top: 30px;
+}
+
+.checkout-form__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.checkout-form label {
+  display: grid;
+  gap: 8px;
+  font-family: 'Manrope Variable', sans-serif;
+  font-size: 0.69rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.checkout-form__wide {
+  grid-column: 1 / -1;
+}
+
+.checkout-form input,
+.checkout-form textarea {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 13px 14px;
+  color: var(--ink);
+  background: transparent;
+  font: inherit;
+  text-transform: none;
+}
+
+.checkout-form textarea {
+  min-height: 110px;
+  resize: vertical;
+}
+
+.checkout-form input:focus,
+.checkout-form textarea:focus {
+  border-color: var(--accent);
+  outline: 3px solid color-mix(in srgb, var(--accent) 18%, transparent);
+}
+
+.checkout-button {
+  display: inline-flex;
+  min-height: 52px;
+  align-items: center;
+  justify-content: center;
+  margin-top: 25px;
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  padding: 12px 22px;
+  color: var(--accent-text);
+  background: var(--accent);
+  font-family: 'Manrope Variable', sans-serif;
+  font-size: 0.73rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-decoration: none;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.checkout-button:hover:not(:disabled) {
+  background: var(--accent-hover);
+  transform: translateY(-2px);
+}
+
+.checkout-button:disabled {
+  cursor: wait;
+  opacity: 0.7;
+}
+
+.checkout-form__message,
+.checkout-unavailable {
+  margin: 18px 0 0;
+  color: var(--accent);
+  font-family: 'Manrope Variable', sans-serif;
+  font-size: 0.82rem;
+  line-height: 1.6;
+}
+
+.checkout-page--success {
+  display: grid;
+  place-items: center;
+}
+
+.checkout-success {
+  width: min(100%, 650px);
+  text-align: center;
+}
+
+.checkout-success__reference {
+  margin-top: 20px;
+}
+
+.checkout-page__loading {
+  font-family: 'Manrope Variable', sans-serif;
+}
+
+.app[data-theme='dark'] .checkout-form-wrap {
+  background: rgba(27, 41, 64, 0.92);
+}
+
+@media (max-width: 780px) {
+  .checkout-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .checkout-summary {
+    max-width: 420px;
+  }
+}
+
+@media (max-width: 560px) {
+  .checkout-form__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .checkout-form__wide {
+    grid-column: auto;
+  }
+}

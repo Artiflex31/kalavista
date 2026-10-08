@@ -1,0 +1,330 @@
+.commission-tracker {
+  display: grid;
+  min-height: 100svh;
+  place-items: center;
+  padding: 140px 24px 64px;
+  background:
+    radial-gradient(circle at 13% 15%, rgba(168, 77, 63, 0.2), transparent 31%),
+    radial-gradient(
+      circle at 88% 82%,
+      rgba(99, 145, 129, 0.2),
+      transparent 29%
+    ),
+    #f5eee4;
+}
+
+.commission-tracker__panel {
+  width: min(100%, 840px);
+  border: 1px solid rgba(75, 46, 51, 0.14);
+  border-radius: 30px;
+  padding: clamp(28px, 6vw, 56px);
+  color: #30232b;
+  background: rgba(255, 252, 247, 0.9);
+  box-shadow: 0 28px 70px rgba(55, 31, 36, 0.12);
+}
+
+.commission-tracker__header {
+  display: flex;
+  gap: 24px;
+  justify-content: space-between;
+}
+
+.commission-tracker__eyebrow {
+  margin: 0;
+  color: #a84d3f;
+  font-family: 'Manrope Variable', sans-serif;
+  font-size: 0.67rem;
+  font-weight: 800;
+  letter-spacing: 0.13em;
+}
+
+.commission-tracker h1 {
+  max-width: 11ch;
+  margin: 14px 0 0;
+  font-family: 'Cormorant Garamond Variable', Georgia, serif;
+  font-size: clamp(3rem, 7vw, 5.5rem);
+  font-weight: 550;
+  letter-spacing: -0.06em;
+  line-height: 0.85;
+}
+
+.commission-tracker__header p:not(.commission-tracker__eyebrow),
+.commission-tracker__footer p,
+.commission-tracker__panel > p {
+  color: #735f63;
+  font-family: 'Manrope Variable', sans-serif;
+  font-size: 0.82rem;
+  line-height: 1.65;
+}
+
+.commission-tracker__reference {
+  align-self: start;
+  border: 1px solid rgba(75, 46, 51, 0.16);
+  border-radius: 999px;
+  padding: 8px 10px;
+  color: #735f63;
+  font-family: 'Manrope Variable', sans-serif;
+  font-size: 0.61rem;
+  font-weight: 800;
+  letter-spacing: 0.07em;
+  white-space: nowrap;
+}
+
+.commission-tracker__payment {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 18px;
+  align-items: center;
+  margin-top: 34px;
+  border-radius: 20px;
+  padding: 22px;
+  color: #fffaf3;
+  background: #31242c;
+}
+
+.commission-tracker__payment p,
+.commission-tracker__payment h2,
+.commission-tracker__payment span,
+.commission-tracker__payment strong,
+.commission-tracker__payment small {
+  margin: 0;
+}
+
+.commission-tracker__payment p,
+.commission-tracker__payment-amounts > span {
+  color: #f2ca73;
+  font-family: 'Manrope Variable', sans-serif;
+  font-size: 0.63rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+}
+
+.commission-tracker__payment h2 {
+  margin-top: 7px;
+  font-family: 'Cormorant Garamond Variable', Georgia, serif;
+  font-size: 2rem;
+  font-weight: 560;
+  line-height: 0.9;
+}
+
+.commission-tracker__payment > div > span {
+  display: block;
+  margin-top: 9px;
+  color: rgba(255, 250, 243, 0.7);
+  font-family: 'Manrope Variable', sans-serif;
+  font-size: 0.74rem;
+  line-height: 1.55;
+}
+
+.commission-tracker__payment-amounts {
+  display: grid;
+  gap: 6px;
+  text-align: right;
+}
+
+.commission-tracker__payment-amounts strong {
+  font-family: 'Cormorant Garamond Variable', Georgia, serif;
+  font-size: 2rem;
+  font-weight: 600;
+}
+
+.commission-tracker__payment-amounts small {
+  color: rgba(255, 250, 243, 0.65);
+  font-family: 'Manrope Variable', sans-serif;
+  font-size: 0.68rem;
+}
+
+.commission-tracker__pay-link {
+  grid-column: 1 / -1;
+  justify-self: start;
+  border-bottom: 1px solid #f2ca73;
+  padding-bottom: 5px;
+  color: #f2ca73;
+  font-family: 'Manrope Variable', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
+.commission-tracker__timeline {
+  display: grid;
+  margin-top: 34px;
+}
+
+.commission-tracker__stage {
+  position: relative;
+  display: grid;
+  grid-template-columns: 44px 1fr;
+  gap: 17px;
+  min-height: 108px;
+  padding-bottom: 23px;
+  color: #9a888a;
+}
+
+.commission-tracker__stage:not(:last-child)::before {
+  position: absolute;
+  top: 44px;
+  bottom: 0;
+  left: 21px;
+  width: 1px;
+  background: rgba(75, 46, 51, 0.16);
+  content: '';
+}
+
+.commission-tracker__marker {
+  display: grid;
+  z-index: 1;
+  width: 44px;
+  height: 44px;
+  place-items: center;
+  border: 1px solid rgba(75, 46, 51, 0.2);
+  border-radius: 50%;
+  color: #8d797c;
+  background: #fffaf3;
+  font-family: 'Manrope Variable', sans-serif;
+  font-size: 0.67rem;
+  font-weight: 800;
+}
+
+.commission-tracker__stage h2,
+.commission-tracker__stage p {
+  margin: 0;
+}
+
+.commission-tracker__stage h2 {
+  padding-top: 4px;
+  font-family: 'Cormorant Garamond Variable', Georgia, serif;
+  font-size: 1.7rem;
+  font-weight: 600;
+  line-height: 0.9;
+}
+
+.commission-tracker__stage p {
+  margin-top: 8px;
+  font-family: 'Manrope Variable', sans-serif;
+  font-size: 0.75rem;
+  line-height: 1.55;
+}
+
+.commission-tracker__stage--complete,
+.commission-tracker__stage--current {
+  color: #30232b;
+}
+
+.commission-tracker__stage--complete .commission-tracker__marker {
+  border-color: #4f8a66;
+  color: #fffaf3;
+  background: #4f8a66;
+}
+
+.commission-tracker__stage--current .commission-tracker__marker {
+  border-color: #a84d3f;
+  color: #fffaf3;
+  background: #a84d3f;
+  box-shadow: 0 0 0 6px rgba(168, 77, 63, 0.13);
+}
+
+.commission-tracker__footer {
+  display: flex;
+  gap: 20px;
+  align-items: end;
+  justify-content: space-between;
+  margin-top: 8px;
+  border-top: 1px solid rgba(75, 46, 51, 0.12);
+  padding-top: 24px;
+}
+
+.commission-tracker__footer p {
+  max-width: 46ch;
+  margin: 0;
+}
+
+.commission-tracker__back-link {
+  display: inline-block;
+  flex: 0 0 auto;
+  border-bottom: 1px solid currentColor;
+  padding-bottom: 4px;
+  color: #a84d3f;
+  font-family: 'Manrope Variable', sans-serif;
+  font-size: 0.69rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
+.commission-tracker__state {
+  color: #30232b;
+  font-family: 'Manrope Variable', sans-serif;
+}
+
+.app[data-theme='dark'] .commission-tracker {
+  background:
+    radial-gradient(
+      circle at 13% 15%,
+      rgba(193, 103, 84, 0.18),
+      transparent 31%
+    ),
+    radial-gradient(
+      circle at 88% 82%,
+      rgba(99, 145, 129, 0.15),
+      transparent 29%
+    ),
+    #111a2a;
+}
+
+.app[data-theme='dark'] .commission-tracker__panel {
+  border-color: rgba(255, 250, 243, 0.16);
+  color: #fffaf3;
+  background: rgba(25, 37, 57, 0.95);
+}
+
+.app[data-theme='dark']
+  .commission-tracker__header
+  p:not(.commission-tracker__eyebrow),
+.app[data-theme='dark'] .commission-tracker__footer p,
+.app[data-theme='dark'] .commission-tracker__panel > p {
+  color: rgba(255, 250, 243, 0.72);
+}
+
+.app[data-theme='dark'] .commission-tracker__reference,
+.app[data-theme='dark'] .commission-tracker__marker {
+  border-color: rgba(255, 250, 243, 0.2);
+  color: rgba(255, 250, 243, 0.72);
+  background: #1d2a40;
+}
+
+.app[data-theme='dark'] .commission-tracker__stage {
+  color: rgba(255, 250, 243, 0.47);
+}
+
+.app[data-theme='dark'] .commission-tracker__stage--complete,
+.app[data-theme='dark'] .commission-tracker__stage--current {
+  color: #fffaf3;
+}
+
+@media (max-width: 640px) {
+  .commission-tracker {
+    padding: 112px 16px 40px;
+  }
+
+  .commission-tracker__panel {
+    border-radius: 22px;
+  }
+
+  .commission-tracker__header,
+  .commission-tracker__footer {
+    align-items: start;
+    flex-direction: column;
+  }
+
+  .commission-tracker__payment {
+    grid-template-columns: 1fr;
+  }
+
+  .commission-tracker__payment-amounts {
+    text-align: left;
+  }
+}

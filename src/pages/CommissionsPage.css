@@ -1559,3 +1559,8 @@
   outline: none !important;
   box-shadow: 0 0 0 3px rgba(244, 199, 141, 0.34) !important;
 }
+.commission-form__submit:disabled {
+  cursor: wait;
+  opacity: 0.72;
+  transform: none;
+}

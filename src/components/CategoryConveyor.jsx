@@ -164,8 +164,18 @@ function CategoryConveyor({ categories, selectedCategory, onSelectCategory }) {
     >
       <div className="category-conveyor__stage">
         <header className="category-conveyor__header">
-          <p>THE KALAVISTA ARCHIVE</p>
-          <span>Scroll through the studio</span>
+          <div>
+            <p>THE KALAVISTA ARCHIVE</p>
+            <span>Scroll through the studio</span>
+          </div>
+
+          <button
+            className="category-conveyor__all-button"
+            type="button"
+            onClick={() => onSelectCategory('all')}
+          >
+            View all works <span aria-hidden="true">↗</span>
+          </button>
         </header>
 
         <div className="category-conveyor__track" aria-hidden="true" />

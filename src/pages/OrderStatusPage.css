@@ -1,0 +1,207 @@
+.order-status-page {
+  min-height: 100svh;
+  padding: clamp(130px, 16vw, 180px) max(22px, calc((100% - 900px) / 2))
+    clamp(70px, 10vw, 120px);
+  color: #2b2028;
+  background:
+    radial-gradient(circle at 84% 8%, rgba(168, 77, 63, 0.16), transparent 30%),
+    #f4efe7;
+}
+
+.order-status-card {
+  padding: clamp(26px, 5vw, 54px);
+  border: 1px solid rgba(74, 47, 53, 0.16);
+  border-radius: 28px;
+  background: rgba(255, 253, 249, 0.82);
+  box-shadow: 0 24px 70px rgba(48, 26, 39, 0.1);
+}
+
+.order-status-page__eyebrow {
+  margin: 0 0 14px;
+  color: #a84d3f;
+  font-family: 'Manrope Variable', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+}
+
+.order-status-card h1 {
+  margin: 0;
+  font-family: 'Cormorant Garamond Variable', Georgia, serif;
+  font-size: clamp(2.8rem, 7vw, 5rem);
+  font-weight: 550;
+  letter-spacing: -0.055em;
+  line-height: 0.9;
+}
+
+.order-status-artwork {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  margin: 38px 0;
+  padding: 16px;
+  border-radius: 18px;
+  background: rgba(168, 77, 63, 0.07);
+}
+
+.order-status-artwork img {
+  width: 84px;
+  height: 104px;
+  border-radius: 10px;
+  object-fit: cover;
+}
+
+.order-status-artwork p,
+.order-status-artwork span,
+.order-status-page__updated {
+  margin: 0;
+  color: #786a6e;
+  font-family: 'Manrope Variable', sans-serif;
+  font-size: 0.75rem;
+}
+
+.order-status-artwork h2 {
+  margin: 7px 0;
+  font-family: 'Cormorant Garamond Variable', Georgia, serif;
+  font-size: 1.85rem;
+  font-weight: 550;
+  line-height: 0.95;
+}
+
+.order-status-timeline {
+  display: grid;
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.order-status-timeline__item {
+  position: relative;
+  display: grid;
+  grid-template-columns: 28px 1fr;
+  gap: 15px;
+  min-height: 82px;
+  color: #9c9092;
+}
+
+.order-status-timeline__item:not(:last-child)::before {
+  position: absolute;
+  top: 22px;
+  left: 10px;
+  width: 1px;
+  height: calc(100% - 21px);
+  background: rgba(74, 47, 53, 0.18);
+  content: '';
+}
+
+.order-status-timeline__dot {
+  z-index: 1;
+  width: 21px;
+  height: 21px;
+  border: 1px solid rgba(74, 47, 53, 0.28);
+  border-radius: 50%;
+  background: #fffdf9;
+}
+
+.order-status-timeline__item strong {
+  display: block;
+  font-family: 'Manrope Variable', sans-serif;
+  font-size: 0.88rem;
+}
+
+.order-status-timeline__item p {
+  margin: 6px 0 0;
+  font-family: 'Manrope Variable', sans-serif;
+  font-size: 0.78rem;
+  line-height: 1.55;
+}
+
+.order-status-timeline__item--complete {
+  color: #2b2028;
+}
+
+.order-status-timeline__item--complete .order-status-timeline__dot {
+  border-color: #a84d3f;
+  background: #a84d3f;
+  box-shadow: 0 0 0 5px rgba(168, 77, 63, 0.12);
+}
+
+.order-status-timeline__item--current strong {
+  color: #a84d3f;
+}
+
+.order-status-shipping {
+  display: grid;
+  gap: 6px;
+  margin: 18px 0 28px;
+  padding: 18px;
+  border: 1px solid rgba(168, 77, 63, 0.22);
+  border-radius: 16px;
+  background: rgba(168, 77, 63, 0.06);
+  font-family: 'Manrope Variable', sans-serif;
+}
+
+.order-status-shipping p,
+.order-status-shipping span {
+  margin: 0;
+  color: #786a6e;
+  font-size: 0.76rem;
+}
+
+.order-status-page__link {
+  color: #a84d3f;
+  font-family: 'Manrope Variable', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 800;
+}
+
+.order-status-page__message {
+  color: #2b2028;
+  font-family: 'Manrope Variable', sans-serif;
+  text-align: center;
+}
+
+@media (max-width: 600px) {
+  .order-status-artwork {
+    align-items: flex-start;
+  }
+
+  .order-status-artwork img {
+    width: 66px;
+    height: 82px;
+  }
+}
+
+.app[data-theme='dark'] .order-status-page {
+  color: #fffaf3;
+  background:
+    radial-gradient(
+      circle at 84% 8%,
+      rgba(239, 176, 120, 0.16),
+      transparent 30%
+    ),
+    #101827;
+}
+
+.app[data-theme='dark'] .order-status-card {
+  border-color: rgba(255, 250, 243, 0.16);
+  background: rgba(23, 34, 56, 0.9);
+}
+
+.app[data-theme='dark'] .order-status-artwork,
+.app[data-theme='dark'] .order-status-shipping {
+  background: rgba(255, 250, 243, 0.06);
+}
+
+.app[data-theme='dark'] .order-status-timeline__dot {
+  background: #172238;
+}
+
+.app[data-theme='dark'] .order-status-artwork p,
+.app[data-theme='dark'] .order-status-artwork span,
+.app[data-theme='dark'] .order-status-page__updated,
+.app[data-theme='dark'] .order-status-shipping p,
+.app[data-theme='dark'] .order-status-shipping span {
+  color: rgba(255, 250, 243, 0.68);
+}

@@ -1,8 +1,23 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import ArtworkCard from '../components/ArtworkCard'
+import { useSearchParams } from 'react-router'
 import CategoryConveyor from '../components/CategoryConveyor'
 import artworks from '../data/artworks'
 import './GalleryPage.css'
+
+const API_BASE_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:5000'
+
+function attachLocalArtworkMedia(apiArtwork) {
+  const localArtwork = artworks.find(
+    (artwork) => artwork.slug === apiArtwork.slug,
+  )
+
+  return {
+    ...apiArtwork,
+    image: apiArtwork.imageUrl ?? localArtwork?.image ?? '',
+    alt: apiArtwork.alt ?? localArtwork?.alt ?? apiArtwork.title,
+  }
+}
 
 const categoryDefinitions = [
   { value: 'all', label: 'All works', accent: '#9c4135' },
@@ -105,10 +120,28 @@ function createSlug(title) {
 }
 
 function GalleryPage() {
-  const [isCategoryIndexOpen, setIsCategoryIndexOpen] = useState(true)
+  const [searchParams] = useSearchParams()
+
+  const requestedCategory = searchParams.get('category') ?? 'all'
+  const shouldOpenResults = searchParams.get('view') === 'results'
+
+  const initialCategory = categoryDefinitions.some(
+    (category) => category.value === requestedCategory,
+  )
+    ? requestedCategory
+    : 'all'
+  const [isCategoryIndexOpen, setIsCategoryIndexOpen] = useState(
+    () => !shouldOpenResults,
+  )
+
+  const [selectedCategory, setSelectedCategory] = useState(
+    () => initialCategory,
+  )
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedMood, setSelectedMood] = useState('All')
-  const [selectedCategory, setSelectedCategory] = useState('all')
+  const [apiArtworks, setApiArtworks] = useState([])
+  const [apiStatus, setApiStatus] = useState('loading')
+  const [apiError, setApiError] = useState('')
   const [uploadedArtworks, setUploadedArtworks] = useState([])
   const [isUploadPanelOpen, setIsUploadPanelOpen] = useState(false)
   const [draftFile, setDraftFile] = useState(null)
@@ -116,16 +149,57 @@ function GalleryPage() {
   const [draftCategory, setDraftCategory] = useState('all')
   const [uploadMessage, setUploadMessage] = useState('')
   const objectUrlsRef = useRef([])
+  useEffect(() => {
+    const controller = new AbortController()
 
+    async function loadArtworks() {
+      try {
+        setApiStatus('loading')
+        setApiError('')
+
+        const response = await fetch(`${API_BASE_URL}/api/artworks`, {
+          signal: controller.signal,
+        })
+
+        if (!response.ok) {
+          throw new Error(`The API returned status ${response.status}.`)
+        }
+
+        const payload = await response.json()
+
+        if (!payload.success || !Array.isArray(payload.data)) {
+          throw new Error('The API returned an unexpected response.')
+        }
+
+        setApiArtworks(payload.data.map(attachLocalArtworkMedia))
+        setApiStatus('ready')
+      } catch (error) {
+        if (error.name === 'AbortError') {
+          return
+        }
+
+        setApiError(error.message)
+        setApiStatus('error')
+      }
+    }
+
+    loadArtworks()
+
+    return () => {
+      controller.abort()
+    }
+  }, [])
   useEffect(() => {
     return () => {
       objectUrlsRef.current.forEach((url) => URL.revokeObjectURL(url))
     }
   }, [])
 
+  const sourceArtworks = apiStatus === 'ready' ? apiArtworks : artworks
+
   const allArtworks = useMemo(
-    () => [...uploadedArtworks, ...artworks],
-    [uploadedArtworks],
+    () => [...uploadedArtworks, ...sourceArtworks],
+    [apiArtworks, apiStatus, uploadedArtworks],
   )
 
   const moodOptions = useMemo(
@@ -301,6 +375,13 @@ function GalleryPage() {
       className="gallery gallery--enter gallery-page gallery-page--results"
       aria-labelledby="gallery-page-title"
     >
+      {apiStatus === 'error' && (
+        <p className="gallery-api-notice" role="status">
+          The live gallery could not load right now, so local preview data is
+          shown.
+          {apiError ? ` ${apiError}` : ''}
+        </p>
+      )}
       <div className="gallery-results-toolbar">
         <button
           className="gallery-index-back"
@@ -452,7 +533,12 @@ function GalleryPage() {
               key={artwork.id}
               style={{ '--reveal-delay': `${index * 80}ms` }}
             >
-              <ArtworkCard artwork={artwork} />
+              <ArtworkCard
+                artwork={artwork}
+                returnTo={`/gallery?view=results&category=${encodeURIComponent(
+                  selectedCategory,
+                )}`}
+              />
             </div>
           ))}
         </div>

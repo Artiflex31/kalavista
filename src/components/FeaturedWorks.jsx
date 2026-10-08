@@ -1,7 +1,9 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router'
-import artworks from '../data/artworks'
+import localArtworks from '../data/artworks'
 import './FeaturedWorks.css'
+
+const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:5000'
 
 const studioNotes = [
   'A rain-soaked beginning.',
@@ -10,18 +12,69 @@ const studioNotes = [
 ]
 
 function getArtworkImage(artwork) {
-  return artwork.image ?? artwork.imageUrl ?? artwork.coverImage ?? ''
+  return artwork?.image ?? artwork?.imageUrl ?? artwork?.coverImage ?? ''
+}
+
+function getFeaturedWorks(artworkList) {
+  const markedFeatured = artworkList.filter(
+    (artwork) => artwork.isFeatured === true || artwork.featured === true,
+  )
+
+  return (markedFeatured.length > 0 ? markedFeatured : artworkList).slice(0, 3)
+}
+
+function addLocalImageFallback(apiArtwork) {
+  const localArtwork = localArtworks.find(
+    (artwork) => artwork.slug === apiArtwork.slug,
+  )
+
+  return {
+    ...localArtwork,
+    ...apiArtwork,
+    image: getArtworkImage(apiArtwork) || getArtworkImage(localArtwork),
+    alt:
+      apiArtwork.alt ||
+      localArtwork?.alt ||
+      `Artwork titled ${apiArtwork.title}`,
+  }
 }
 
 function FeaturedWorks() {
-  const markedFeatured = artworks.filter((artwork) => artwork.featured)
-
-  const featuredWorks = (
-    markedFeatured.length > 0 ? markedFeatured : artworks
-  ).slice(0, 3)
-
+  const [featuredWorks, setFeaturedWorks] = useState(() =>
+    getFeaturedWorks(localArtworks),
+  )
   const [activeIndex, setActiveIndex] = useState(0)
-  const [previewArtworkId, setPreviewArtworkId] = useState(null)
+
+  useEffect(() => {
+    let isCancelled = false
+
+    async function loadFeaturedWorks() {
+      try {
+        const response = await fetch(`${API_URL}/api/artworks`)
+        const result = await response.json()
+
+        if (!response.ok) {
+          throw new Error('Could not load featured artworks.')
+        }
+
+        const artworksFromApi = (result.data ?? []).map(addLocalImageFallback)
+        const nextFeaturedWorks = getFeaturedWorks(artworksFromApi)
+
+        if (!isCancelled && nextFeaturedWorks.length > 0) {
+          setFeaturedWorks(nextFeaturedWorks)
+          setActiveIndex(0)
+        }
+      } catch {
+        // Keep local artwork data visible if the API is temporarily unavailable.
+      }
+    }
+
+    loadFeaturedWorks()
+
+    return () => {
+      isCancelled = true
+    }
+  }, [])
 
   if (featuredWorks.length === 0) {
     return null
@@ -29,17 +82,16 @@ function FeaturedWorks() {
 
   const activeWork = featuredWorks[activeIndex]
   const activeImage = getArtworkImage(activeWork)
+
   const detailPath = activeWork.slug
     ? `/artworks/${activeWork.slug}`
     : '/gallery'
 
-    function moveArtwork(direction) {
+  function moveArtwork(direction) {
     setActiveIndex((currentIndex) => {
-      const nextIndex =
-        (currentIndex + direction + featuredWorks.length) %
-        featuredWorks.length
-
-      return nextIndex
+      return (
+        (currentIndex + direction + featuredWorks.length) % featuredWorks.length
+      )
     })
   }
 
@@ -52,9 +104,7 @@ function FeaturedWorks() {
       <div className="featured-works__inner">
         <header className="featured-works__header">
           <div>
-            <p className="featured-works__eyebrow">
-              ARRIVAL / THE STUDIO EDIT
-            </p>
+            <p className="featured-works__eyebrow">ARRIVAL / THE STUDIO EDIT</p>
 
             <h2 id="featured-works-title">
               Pause with
@@ -83,7 +133,8 @@ function FeaturedWorks() {
             </p>
 
             <p className="featured-works__description">
-              {activeWork.description ??
+              {activeWork.story ??
+                activeWork.description ??
                 'An original work made slowly, with colour, texture, and memory.'}
             </p>
 
@@ -113,77 +164,59 @@ function FeaturedWorks() {
           </div>
 
           <div className="featured-works__art-area">
-  <p className="featured-works__art-label">CURRENTLY IN FOCUS</p>
-  <div className="featured-works__halo" aria-hidden="true" />
+            <p className="featured-works__art-label">CURRENTLY IN FOCUS</p>
+            <div className="featured-works__halo" aria-hidden="true" />
 
-  <div className="featured-works__frame" key={activeWork.id}>
-    {activeImage ? (
-      <img
-        className="featured-works__image"
-        src={activeImage}
-        alt={activeWork.title}
-      />
-    ) : (
-      <div className="featured-works__image-fallback">कला</div>
-    )}
-  </div>
+            <div className="featured-works__frame" key={activeWork.id}>
+              {activeImage ? (
+                <img
+                  className="featured-works__image"
+                  src={activeImage}
+                  alt={activeWork.alt}
+                />
+              ) : (
+                <div className="featured-works__image-fallback">कला</div>
+              )}
+            </div>
 
-  <p className="featured-works__note">
-    {studioNotes[activeIndex]}
-  </p>
-</div>
+            <p className="featured-works__note">
+              {studioNotes[activeIndex % studioNotes.length]}
+            </p>
+          </div>
         </div>
 
         <div
-            className="featured-works__picker"
-            aria-label="Choose or update a featured artwork"
-          >
-            {featuredWorks.map((artwork, index) => {
-              const image = getArtworkImage(artwork)
-              const isActive = index === activeIndex
-              const isPreviewingUpdate = previewArtworkId === artwork.id
+          className="featured-works__picker"
+          aria-label="Choose a featured artwork"
+        >
+          {featuredWorks.map((artwork, index) => {
+            const image = getArtworkImage(artwork)
+            const isActive = index === activeIndex
 
-              return (
-                <div className="featured-works__picker-item" key={artwork.id}>
-                <button
-                  className={`featured-works__picker-button ${
-                    isActive ? 'featured-works__picker-button--active' : ''
-                  }`}
-                  type="button"
-                  aria-pressed={isActive}
-                  aria-label={`Show ${artwork.title}`}
-                  onClick={() => setActiveIndex(index)}
-                >
-                  {image ? (
-                    <img src={image} alt="" />
-                  ) : (
-                    <span className="featured-works__thumbnail-fallback">
-                      कला
-                    </span>
-                  )}
-
-                  <span>
-                    <strong>{String(index + 1).padStart(2, '0')}</strong>
-                    {artwork.title}
-                  </span>
-                </button>
-
-                <button
-                  className="featured-works__picker-update"
-                  type="button"
-                  onClick={() => setPreviewArtworkId(artwork.id)}
-                  aria-label={`Update preview for ${artwork.title}`}
-                >
-                  <span aria-hidden="true">✦</span>
-                  Update
-                </button>
-
-                {isPreviewingUpdate && (
-                  <span className="featured-works__picker-status" role="status">
-                    Preview only
+            return (
+              <button
+                className={`featured-works__picker-button ${
+                  isActive ? 'featured-works__picker-button--active' : ''
+                }`}
+                type="button"
+                key={artwork.id}
+                aria-pressed={isActive}
+                aria-label={`Show ${artwork.title}`}
+                onClick={() => setActiveIndex(index)}
+              >
+                {image ? (
+                  <img src={image} alt="" />
+                ) : (
+                  <span className="featured-works__thumbnail-fallback">
+                    कला
                   </span>
                 )}
-              </div>
+
+                <span>
+                  <strong>{String(index + 1).padStart(2, '0')}</strong>
+                  {artwork.title}
+                </span>
+              </button>
             )
           })}
         </div>

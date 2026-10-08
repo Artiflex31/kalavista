@@ -1,0 +1,180 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum ArtworkAvailability {
+  AVAILABLE
+  RESERVED
+  SOLD
+  NOT_FOR_SALE
+}
+
+model Artwork {
+  id           Int                 @id @default(autoincrement())
+  slug         String              @unique
+  title        String
+  medium       String
+  year         Int
+  dimensions   String?
+  collection   String?
+  moods        String[]
+  categories   String[]
+  availability ArtworkAvailability @default(AVAILABLE)
+  priceInPaise Int?
+  currency     String              @default("INR")
+  imageUrl     String?
+  alt          String?
+  story        String
+  isFeatured   Boolean             @default(false)
+  createdAt    DateTime            @default(now())
+  updatedAt    DateTime            @updatedAt
+  enquiries CommissionEnquiry[]
+  orders ArtworkOrder[]
+}
+enum EnquiryStatus {
+  NEW
+  REVIEWING
+  ACCEPTED
+  DECLINED
+}
+
+model CommissionEnquiry {
+  id          Int           @id @default(autoincrement())
+  trackingReference String             @unique @default(cuid())
+  progress          CommissionProgress @default(REQUEST_RECEIVED)
+  name        String
+  email       String
+  artworkType String
+  budget      String?
+  message     String
+  timeline    String?
+  artworkId   Int?
+  artwork     Artwork?      @relation(fields: [artworkId], references: [id], onDelete: SetNull)
+  status      EnquiryStatus @default(NEW)
+  payment CommissionPayment?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  @@index([artworkId])
+  @@index([status])
+}
+enum AdminRole {
+  ADMIN
+}
+
+model AdminUser {
+  id           Int       @id @default(autoincrement())
+  email        String    @unique
+  passwordHash String
+  role         AdminRole @default(ADMIN)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+}
+enum ArtworkOrderStatus {
+  PENDING_PAYMENT
+  PAID
+  PAYMENT_FAILED
+  CANCELLED
+  FULFILLED
+  REFUNDED
+}
+enum ArtworkDeliveryProgress {
+  PAYMENT_RECEIVED
+  PREPARING
+  PACKED
+  SHIPPED
+  DELIVERED
+}
+enum CommissionPaymentStatus {
+  NOT_REQUESTED
+  AWAITING_ADVANCE
+  ADVANCE_PAID
+  FULLY_PAID
+  CANCELLED
+}
+enum CommissionPaymentPreference {
+  ADVANCE_60
+  FULL_PAYMENT
+}
+enum CommissionFinalPaymentStatus {
+  NOT_REQUESTED
+  AWAITING_PAYMENT
+  PAID
+  CANCELLED
+}
+enum CommissionProgress {
+  REQUEST_RECEIVED
+  QUOTE_READY
+  ADVANCE_RECEIVED
+  IN_PROGRESS
+  PREVIEW_READY
+  COMPLETED
+  CANCELLED
+}
+model ArtworkOrder {
+  id                Int                   @id @default(autoincrement())
+  reference         String                @unique @default(cuid())
+
+  artworkId         Int
+  artwork           Artwork               @relation(fields: [artworkId], references: [id], onDelete: Restrict)
+
+  customerName      String
+  customerEmail     String
+  customerPhone     String?
+
+  shippingAddress   String
+  city              String
+  state             String
+  postalCode        String
+
+  amountInPaise     Int
+  currency          String                @default("INR")
+
+  status            ArtworkOrderStatus   @default(PENDING_PAYMENT)
+  deliveryProgress  ArtworkDeliveryProgress @default(PAYMENT_RECEIVED)
+  courierName       String?
+  trackingNumber    String?
+
+  razorpayOrderId   String?               @unique
+  razorpayPaymentId String?               @unique
+  razorpaySignature String?
+
+  createdAt         DateTime              @default(now())
+  updatedAt         DateTime              @updatedAt
+
+  @@index([artworkId])
+  @@index([status])
+  @@index([customerEmail])
+  @@index([deliveryProgress])
+}
+model CommissionPayment {
+  id                  Int                         @id @default(autoincrement())
+  reference           String                      @unique @default(cuid())
+  enquiryId           Int                         @unique
+  enquiry             CommissionEnquiry          @relation(fields: [enquiryId], references: [id], onDelete: Cascade)
+
+  totalPriceInPaise   Int
+  advanceInPaise      Int
+  amountDueInPaise    Int                         @default(0)
+  paymentPreference   CommissionPaymentPreference @default(ADVANCE_60)
+  finalAmountInPaise     Int                          @default(0)
+  finalPaymentStatus     CommissionFinalPaymentStatus @default(NOT_REQUESTED)
+  finalRazorpayOrderId   String?                      @unique
+  finalRazorpayPaymentId String?                      @unique
+  finalRazorpaySignature String?
+  currency            String                      @default("INR")
+  status              CommissionPaymentStatus     @default(NOT_REQUESTED)
+  razorpayOrderId     String?                     @unique
+  razorpayPaymentId   String?                     @unique
+  razorpaySignature   String?
+  AmountInPaise      Int                          @default(0)
+  
+  createdAt           DateTime                    @default(now())
+  updatedAt           DateTime                    @updatedAt
+
+  @@index([status])
+}

@@ -496,3 +496,11 @@
     grid-template-columns: 1fr;
   }
 }
+.gallery-api-notice {
+  margin: 0 0 24px;
+  color: var(--accent);
+  font-family: 'Manrope Variable', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 700;
+  line-height: 1.5;
+}

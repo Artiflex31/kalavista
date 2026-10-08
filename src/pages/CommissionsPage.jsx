@@ -1,8 +1,9 @@
 import { useRef, useState } from 'react'
-import { Link } from 'react-router'
-import CommissionStage from '../components/CommissionStage'
+import { useSearchParams } from 'react-router'
 import RealWaterPond from '../components/RealWaterPond'
 import './CommissionsPage.css'
+
+const API_BASE_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:5000'
 
 const commissionOptions = [
   {
@@ -35,16 +36,27 @@ const commissionOptions = [
   },
 ]
 
+function formatArtworkSlug(slug) {
+  return slug
+    .split('-')
+    .filter(Boolean)
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ')
+}
+
 function CommissionsPage() {
+  const [searchParams] = useSearchParams()
+
+  const artworkSlug =
+    searchParams.get('artwork') ?? searchParams.get('inspired-by') ?? ''
+
   const [selectedType, setSelectedType] = useState(commissionOptions[0].value)
   const [referenceFileName, setReferenceFileName] = useState('')
   const [formMessage, setFormMessage] = useState('')
+  const [submitStatus, setSubmitStatus] = useState('idle')
+
   const waterRef = useRef(null)
   const lastDropAtRef = useRef(0)
-
-  const selectedOption =
-    commissionOptions.find((option) => option.value === selectedType) ??
-    commissionOptions[0]
 
   function chooseType(value) {
     setSelectedType(value)
@@ -82,6 +94,7 @@ function CommissionsPage() {
       : elementBounds
         ? elementBounds.left + elementBounds.width / 2
         : undefined
+
     const y = Number.isFinite(clientY)
       ? clientY
       : elementBounds
@@ -111,7 +124,6 @@ function CommissionsPage() {
   function handleOptionClick(event, value) {
     chooseType(value)
 
-    // Keyboard selection does not trigger pointer-down, so add a drop here.
     if (event.detail === 0) {
       createWaterDrop({
         element: event.currentTarget,
@@ -122,12 +134,18 @@ function CommissionsPage() {
 
   function handleArtworkTypeChange(event) {
     chooseType(event.target.value)
-    createWaterDrop({ element: event.currentTarget, strength: 0.1 })
+    createWaterDrop({
+      element: event.currentTarget,
+      strength: 0.1,
+    })
   }
 
   function handleReferenceChange(event) {
     setReferenceFileName(event.target.files?.[0]?.name ?? '')
-    createWaterDrop({ element: event.currentTarget, strength: 0.16 })
+    createWaterDrop({
+      element: event.currentTarget,
+      strength: 0.16,
+    })
   }
 
   function handleFormInput(event) {
@@ -141,19 +159,73 @@ function CommissionsPage() {
     })
   }
 
-  function handleSubmit(event) {
+  async function handleSubmit(event) {
     event.preventDefault()
 
+    const form = event.currentTarget
+    const formData = new FormData(form)
+
     createWaterDrop({
-      element: event.currentTarget.querySelector('button[type="submit"]'),
+      element: form.querySelector('button[type="submit"]'),
       radius: 40,
       strength: 0.2,
       force: true,
     })
 
-    setFormMessage(
-      'Your brief has passed frontend validation. We will connect this form to the KalaVista API and artist inbox in the backend milestone.',
-    )
+    setSubmitStatus('submitting')
+    setFormMessage('')
+
+    const payload = {
+      name: String(formData.get('name') ?? '').trim(),
+      email: String(formData.get('email') ?? '').trim(),
+      artworkType: selectedType,
+      budget: String(formData.get('budget') ?? '').trim(),
+      message: String(formData.get('brief') ?? '').trim(),
+      timeline: String(formData.get('timeline') ?? '').trim(),
+      artworkSlug: artworkSlug || undefined,
+    }
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/commission-enquiries`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      })
+
+      const result = await response.json().catch(() => null)
+
+      if (!response.ok) {
+        const firstFieldError = Object.values(result?.errors ?? {})
+          .flat()
+          .find(Boolean)
+
+        throw new Error(
+          firstFieldError ??
+            result?.message ??
+            'Your enquiry could not be sent. Please try again.',
+        )
+      }
+
+      form.reset()
+      setSelectedType(commissionOptions[0].value)
+      setReferenceFileName('')
+      setSubmitStatus('success')
+
+      setFormMessage(
+        artworkSlug
+          ? `Your enquiry about ${formatArtworkSlug(
+              artworkSlug,
+            )} has been received. I will get back to you soon.`
+          : 'Your commission brief has been received. I will get back to you soon.',
+      )
+    } catch (error) {
+      setSubmitStatus('error')
+      setFormMessage(
+        error.message ?? 'Your enquiry could not be sent. Please try again.',
+      )
+    }
   }
 
   return (
@@ -295,7 +367,7 @@ function CommissionsPage() {
                   id="commission-brief"
                   name="brief"
                   rows="6"
-                  minLength="20"
+                  minLength="10"
                   placeholder="For example: a watercolour portrait of my grandparents in their old home, with a warm monsoon feeling..."
                   required
                 />
@@ -329,8 +401,15 @@ function CommissionsPage() {
               </div>
             </div>
 
-            <button className="commission-form__submit" type="submit">
-              Send commission brief <span aria-hidden="true">↗</span>
+            <button
+              className="commission-form__submit"
+              type="submit"
+              disabled={submitStatus === 'submitting'}
+            >
+              {submitStatus === 'submitting'
+                ? 'Sending your brief...'
+                : 'Send commission brief'}
+              <span aria-hidden="true">↗</span>
             </button>
 
             {formMessage && (
@@ -340,7 +419,11 @@ function CommissionsPage() {
             )}
 
             <p className="commission-form__note">
-              Frontend prototype: no email is sent yet.
+              {artworkSlug
+                ? `This enquiry is linked to ${formatArtworkSlug(artworkSlug)}.`
+                : 'Your commission request is saved securely in the KalaVista artist inbox.'}{' '}
+              Reference files will be uploaded securely in the dashboard
+              milestone.
             </p>
           </form>
         </div>
