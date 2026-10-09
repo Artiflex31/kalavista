@@ -3,7 +3,17 @@ import ArtworkCard from '../components/ArtworkCard'
 import { useSearchParams } from 'react-router'
 import CategoryConveyor from '../components/CategoryConveyor'
 import artworks from '../data/artworks'
+import useFavourites from '../hooks/useFavourites'
+import {
+  buildAvailabilityOptions,
+  buildMediumOptions,
+  buildResultsPath,
+  matchesAvailability,
+  matchesMedium,
+  readFiltersFromParams,
+} from '../lib/artworkFilters'
 import './GalleryPage.css'
+import './GalleryFilters.css'
 
 const API_BASE_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:5000'
 
@@ -123,7 +133,9 @@ function GalleryPage() {
   const [searchParams] = useSearchParams()
 
   const requestedCategory = searchParams.get('category') ?? 'all'
-  const shouldOpenResults = searchParams.get('view') === 'results'
+  const initialFilters = readFiltersFromParams(searchParams)
+  const shouldOpenResults =
+    searchParams.get('view') === 'results' || initialFilters.savedOnly
 
   const initialCategory = categoryDefinitions.some(
     (category) => category.value === requestedCategory,
@@ -137,11 +149,19 @@ function GalleryPage() {
   const [selectedCategory, setSelectedCategory] = useState(
     () => initialCategory,
   )
-  const [searchQuery, setSearchQuery] = useState('')
-  const [selectedMood, setSelectedMood] = useState('All')
+  const [searchQuery, setSearchQuery] = useState(initialFilters.query)
+  const [selectedMood, setSelectedMood] = useState(initialFilters.mood)
+  const [selectedAvailability, setSelectedAvailability] = useState(
+    initialFilters.availability,
+  )
+  const [selectedMedium, setSelectedMedium] = useState(initialFilters.medium)
+  const [savedOnly, setSavedOnly] = useState(initialFilters.savedOnly)
   const [apiArtworks, setApiArtworks] = useState([])
   const [apiStatus, setApiStatus] = useState('loading')
   const [apiError, setApiError] = useState('')
+  const [reloadCount, setReloadCount] = useState(0)
+  const [isSlowLoad, setIsSlowLoad] = useState(false)
+  const { slugs: favouriteSlugs } = useFavourites()
   const [uploadedArtworks, setUploadedArtworks] = useState([])
   const [isUploadPanelOpen, setIsUploadPanelOpen] = useState(false)
   const [draftFile, setDraftFile] = useState(null)
@@ -188,18 +208,58 @@ function GalleryPage() {
     return () => {
       controller.abort()
     }
-  }, [])
+  }, [reloadCount])
+
+  // If the API takes a while (for example a sleeping free-tier server), tell
+  // the visitor instead of leaving a silent loading screen.
+  useEffect(() => {
+    if (apiStatus !== 'loading') {
+      return undefined
+    }
+
+    const timerId = window.setTimeout(() => setIsSlowLoad(true), 6000)
+
+    return () => {
+      window.clearTimeout(timerId)
+      setIsSlowLoad(false)
+    }
+  }, [apiStatus])
+
   useEffect(() => {
     return () => {
       objectUrlsRef.current.forEach((url) => URL.revokeObjectURL(url))
     }
   }, [])
 
-  const sourceArtworks = apiStatus === 'ready' ? apiArtworks : artworks
+  // Live data when the API answered. Local preview data only when it failed.
+  // While loading there is nothing to show yet, so visitors never see the
+  // three local works flash before the real catalogue replaces them.
+  const allArtworks = useMemo(() => {
+    const sourceArtworks =
+      apiStatus === 'ready'
+        ? apiArtworks
+        : apiStatus === 'error'
+          ? artworks
+          : []
 
-  const allArtworks = useMemo(
-    () => [...uploadedArtworks, ...sourceArtworks],
-    [apiArtworks, apiStatus, uploadedArtworks],
+    return [...uploadedArtworks, ...sourceArtworks]
+  }, [apiArtworks, apiStatus, uploadedArtworks])
+
+  const availabilityOptions = useMemo(
+    () => buildAvailabilityOptions(allArtworks),
+    [allArtworks],
+  )
+
+  const mediumOptions = useMemo(
+    () => buildMediumOptions(allArtworks),
+    [allArtworks],
+  )
+
+  const savedCount = useMemo(
+    () =>
+      allArtworks.filter((artwork) => favouriteSlugs.includes(artwork.slug))
+        .length,
+    [allArtworks, favouriteSlugs],
   )
 
   const moodOptions = useMemo(
@@ -245,14 +305,46 @@ function GalleryPage() {
         normalizedQuery === '' ||
         getArtworkSearchText(artwork).includes(normalizedQuery)
 
-      return matchesSelectedCategory && matchesMood && matchesSearch
+      const matchesSaved = !savedOnly || favouriteSlugs.includes(artwork.slug)
+
+      return (
+        matchesSelectedCategory &&
+        matchesMood &&
+        matchesSearch &&
+        matchesAvailability(artwork, selectedAvailability) &&
+        matchesMedium(artwork, selectedMedium) &&
+        matchesSaved
+      )
     })
-  }, [activeCategory, allArtworks, searchQuery, selectedMood])
+  }, [
+    activeCategory,
+    allArtworks,
+    favouriteSlugs,
+    savedOnly,
+    searchQuery,
+    selectedAvailability,
+    selectedMedium,
+    selectedMood,
+  ])
 
   const hasActiveFilters =
     searchQuery.trim() !== '' ||
     selectedMood !== 'All' ||
-    selectedCategory !== 'all'
+    selectedCategory !== 'all' ||
+    selectedAvailability !== 'all' ||
+    selectedMedium !== 'all' ||
+    savedOnly
+
+  const hasNoSavedWorks = savedOnly && savedCount === 0
+
+  const resultsPath = buildResultsPath({
+    category: selectedCategory,
+    mood: selectedMood,
+    availability: selectedAvailability,
+    medium: selectedMedium,
+    query: searchQuery,
+    savedOnly,
+  })
 
   const isFutureCategory =
     selectedCategory !== 'all' && activeCategoryOption.count === 0
@@ -263,6 +355,9 @@ function GalleryPage() {
     if (categoryValue === 'all') {
       setSearchQuery('')
       setSelectedMood('All')
+      setSelectedAvailability('all')
+      setSelectedMedium('all')
+      setSavedOnly(false)
     }
 
     setIsCategoryIndexOpen(false)
@@ -283,6 +378,9 @@ function GalleryPage() {
   function clearFilters() {
     setSearchQuery('')
     setSelectedMood('All')
+    setSelectedAvailability('all')
+    setSelectedMedium('all')
+    setSavedOnly(false)
     setSelectedCategory('all')
   }
 
@@ -360,6 +458,28 @@ function GalleryPage() {
     event.currentTarget.reset()
   }
 
+  if (apiStatus === 'loading') {
+    return (
+      <section
+        aria-busy="true"
+        aria-labelledby="gallery-loading-title"
+        className="page-shell"
+        role="status"
+      >
+        <div className="empty-state">
+          <div>
+            <h1 id="gallery-loading-title">Loading the gallery...</h1>
+            <p>
+              {isSlowLoad
+                ? 'The studio server is waking up. This can take a moment.'
+                : 'Bringing the latest works out of the studio.'}
+            </p>
+          </div>
+        </div>
+      </section>
+    )
+  }
+
   if (isCategoryIndexOpen) {
     return (
       <CategoryConveyor
@@ -380,6 +500,13 @@ function GalleryPage() {
           The live gallery could not load right now, so local preview data is
           shown.
           {apiError ? ` ${apiError}` : ''}
+          <button
+            className="gallery-clear-button gallery-api-notice__retry"
+            type="button"
+            onClick={() => setReloadCount((count) => count + 1)}
+          >
+            Try again
+          </button>
         </p>
       )}
       <div className="gallery-results-toolbar">
@@ -503,6 +630,67 @@ function GalleryPage() {
             </button>
           ))}
         </div>
+
+        <div className="gallery-filter-row">
+          <button
+            aria-pressed={savedOnly}
+            className="filter-chip filter-chip--saved"
+            onClick={() => setSavedOnly((isOn) => !isOn)}
+            type="button"
+          >
+            <span aria-hidden="true">{savedOnly ? '♥' : '♡'}</span>
+            Saved ({savedCount})
+          </button>
+
+          {availabilityOptions.length > 1 && (
+            <div
+              className="gallery-filter-list"
+              role="group"
+              aria-label="Filter artworks by availability"
+            >
+              <button
+                aria-pressed={selectedAvailability === 'all'}
+                className="filter-chip"
+                onClick={() => setSelectedAvailability('all')}
+                type="button"
+              >
+                Any availability
+              </button>
+
+              {availabilityOptions.map((option) => (
+                <button
+                  aria-pressed={selectedAvailability === option.value}
+                  className="filter-chip"
+                  key={option.value}
+                  onClick={() => setSelectedAvailability(option.value)}
+                  type="button"
+                >
+                  {option.label} ({option.count})
+                </button>
+              ))}
+            </div>
+          )}
+
+          {mediumOptions.length > 1 && (
+            <div className="gallery-select">
+              <label htmlFor="gallery-medium">Medium</label>
+
+              <select
+                id="gallery-medium"
+                value={selectedMedium}
+                onChange={(event) => setSelectedMedium(event.target.value)}
+              >
+                <option value="all">All mediums</option>
+
+                {mediumOptions.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label} ({option.count})
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+        </div>
       </div>
 
       <div className="gallery-results-summary" role="status" aria-live="polite">
@@ -525,7 +713,7 @@ function GalleryPage() {
       {filteredArtworks.length > 0 ? (
         <div
           className="art-grid gallery-page__grid"
-          key={`${selectedCategory}-${selectedMood}-${searchQuery}`}
+          key={`${selectedCategory}-${selectedMood}-${searchQuery}-${selectedAvailability}-${selectedMedium}-${savedOnly}`}
         >
           {filteredArtworks.map((artwork, index) => (
             <div
@@ -533,12 +721,7 @@ function GalleryPage() {
               key={artwork.id}
               style={{ '--reveal-delay': `${index * 80}ms` }}
             >
-              <ArtworkCard
-                artwork={artwork}
-                returnTo={`/gallery?view=results&category=${encodeURIComponent(
-                  selectedCategory,
-                )}`}
-              />
+              <ArtworkCard artwork={artwork} returnTo={resultsPath} />
             </div>
           ))}
         </div>
@@ -546,23 +729,29 @@ function GalleryPage() {
         <div className="gallery-empty-state">
           <div>
             <h2>
-              {isFutureCategory
-                ? `${activeCategoryOption.label} is on its way.`
-                : 'No artworks found.'}
+              {hasNoSavedWorks
+                ? 'No saved works yet.'
+                : isFutureCategory
+                  ? `${activeCategoryOption.label} is on its way.`
+                  : 'No artworks found.'}
             </h2>
 
             <p>
-              {isFutureCategory
-                ? 'This category is ready for your upcoming original artworks.'
-                : 'Try another mood, search word, or return to the category index.'}
+              {hasNoSavedWorks
+                ? 'Tap the heart on any artwork to keep it here for later.'
+                : isFutureCategory
+                  ? 'This category is ready for your upcoming original artworks.'
+                  : 'Try another mood, search word, or return to the category index.'}
             </p>
 
             <button
               className="gallery-clear-button"
               type="button"
-              onClick={returnToCategoryIndex}
+              onClick={hasNoSavedWorks ? clearFilters : returnToCategoryIndex}
             >
-              Return to category index
+              {hasNoSavedWorks
+                ? 'Browse all works'
+                : 'Return to category index'}
             </button>
           </div>
         </div>

@@ -1,4 +1,5 @@
 import { Link } from 'react-router'
+import FavouriteButton from './FavouriteButton'
 
 function getArtworkImage(artwork) {
   return artwork.image ?? artwork.imageUrl ?? ''
@@ -28,6 +29,7 @@ function ArtworkCard({ artwork, returnTo }) {
   return (
     <article className="art-card">
       <Link
+        className="art-card-link"
         to={`/artworks/${artwork.slug}${
           returnTo ? `?from=${encodeURIComponent(returnTo)}` : ''
         }`}
@@ -60,6 +62,12 @@ function ArtworkCard({ artwork, returnTo }) {
           <p>{artwork.medium}</p>
         </div>
       </Link>
+
+      {/* A button cannot live inside the link, so it sits beside it. Locally
+          previewed uploads are not saved because they vanish on reload. */}
+      {!artwork.isLocalUpload && (
+        <FavouriteButton slug={artwork.slug} title={artwork.title} />
+      )}
     </article>
   )
 }

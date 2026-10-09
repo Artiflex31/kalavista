@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, useParams, useSearchParams } from 'react-router'
+import FavouriteButton from '../components/FavouriteButton'
 import artworks from '../data/artworks'
 
 const API_BASE_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:5000'
@@ -57,8 +58,13 @@ function ArtworkDetailPage() {
 
   const [searchParams] = useSearchParams()
 
+  // Only accept in-site gallery paths, so a crafted ?from= link cannot send
+  // the "Back to gallery" button to another website.
+  const fromParam = searchParams.get('from')
   const returnTo =
-    searchParams.get('from') ?? '/gallery?view=results&category=all'
+    fromParam && fromParam.startsWith('/gallery')
+      ? fromParam
+      : '/gallery?view=results&category=all'
   const [artwork, setArtwork] = useState(null)
   const [status, setStatus] = useState('loading')
   const [errorMessage, setErrorMessage] = useState('')
@@ -212,12 +218,12 @@ function ArtworkDetailPage() {
 
             <div>
               <dt>Dimensions</dt>
-              <dd>{artwork.dimensions}</dd>
+              <dd>{artwork.dimensions || '—'}</dd>
             </div>
 
             <div>
               <dt>Collection</dt>
-              <dd>{artwork.collection}</dd>
+              <dd>{artwork.collection || '—'}</dd>
             </div>
 
             <div>
@@ -238,6 +244,12 @@ function ArtworkDetailPage() {
               {purchaseMessage}
             </p>
           )}
+
+          <FavouriteButton
+            slug={artwork.slug}
+            title={artwork.title}
+            variant="text"
+          />
         </div>
       </div>
     </section>

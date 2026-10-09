@@ -1,0 +1,92 @@
+/* Cards need a positioning context for the floating heart. */
+.art-card {
+  position: relative;
+}
+
+.favourite-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font: inherit;
+  transition:
+    background-color 180ms ease,
+    border-color 180ms ease,
+    color 180ms ease,
+    transform 180ms ease;
+}
+
+.favourite-button svg {
+  width: 22px;
+  height: 22px;
+  flex: none;
+}
+
+.favourite-button:focus-visible {
+  outline: 3px solid var(--accent-hover, #7e332a);
+  outline-offset: 3px;
+}
+
+/* Icon variant: sits over the artwork, so it uses fixed light colours that
+   stay readable in both the light and night themes. */
+.favourite-button--icon {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 2;
+  width: 44px;
+  height: 44px;
+  border: 1px solid rgba(38, 35, 41, 0.18);
+  border-radius: 999px;
+  background: rgba(255, 253, 249, 0.92);
+  color: #262329;
+  backdrop-filter: blur(8px);
+}
+
+.favourite-button--icon[aria-pressed='true'] {
+  border-color: #9c4135;
+  color: #9c4135;
+}
+
+/* Text variant: used on the artwork detail page and follows the theme. */
+.favourite-button--text {
+  display: flex;
+  width: fit-content;
+  min-height: 46px;
+  max-width: 100%;
+  gap: 10px;
+  margin-top: 16px;
+  border: 1px solid var(--line, #d9cec0);
+  border-radius: 999px;
+  padding: 10px 18px;
+  background: transparent;
+  color: var(--ink, #262329);
+  font-size: 0.9rem;
+  font-weight: 750;
+}
+
+.favourite-button--text[aria-pressed='true'] {
+  border-color: var(--accent, #9c4135);
+  color: var(--accent, #9c4135);
+}
+
+@media (hover: hover) {
+  .favourite-button--icon:hover {
+    transform: scale(1.08);
+  }
+
+  .favourite-button--text:hover {
+    border-color: var(--accent, #9c4135);
+    color: var(--accent, #9c4135);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .favourite-button {
+    transition: none;
+  }
+
+  .favourite-button--icon:hover {
+    transform: none;
+  }
+}

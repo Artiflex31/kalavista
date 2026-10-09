@@ -1,0 +1,68 @@
+/* Extra gallery filters: saved works, availability and medium. */
+.gallery-filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 16px;
+}
+
+.filter-chip--saved {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.gallery-select {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.gallery-select label {
+  color: var(--muted, #645c58);
+  font-size: 0.8rem;
+  font-weight: 750;
+  letter-spacing: 0.03em;
+}
+
+.gallery-select select {
+  min-height: 38px;
+  max-width: 100%;
+  border: 1px solid var(--border, rgba(38, 35, 41, 0.18));
+  border-radius: 999px;
+  padding: 8px 14px;
+  background: var(--surface, #fffdf9);
+  color: var(--ink, #262329);
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.gallery-select select:hover {
+  border-color: var(--accent, #9c4135);
+}
+
+.gallery-select select:focus-visible {
+  outline: 2px solid var(--accent, #9c4135);
+  outline-offset: 3px;
+}
+
+.gallery-api-notice__retry {
+  margin-left: 10px;
+}
+
+@media (max-width: 640px) {
+  .gallery-filter-row {
+    align-items: stretch;
+  }
+
+  .gallery-select {
+    width: 100%;
+  }
+
+  .gallery-select select {
+    min-width: 0;
+    flex: 1;
+  }
+}
