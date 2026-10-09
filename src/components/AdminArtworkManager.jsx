@@ -30,7 +30,7 @@ function getEditForm(artwork) {
     dimensions: artwork.dimensions ?? '',
     collection: artwork.collection ?? '',
     moods: (artwork.moods ?? []).join(', '),
-    categories: (artwork.categories ?? []).join(', '),
+    categorySlugs: artwork.categories ?? [],
     availability: artwork.availability ?? 'AVAILABLE',
     priceInRupees: artwork.priceInPaise
       ? String(artwork.priceInPaise / 100)
@@ -52,6 +52,21 @@ function AdminArtworkManager({ token, refreshKey }) {
   const [editForm, setEditForm] = useState(null)
   const [replacementImage, setReplacementImage] = useState(null)
   const [isSavingEdit, setIsSavingEdit] = useState(false)
+
+  const [categories, setCategories] = useState([])
+
+  useEffect(() => {
+    async function loadCategories() {
+      try {
+        const response = await fetch(`${API_URL}/api/categories`)
+        const result = await response.json()
+        if (response.ok) setCategories(result.data ?? [])
+      } catch {
+        // Non-blocking; edit form still works without a dropdown.
+      }
+    }
+    loadCategories()
+  }, [])
 
   async function loadArtworks() {
     setIsLoading(true)
@@ -112,6 +127,18 @@ function AdminArtworkManager({ token, refreshKey }) {
       [name]: type === 'checkbox' ? checked : value,
     }))
   }
+  function toggleEditCategory(slug) {
+    setEditForm((current) => {
+      if (!current) return current
+      const has = current.categorySlugs.includes(slug)
+      return {
+        ...current,
+        categorySlugs: has
+          ? current.categorySlugs.filter((item) => item !== slug)
+          : [...current.categorySlugs, slug],
+      }
+    })
+  }
 
   async function uploadReplacementImage() {
     const uploadData = new FormData()
@@ -167,7 +194,7 @@ function AdminArtworkManager({ token, refreshKey }) {
         dimensions: editForm.dimensions.trim(),
         collection: editForm.collection.trim(),
         moods: splitList(editForm.moods),
-        categories: splitList(editForm.categories),
+        categories: editForm.categorySlugs,
         availability: editForm.availability,
         priceInPaise: editForm.priceInRupees
           ? Math.round(Number(editForm.priceInRupees) * 100)
@@ -303,24 +330,48 @@ function AdminArtworkManager({ token, refreshKey }) {
 
           <div className="admin-form-grid">
             <label className="admin-form-field">
-              <span>Artwork title *</span>
-              <input
-                name="title"
-                value={editForm.title}
+              <span>Category</span>
+              <select
+                name="categorySlug"
+                value={editForm.categorySlug}
                 onChange={updateEditField}
-                required
-              />
+              >
+                <option value="">— None —</option>
+                {categories.map((category) => (
+                  <option key={category.id} value={category.slug}>
+                    {category.label}
+                  </option>
+                ))}
+              </select>
             </label>
 
-            <label className="admin-form-field">
-              <span>Medium *</span>
-              <input
-                name="medium"
-                value={editForm.medium}
-                onChange={updateEditField}
-                required
-              />
-            </label>
+            <div className="admin-form-field admin-form-field--wide">
+              <span>Categories</span>
+              <small>Tap to select. You can pick more than one.</small>
+
+              <div className="admin-category-picker">
+                {categories.map((category) => {
+                  const isSelected = (editForm.categorySlugs ?? []).includes(
+                    category.slug,
+                  )
+                  return (
+                    <button
+                      key={category.id}
+                      type="button"
+                      className={`admin-category-chip ${
+                        isSelected ? 'admin-category-chip--active' : ''
+                      }`}
+                      aria-pressed={isSelected}
+                      style={{ '--chip-accent': category.accent }}
+                      onClick={() => toggleEditCategory(category.slug)}
+                    >
+                      <span className="admin-category-chip__dot" />
+                      {category.label}
+                    </button>
+                  )
+                })}
+              </div>
+            </div>
 
             <label className="admin-form-field">
               <span>Year *</span>

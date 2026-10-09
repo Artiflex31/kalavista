@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import '../pages/AdminPages.css'
 
 const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:5000'
@@ -12,7 +12,7 @@ const initialForm = {
   priceInRupees: '',
   availability: 'AVAILABLE',
   moods: '',
-  categories: '',
+  categorySlugs: [],
   alt: '',
   story: '',
   isFeatured: false,
@@ -33,6 +33,39 @@ function AdminArtworkForm({ token, onArtworkCreated }) {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [message, setMessage] = useState('')
 
+  const [categories, setCategories] = useState([])
+  const [categoriesLoading, setCategoriesLoading] = useState(true)
+
+  const [showNewCategory, setShowNewCategory] = useState(false)
+  const [newCategory, setNewCategory] = useState({
+    label: '',
+    accent: '#9c4135',
+  })
+  const [newCategorySaving, setNewCategorySaving] = useState(false)
+  const [newCategoryMessage, setNewCategoryMessage] = useState('')
+
+  async function loadCategories() {
+    try {
+      setCategoriesLoading(true)
+      const response = await fetch(`${API_URL}/api/categories`)
+      const result = await response.json()
+
+      if (!response.ok) {
+        throw new Error(result.message ?? 'Could not load categories.')
+      }
+
+      setCategories(result.data ?? [])
+    } catch (error) {
+      setNewCategoryMessage(error.message ?? 'Could not load categories.')
+    } finally {
+      setCategoriesLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    loadCategories()
+  }, [])
+
   function updateField(event) {
     const { name, value, type, checked } = event.target
 
@@ -40,6 +73,18 @@ function AdminArtworkForm({ token, onArtworkCreated }) {
       ...currentForm,
       [name]: type === 'checkbox' ? checked : value,
     }))
+  }
+
+  function toggleCategory(slug) {
+    setForm((currentForm) => {
+      const has = currentForm.categorySlugs.includes(slug)
+      return {
+        ...currentForm,
+        categorySlugs: has
+          ? currentForm.categorySlugs.filter((item) => item !== slug)
+          : [...currentForm.categorySlugs, slug],
+      }
+    })
   }
 
   function chooseImage(event) {
@@ -54,19 +99,60 @@ function AdminArtworkForm({ token, onArtworkCreated }) {
 
     const response = await fetch(`${API_URL}/api/artworks/upload`, {
       method: 'POST',
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      headers: { Authorization: `Bearer ${token}` },
       body: uploadData,
     })
 
     const result = await response.json()
+    if (!response.ok) throw new Error(result.message ?? 'Image upload failed.')
+    return result.data.imageUrl
+  }
 
-    if (!response.ok) {
-      throw new Error(result.message ?? 'Image upload failed.')
+  async function createCategory(event) {
+    event.preventDefault()
+    setNewCategoryMessage('')
+
+    const label = newCategory.label.trim()
+    if (label.length < 2) {
+      setNewCategoryMessage('Category name must be at least 2 characters.')
+      return
     }
 
-    return result.data.imageUrl
+    const slug = label
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-|-$/g, '')
+
+    setNewCategorySaving(true)
+
+    try {
+      const response = await fetch(`${API_URL}/api/categories`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ slug, label, accent: newCategory.accent }),
+      })
+
+      const result = await response.json()
+      if (!response.ok) {
+        throw new Error(result.message ?? 'Could not create category.')
+      }
+
+      setCategories((current) => [...current, result.data])
+      setForm((current) => ({
+        ...current,
+        categorySlugs: [...current.categorySlugs, result.data.slug],
+      }))
+      setNewCategory({ label: '', accent: '#9c4135' })
+      setShowNewCategory(false)
+      setNewCategoryMessage('')
+    } catch (error) {
+      setNewCategoryMessage(error.message ?? 'Could not create category.')
+    } finally {
+      setNewCategorySaving(false)
+    }
   }
 
   async function handleSubmit(event) {
@@ -86,10 +172,8 @@ function AdminArtworkForm({ token, onArtworkCreated }) {
     setIsSubmitting(true)
 
     try {
-      // Step 1: device file → Cloudinary
       const imageUrl = await uploadArtworkImage()
 
-      // Step 2: artwork information + Cloudinary URL → Neon database
       const artworkPayload = {
         title: form.title.trim(),
         medium: form.medium.trim(),
@@ -97,7 +181,7 @@ function AdminArtworkForm({ token, onArtworkCreated }) {
         dimensions: form.dimensions.trim() || null,
         collection: form.collection.trim() || null,
         moods: splitList(form.moods),
-        categories: splitList(form.categories),
+        categories: form.categorySlugs,
         availability: form.availability,
         priceInPaise: form.priceInRupees
           ? Math.round(Number(form.priceInRupees) * 100)
@@ -119,7 +203,6 @@ function AdminArtworkForm({ token, onArtworkCreated }) {
       })
 
       const result = await response.json()
-
       if (!response.ok) {
         throw new Error(result.message ?? 'Could not publish artwork.')
       }
@@ -127,11 +210,7 @@ function AdminArtworkForm({ token, onArtworkCreated }) {
       setMessage(`Published: ${result.data.title}`)
       setForm(initialForm)
       setImageFile(null)
-
-      if (fileInputRef.current) {
-        fileInputRef.current.value = ''
-      }
-
+      if (fileInputRef.current) fileInputRef.current.value = ''
       onArtworkCreated?.(result.data)
     } catch (error) {
       setMessage(error.message ?? 'Something went wrong. Please try again.')
@@ -264,15 +343,92 @@ function AdminArtworkForm({ token, onArtworkCreated }) {
             />
           </label>
 
-          <label className="admin-form-field">
+          <div className="admin-form-field admin-form-field--wide">
             <span>Categories</span>
-            <input
-              name="categories"
-              value={form.categories}
-              onChange={updateField}
-              placeholder="watercolour, soil-story"
-            />
-          </label>
+            <small>Tap to select. You can pick more than one.</small>
+
+            <div className="admin-category-picker">
+              {categoriesLoading ? (
+                <span className="admin-empty-copy">Loading categories…</span>
+              ) : (
+                categories.map((category) => {
+                  const isSelected = form.categorySlugs.includes(category.slug)
+                  return (
+                    <button
+                      key={category.id}
+                      type="button"
+                      className={`admin-category-chip ${
+                        isSelected ? 'admin-category-chip--active' : ''
+                      }`}
+                      aria-pressed={isSelected}
+                      style={{ '--chip-accent': category.accent }}
+                      onClick={() => toggleCategory(category.slug)}
+                    >
+                      <span className="admin-category-chip__dot" />
+                      {category.label}
+                    </button>
+                  )
+                })
+              )}
+            </div>
+
+            <button
+              className="admin-inline-add-button"
+              type="button"
+              onClick={() => setShowNewCategory((open) => !open)}
+            >
+              {showNewCategory ? 'Cancel' : '+ Add new category'}
+            </button>
+          </div>
+
+          {showNewCategory && (
+            <div className="admin-inline-new-category admin-form-field--wide">
+              <div className="admin-inline-new-category__fields">
+                <label>
+                  <span>New category name</span>
+                  <input
+                    value={newCategory.label}
+                    onChange={(event) =>
+                      setNewCategory((current) => ({
+                        ...current,
+                        label: event.target.value,
+                      }))
+                    }
+                    placeholder="For example: Winter Studies"
+                  />
+                </label>
+
+                <label>
+                  <span>Accent colour</span>
+                  <input
+                    type="color"
+                    value={newCategory.accent}
+                    onChange={(event) =>
+                      setNewCategory((current) => ({
+                        ...current,
+                        accent: event.target.value,
+                      }))
+                    }
+                  />
+                </label>
+
+                <button
+                  className="admin-primary-button"
+                  type="button"
+                  disabled={newCategorySaving}
+                  onClick={createCategory}
+                >
+                  {newCategorySaving ? 'Creating…' : 'Create category'}
+                </button>
+              </div>
+
+              {newCategoryMessage && (
+                <p className="admin-form-message" role="status">
+                  {newCategoryMessage}
+                </p>
+              )}
+            </div>
+          )}
 
           <label className="admin-form-field admin-form-field--wide">
             <span>Image description (alt text)</span>

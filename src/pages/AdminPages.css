@@ -1348,3 +1348,206 @@
   font-family: 'Manrope Variable', sans-serif;
   font-size: 0.75rem;
 }
+/* Admin tabs */
+
+.admin-tabs {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  margin: 0 0 28px;
+  border-bottom: 1px solid rgba(61, 42, 48, 0.16);
+  background: var(--surface, #f5efe6);
+}
+
+.admin-tabs__toggle {
+  display: none;
+  width: 100%;
+  gap: 10px;
+  align-items: center;
+  border: 0;
+  padding: 16px 4px;
+  color: var(--ink, #2d2229);
+  background: transparent;
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.admin-tabs__list {
+  display: flex;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.admin-tabs__button {
+  display: inline-flex;
+  gap: 9px;
+  align-items: center;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  padding: 14px 14px;
+  color: var(--muted, #675c60);
+  background: transparent;
+  font: inherit;
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition:
+    color 180ms ease,
+    border-color 180ms ease;
+}
+
+.admin-tabs__button:hover {
+  color: var(--ink, #2d2229);
+}
+
+.admin-tabs__button--active {
+  color: var(--accent, #9c4135);
+  border-bottom-color: var(--accent, #9c4135);
+}
+
+.admin-tabs__number {
+  color: var(--accent, #9c4135);
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+}
+
+@media (max-width: 760px) {
+  .admin-tabs__toggle {
+    display: inline-flex;
+    justify-content: space-between;
+  }
+
+  .admin-tabs__list {
+    display: none;
+    flex-direction: column;
+    gap: 0;
+    padding-bottom: 12px;
+  }
+
+  .admin-tabs__list[data-open='true'] {
+    display: flex;
+  }
+
+  .admin-tabs__button {
+    width: 100%;
+    justify-content: flex-start;
+    border-bottom: 0;
+    border-left: 2px solid transparent;
+    padding: 12px 10px;
+  }
+
+  .admin-tabs__button--active {
+    border-left-color: var(--accent, #9c4135);
+  }
+}
+
+/* Enquiry card controls + delete */
+
+.admin-enquiry-card__controls {
+  display: flex;
+  gap: 12px;
+  align-items: flex-end;
+}
+
+.admin-enquiry-delete-button {
+  border: 1px solid rgba(173, 68, 60, 0.4);
+  border-radius: 999px;
+  padding: 11px 14px;
+  color: #ad443c;
+  background: transparent;
+  font: inherit;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.admin-enquiry-delete-button:hover:not(:disabled) {
+  color: #fffaf5;
+  background: #ad443c;
+}
+
+.admin-enquiry-delete-button:disabled {
+  cursor: wait;
+  opacity: 0.6;
+}
+
+@media (max-width: 640px) {
+  .admin-enquiry-card__controls {
+    align-items: stretch;
+    flex-direction: column;
+    width: 100%;
+  }
+}
+
+/* Inline new-category form */
+
+.admin-inline-add-button {
+  margin-top: 6px;
+  border: 0;
+  border-bottom: 1px solid currentColor;
+  padding: 0 0 2px;
+  color: var(--accent, #9c4135);
+  background: transparent;
+  font: inherit;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.admin-inline-new-category {
+  border: 1px dashed rgba(179, 83, 67, 0.4);
+  border-radius: 14px;
+  padding: 16px;
+  background: rgba(179, 83, 67, 0.05);
+}
+
+.admin-inline-new-category__fields {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 120px auto;
+  gap: 12px;
+  align-items: end;
+}
+
+.admin-inline-new-category__fields label {
+  display: grid;
+  gap: 6px;
+}
+
+.admin-inline-new-category__fields label > span {
+  font-family: 'Manrope Variable', sans-serif;
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.admin-inline-new-category__fields input {
+  width: 100%;
+  border: 1px solid rgba(61, 42, 48, 0.24);
+  border-radius: 10px;
+  padding: 10px 12px;
+  font: inherit;
+}
+
+.admin-inline-new-category__fields input[type='color'] {
+  height: 42px;
+  padding: 4px;
+  cursor: pointer;
+}
+
+@media (max-width: 640px) {
+  .admin-inline-new-category__fields {
+    grid-template-columns: 1fr;
+  }
+}
