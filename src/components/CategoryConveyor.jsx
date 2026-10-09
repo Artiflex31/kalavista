@@ -1,45 +1,36 @@
 import { useEffect, useRef, useState } from 'react'
 import './CategoryConveyor.css'
-import artworks from '../data/artworks'
 
 const TAU = Math.PI * 2
 
 function clamp(value, minimum, maximum) {
   return Math.min(Math.max(value, minimum), maximum)
 }
+
 function getArtworkImage(artwork) {
   return artwork?.image ?? artwork?.imageUrl ?? artwork?.coverImage ?? ''
 }
 
-function getCardArtwork(category, index) {
-  const matchingArtwork = artworks.find((artwork) => {
-    if (category.value === 'all') {
-      return true
-    }
+function getCardArtwork(category, index, allArtworks) {
+  // Admin-uploaded category image always wins.
+  if (category.imageUrl) {
+    return category.imageUrl
+  }
 
-    if (category.collection && artwork.collection === category.collection) {
-      return true
-    }
+  // Otherwise, use the first artwork that belongs to this category.
+  const matchingArtwork = allArtworks.find((artwork) =>
+    (artwork.categories ?? []).includes(category.value),
+  )
 
-    const searchableText = [
-      artwork.title,
-      artwork.collection,
-      artwork.medium,
-      artwork.story,
-      ...(artwork.categories ?? []),
-    ]
-      .join(' ')
-      .toLowerCase()
+  if (matchingArtwork) {
+    return getArtworkImage(matchingArtwork)
+  }
 
-    return (category.keywords ?? []).some((keyword) =>
-      searchableText.includes(keyword),
-    )
-  })
-
+  // Final fallback: any artwork at all.
   const fallbackArtwork =
-    artworks.length > 0 ? artworks[index % artworks.length] : null
+    allArtworks.length > 0 ? allArtworks[index % allArtworks.length] : null
 
-  return getArtworkImage(matchingArtwork ?? fallbackArtwork)
+  return getArtworkImage(fallbackArtwork)
 }
 
 function getFocusedIndex(categoryCount, phase) {
@@ -59,7 +50,12 @@ function getFocusedIndex(categoryCount, phase) {
   return focusedIndex
 }
 
-function CategoryConveyor({ categories, selectedCategory, onSelectCategory }) {
+function CategoryConveyor({
+  categories,
+  selectedCategory,
+  onSelectCategory,
+  artworks = [],
+}) {
   const conveyorRef = useRef(null)
 
   const [scrollProgress, setScrollProgress] = useState(0)
@@ -215,7 +211,7 @@ function CategoryConveyor({ categories, selectedCategory, onSelectCategory }) {
                   : artworkCount === 1
                     ? '1 work'
                     : `${artworkCount} works`
-              const cardImage = getCardArtwork(category, index)
+              const cardImage = getCardArtwork(category, index, artworks)
 
               return (
                 <li
@@ -251,6 +247,7 @@ function CategoryConveyor({ categories, selectedCategory, onSelectCategory }) {
                     >
                       {cardImage ? <img src={cardImage} alt="" /> : null}
                     </span>
+
                     <span className="category-conveyor__card-number">
                       {String(index + 1).padStart(2, '0')}
                     </span>

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import ArtworkCard from '../components/ArtworkCard'
 import { useSearchParams } from 'react-router'
 import CategoryConveyor from '../components/CategoryConveyor'
@@ -29,64 +29,6 @@ function attachLocalArtworkMedia(apiArtwork) {
   }
 }
 
-const categoryDefinitions = [
-  { value: 'all', label: 'All works', accent: '#9c4135' },
-  {
-    value: 'monsoon-studies',
-    label: 'Monsoon Studies',
-    accent: '#597c9d',
-    collection: 'Monsoon Studies',
-  },
-  {
-    value: 'small-messages',
-    label: 'Small Messages',
-    accent: '#b98a4b',
-    collection: 'Small Messages',
-  },
-  {
-    value: 'soil-story',
-    label: 'Soil & Story',
-    accent: '#a84d3f',
-    collection: 'Soil & Story',
-  },
-  {
-    value: 'anime-fan-art',
-    label: 'Anime & Fan Art',
-    accent: '#7757a7',
-    keywords: ['anime', 'fan art', 'fanart', 'manga', 'character'],
-  },
-  {
-    value: 'portrait-studies',
-    label: 'Portrait Studies',
-    accent: '#a96e5c',
-    keywords: ['portrait', 'face study', 'face drawing'],
-  },
-  {
-    value: 'pencil-charcoal',
-    label: 'Pencil & Charcoal',
-    accent: '#59616b',
-    keywords: ['pencil', 'charcoal', 'graphite', 'sketch'],
-  },
-  {
-    value: 'watercolour',
-    label: 'Watercolour',
-    accent: '#4f8d91',
-    keywords: ['watercolour', 'watercolor'],
-  },
-  {
-    value: 'digital-glow',
-    label: 'Digital / Glow',
-    accent: '#ba5e9b',
-    keywords: ['digital', 'glow', 'neon'],
-  },
-  {
-    value: 'wildlife-studies',
-    label: 'Wildlife Studies',
-    accent: '#6c8654',
-    keywords: ['wildlife', 'animal', 'tiger', 'bird'],
-  },
-]
-
 function getArtworkSearchText(artwork) {
   return [
     artwork.title,
@@ -106,27 +48,7 @@ function matchesCategory(artwork, category) {
     return true
   }
 
-  const matchesCollection =
-    category.collection && artwork.collection === category.collection
-
-  const matchesKeyword = (category.keywords ?? []).some((keyword) =>
-    getArtworkSearchText(artwork).includes(keyword),
-  )
-
-  const matchesUploadedCategory = (artwork.categories ?? []).includes(
-    category.value,
-  )
-
-  return matchesCollection || matchesKeyword || matchesUploadedCategory
-}
-
-function createSlug(title) {
-  const normalisedTitle = title
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-|-$/g, '')
-
-  return normalisedTitle || 'studio-upload'
+  return (artwork.categories ?? []).includes(category.value)
 }
 
 function GalleryPage() {
@@ -137,11 +59,8 @@ function GalleryPage() {
   const shouldOpenResults =
     searchParams.get('view') === 'results' || initialFilters.savedOnly
 
-  const initialCategory = categoryDefinitions.some(
-    (category) => category.value === requestedCategory,
-  )
-    ? requestedCategory
-    : 'all'
+  const initialCategory = requestedCategory || 'all'
+
   const [isCategoryIndexOpen, setIsCategoryIndexOpen] = useState(
     () => !shouldOpenResults,
   )
@@ -157,18 +76,14 @@ function GalleryPage() {
   const [selectedMedium, setSelectedMedium] = useState(initialFilters.medium)
   const [savedOnly, setSavedOnly] = useState(initialFilters.savedOnly)
   const [apiArtworks, setApiArtworks] = useState([])
+  const [apiCategories, setApiCategories] = useState([])
   const [apiStatus, setApiStatus] = useState('loading')
   const [apiError, setApiError] = useState('')
   const [reloadCount, setReloadCount] = useState(0)
   const [isSlowLoad, setIsSlowLoad] = useState(false)
   const { slugs: favouriteSlugs } = useFavourites()
-  const [uploadedArtworks, setUploadedArtworks] = useState([])
-  const [isUploadPanelOpen, setIsUploadPanelOpen] = useState(false)
-  const [draftFile, setDraftFile] = useState(null)
-  const [draftTitle, setDraftTitle] = useState('')
-  const [draftCategory, setDraftCategory] = useState('all')
-  const [uploadMessage, setUploadMessage] = useState('')
-  const objectUrlsRef = useRef([])
+
+  // Load artworks from the API.
   useEffect(() => {
     const controller = new AbortController()
 
@@ -210,8 +125,37 @@ function GalleryPage() {
     }
   }, [reloadCount])
 
-  // If the API takes a while (for example a sleeping free-tier server), tell
-  // the visitor instead of leaving a silent loading screen.
+  // Load categories from the API.
+  useEffect(() => {
+    const controller = new AbortController()
+
+    async function loadCategories() {
+      try {
+        const response = await fetch(`${API_BASE_URL}/api/categories`, {
+          signal: controller.signal,
+        })
+
+        const result = await response.json()
+
+        if (response.ok) {
+          setApiCategories(result.data ?? [])
+        }
+      } catch (error) {
+        if (error.name === 'AbortError') {
+          return
+        }
+        // Non-blocking: conveyor will just have the "all" option.
+      }
+    }
+
+    loadCategories()
+
+    return () => {
+      controller.abort()
+    }
+  }, [])
+
+  // Tell visitors if the API is taking a while.
   useEffect(() => {
     if (apiStatus !== 'loading') {
       return undefined
@@ -225,25 +169,35 @@ function GalleryPage() {
     }
   }, [apiStatus])
 
-  useEffect(() => {
-    return () => {
-      objectUrlsRef.current.forEach((url) => URL.revokeObjectURL(url))
-    }
-  }, [])
-
-  // Live data when the API answered. Local preview data only when it failed.
-  // While loading there is nothing to show yet, so visitors never see the
-  // three local works flash before the real catalogue replaces them.
   const allArtworks = useMemo(() => {
-    const sourceArtworks =
-      apiStatus === 'ready'
-        ? apiArtworks
-        : apiStatus === 'error'
-          ? artworks
-          : []
+    return apiStatus === 'ready'
+      ? apiArtworks
+      : apiStatus === 'error'
+        ? artworks
+        : []
+  }, [apiArtworks, apiStatus])
 
-    return [...uploadedArtworks, ...sourceArtworks]
-  }, [apiArtworks, apiStatus, uploadedArtworks])
+  const categoryOptions = useMemo(() => {
+    const allOption = {
+      value: 'all',
+      label: 'All works',
+      accent: '#9c4135',
+      count: allArtworks.length,
+    }
+
+    const fromApi = apiCategories.map((category) => ({
+      value: category.slug,
+      label: category.label,
+      accent: category.accent,
+      imageUrl: category.imageUrl,
+      alt: category.alt,
+      count: allArtworks.filter((artwork) =>
+        (artwork.categories ?? []).includes(category.slug),
+      ).length,
+    }))
+
+    return [allOption, ...fromApi]
+  }, [allArtworks, apiCategories])
 
   const availabilityOptions = useMemo(
     () => buildAvailabilityOptions(allArtworks),
@@ -272,25 +226,11 @@ function GalleryPage() {
     [allArtworks],
   )
 
-  const categoryOptions = useMemo(
-    () =>
-      categoryDefinitions.map((category) => ({
-        ...category,
-        count: allArtworks.filter((artwork) =>
-          matchesCategory(artwork, category),
-        ).length,
-      })),
-    [allArtworks],
-  )
-
   const activeCategory =
-    categoryDefinitions.find(
-      (category) => category.value === selectedCategory,
-    ) ?? categoryDefinitions[0]
-
-  const activeCategoryOption =
     categoryOptions.find((category) => category.value === selectedCategory) ??
     categoryOptions[0]
+
+  const activeCategoryOption = activeCategory
 
   const filteredArtworks = useMemo(() => {
     const normalizedQuery = searchQuery.trim().toLowerCase()
@@ -384,80 +324,6 @@ function GalleryPage() {
     setSelectedCategory('all')
   }
 
-  function handleFileChange(event) {
-    const file = event.target.files?.[0] ?? null
-
-    setDraftFile(file)
-    setUploadMessage('')
-
-    if (file && !draftTitle) {
-      setDraftTitle(file.name.replace(/\.[^/.]+$/, ''))
-    }
-  }
-
-  function handleUpload(event) {
-    event.preventDefault()
-
-    if (!draftFile) {
-      setUploadMessage('Choose an image before adding it to the gallery.')
-      return
-    }
-
-    if (!draftFile.type.startsWith('image/')) {
-      setUploadMessage('Please choose an image file.')
-      return
-    }
-
-    if (draftFile.size > 8 * 1024 * 1024) {
-      setUploadMessage('Choose an image smaller than 8 MB for this preview.')
-      return
-    }
-
-    const selectedUploadCategory =
-      categoryDefinitions.find(
-        (category) => category.value === draftCategory,
-      ) ?? categoryDefinitions[0]
-
-    const title = draftTitle.trim() || 'Untitled studio work'
-    const imageUrl = URL.createObjectURL(draftFile)
-
-    objectUrlsRef.current.push(imageUrl)
-
-    setUploadedArtworks((currentArtworks) => [
-      {
-        id: `local-upload-${Date.now()}`,
-        slug: `${createSlug(title)}-${Date.now()}`,
-        title,
-        medium: 'Studio upload',
-        year: String(new Date().getFullYear()),
-        dimensions: 'Details to be added',
-        collection: selectedUploadCategory.collection ?? '',
-        categories: [
-          selectedUploadCategory.value,
-          ...(selectedUploadCategory.keywords ?? []),
-        ],
-        moods: ['New'],
-        availability: 'Available for enquiry',
-        image: imageUrl,
-        alt: title,
-        story: 'A newly added studio work. Its story will be added soon.',
-        isLocalUpload: true,
-      },
-      ...currentArtworks,
-    ])
-
-    setSearchQuery('')
-    setSelectedMood('All')
-    setSelectedCategory(draftCategory)
-    setDraftFile(null)
-    setDraftTitle('')
-    setDraftCategory('all')
-    setUploadMessage(
-      `Added “${title}” for this browser session. It is ready to preview in the gallery.`,
-    )
-    event.currentTarget.reset()
-  }
-
   if (apiStatus === 'loading') {
     return (
       <section
@@ -486,6 +352,7 @@ function GalleryPage() {
         categories={categoryOptions}
         selectedCategory={selectedCategory}
         onSelectCategory={openCategory}
+        artworks={allArtworks}
       />
     )
   }
@@ -509,6 +376,7 @@ function GalleryPage() {
           </button>
         </p>
       )}
+
       <div className="gallery-results-toolbar">
         <button
           className="gallery-index-back"
@@ -518,74 +386,7 @@ function GalleryPage() {
           <span aria-hidden="true">←</span>
           Back to category index
         </button>
-
-        <button
-          className="gallery-upload-button"
-          type="button"
-          aria-expanded={isUploadPanelOpen}
-          aria-controls="gallery-upload-panel"
-          onClick={() => setIsUploadPanelOpen((isOpen) => !isOpen)}
-        >
-          <span aria-hidden="true">＋</span>
-          Upload artwork
-        </button>
       </div>
-
-      {isUploadPanelOpen && (
-        <form
-          className="gallery-upload-panel"
-          id="gallery-upload-panel"
-          onSubmit={handleUpload}
-        >
-          <div className="gallery-upload-panel__heading">
-            <p>Studio upload / preview</p>
-            <span>
-              Local to this browser until we build the secure artist dashboard.
-            </span>
-          </div>
-
-          <label>
-            Artwork image
-            <input
-              accept="image/png,image/jpeg,image/webp"
-              onChange={handleFileChange}
-              type="file"
-            />
-          </label>
-
-          <label>
-            Title
-            <input
-              value={draftTitle}
-              onChange={(event) => setDraftTitle(event.target.value)}
-              placeholder="Name this artwork"
-              type="text"
-            />
-          </label>
-
-          <label>
-            Category
-            <select
-              value={draftCategory}
-              onChange={(event) => setDraftCategory(event.target.value)}
-            >
-              {categoryDefinitions.map((category) => (
-                <option key={category.value} value={category.value}>
-                  {category.label}
-                </option>
-              ))}
-            </select>
-          </label>
-
-          <button type="submit">Add to gallery</button>
-
-          {uploadMessage && (
-            <p className="gallery-upload-panel__status" role="status">
-              {uploadMessage}
-            </p>
-          )}
-        </form>
-      )}
 
       <div className="gallery-heading">
         <div>
