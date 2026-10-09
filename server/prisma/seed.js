@@ -11,6 +11,33 @@ if (!connectionString) {
 const adapter = new PrismaPg({ connectionString })
 const prisma = new PrismaClient({ adapter })
 
+const categories = [
+  {
+    slug: 'pencil-sketches',
+    label: 'Pencil Sketches',
+    accent: '#59616b',
+    sortOrder: 1,
+  },
+  {
+    slug: 'charcoal-sketches',
+    label: 'Charcoal Sketches',
+    accent: '#3f3a3c',
+    sortOrder: 2,
+  },
+  { slug: 'glow-art', label: 'Glow Art', accent: '#ba5e9b', sortOrder: 3 },
+  { slug: 'anime-art', label: 'Anime Art', accent: '#7757a7', sortOrder: 4 },
+  {
+    slug: 'watercolour',
+    label: 'Watercolour',
+    accent: '#4f8d91',
+    sortOrder: 5,
+  },
+  { slug: 'portraits', label: 'Portraits', accent: '#a96e5c', sortOrder: 6 },
+  { slug: 'realistic', label: 'Realistic', accent: '#6c8654', sortOrder: 7 },
+  { slug: 'horror', label: 'Horror', accent: '#8b2c3f', sortOrder: 8 },
+  { slug: 'style', label: 'Style', accent: '#c77d3e', sortOrder: 9 },
+]
+
 const artworks = [
   {
     slug: 'monsoon-silence',
@@ -63,17 +90,25 @@ const artworks = [
 ]
 
 async function main() {
+  for (const category of categories) {
+    await prisma.category.upsert({
+      where: { slug: category.slug },
+      update: category,
+      create: category,
+    })
+  }
+
   for (const artwork of artworks) {
     await prisma.artwork.upsert({
-      where: {
-        slug: artwork.slug,
-      },
+      where: { slug: artwork.slug },
       update: artwork,
       create: artwork,
     })
   }
 
-  console.log(`Seeded ${artworks.length} artworks.`)
+  console.log(
+    `Seeded ${categories.length} categories and ${artworks.length} artworks.`,
+  )
 }
 
 main()

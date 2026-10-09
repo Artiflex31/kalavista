@@ -6,6 +6,7 @@ import authRouter from './routes/auth.routes.js'
 import ordersRouter from './routes/orders.routes.js'
 import commissionPaymentsRouter from './routes/commission-payments.routes.js'
 import commissionTrackingRouter from './routes/commission-tracking.routes.js'
+import categoriesRouter from './routes/categories.routes.js'
 import { handleRazorpayWebhook } from './routes/razorpay-webhook.routes.js'
 
 const app = express()
@@ -16,10 +17,6 @@ app.use(
   }),
 )
 
-/*
-  This MUST stay before express.json().
-  Razorpay signs the exact raw body, so parsed JSON would fail signature validation.
-*/
 app.post(
   '/api/webhooks/razorpay',
   express.raw({ type: 'application/json' }),
@@ -34,6 +31,7 @@ app.use('/api/auth', authRouter)
 app.use('/api/orders', ordersRouter)
 app.use('/api/commission-payments', commissionPaymentsRouter)
 app.use('/api/commission-tracking', commissionTrackingRouter)
+app.use('/api/categories', categoriesRouter)
 
 app.use((request, response) => {
   response.status(404).json({

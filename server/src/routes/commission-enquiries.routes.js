@@ -112,6 +112,7 @@ router.post('/', async (req, res, next) => {
 router.get('/', requireAdmin, async (req, res, next) => {
   try {
     const enquiries = await prisma.commissionEnquiry.findMany({
+      where: { deletedAt: null },
       include: {
         artwork: {
           select: {
@@ -395,5 +396,44 @@ router.patch('/:id/progress', requireAdmin, async (req, res, next) => {
     next(error)
   }
 })
+/*
+  Protected: soft-delete an enquiry.
+  Preserves payment history. Recoverable from the database if needed.
+*/
+router.delete('/:id', requireAdmin, async (req, res, next) => {
+  try {
+    const enquiryId = Number(req.params.id)
 
+    if (!Number.isInteger(enquiryId) || enquiryId < 1) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid enquiry id.',
+      })
+    }
+
+    const enquiry = await prisma.commissionEnquiry.findUnique({
+      where: { id: enquiryId },
+      select: { id: true, name: true, deletedAt: true },
+    })
+
+    if (!enquiry || enquiry.deletedAt) {
+      return res.status(404).json({
+        success: false,
+        message: 'Enquiry not found.',
+      })
+    }
+
+    await prisma.commissionEnquiry.update({
+      where: { id: enquiryId },
+      data: { deletedAt: new Date() },
+    })
+
+    res.json({
+      success: true,
+      message: `Enquiry from "${enquiry.name}" was archived.`,
+    })
+  } catch (error) {
+    next(error)
+  }
+})
 export default router
