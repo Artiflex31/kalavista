@@ -1,0 +1,133 @@
+.not-found {
+  position: relative;
+  display: grid;
+  min-height: 100svh;
+  place-items: center;
+  overflow: hidden;
+  padding: 60px 24px;
+  color: #fffaf0;
+  background: #0f0d14;
+  text-align: center;
+  isolation: isolate;
+}
+
+.not-found__glow {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background:
+    radial-gradient(
+      circle at 50% 42%,
+      rgba(168, 77, 63, 0.22),
+      transparent 45%
+    ),
+    radial-gradient(
+      circle at 15% 85%,
+      rgba(79, 141, 145, 0.12),
+      transparent 40%
+    ),
+    radial-gradient(
+      circle at 85% 15%,
+      rgba(242, 202, 115, 0.1),
+      transparent 40%
+    );
+  pointer-events: none;
+}
+
+.not-found__container {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: min(100%, 640px);
+}
+
+.not-found__canvas {
+  display: block;
+  width: min(100%, 560px);
+  height: 260px;
+  margin-bottom: 8px;
+  cursor: crosshair;
+}
+
+.not-found__code {
+  margin: 0 0 12px;
+  color: #8a7f88;
+  font-family: 'Manrope Variable', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+}
+
+.not-found__title {
+  margin: 0;
+  font-family: 'Cormorant Garamond Variable', Georgia, serif;
+  font-size: clamp(3.2rem, 8vw, 5.6rem);
+  font-weight: 500;
+  letter-spacing: -0.05em;
+  line-height: 0.9;
+  text-wrap: balance;
+}
+
+.not-found__intro {
+  max-width: 44ch;
+  margin: 20px 0 0;
+  color: #8a7f88;
+  font-family: 'Manrope Variable', sans-serif;
+  font-size: 0.95rem;
+  line-height: 1.7;
+}
+
+.not-found__back {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  margin-top: 36px;
+  border-bottom: 1px solid rgba(255, 250, 240, 0.35);
+  padding-bottom: 4px;
+  color: #fffaf0;
+  font-family: 'Manrope Variable', sans-serif;
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-decoration: none;
+  text-transform: uppercase;
+  transition:
+    border-color 180ms ease,
+    color 180ms ease,
+    transform 180ms ease;
+}
+
+.not-found__back span {
+  color: #f2ca73;
+  font-size: 1rem;
+}
+
+.not-found__back:hover {
+  border-color: #f2ca73;
+  color: #f2ca73;
+  transform: translateY(-2px);
+}
+
+.not-found__back:focus-visible {
+  outline: 2px solid #f2ca73;
+  outline-offset: 4px;
+  border-radius: 2px;
+}
+
+@media (max-width: 640px) {
+  .not-found__canvas {
+    height: 200px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .not-found__back {
+    transition: none;
+  }
+  .not-found__back:hover {
+    transform: none;
+  }
+}

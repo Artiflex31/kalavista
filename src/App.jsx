@@ -24,6 +24,7 @@ import PrivacyPage from './pages/legal/PrivacyPage'
 import RefundPage from './pages/legal/RefundPage'
 import ShippingPage from './pages/legal/ShippingPage'
 import ContactPage from './pages/legal/ContactPage'
+import NotFoundPage from './pages/NotFoundPage'
 import './App.css'
 
 const navigationItems = [
@@ -194,7 +195,7 @@ function App() {
         <Route path="/refund" element={<RefundPage />} />
         <Route path="/shipping" element={<ShippingPage />} />
         <Route path="/contact" element={<ContactPage />} />
-        <Route path="*" element={<Navigate replace to="/" />} />
+        <Route path="*" element={<NotFoundPage />} />
       </Routes>
       <footer className="site-footer">
         <div className="site-footer__inner">
