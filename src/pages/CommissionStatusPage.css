@@ -328,3 +328,198 @@
     text-align: left;
   }
 }
+/* Client cancel section */
+
+.commission-tracker__notice {
+  margin: 20px 0 0;
+  border: 1px solid rgba(75, 46, 51, 0.16);
+  border-radius: 14px;
+  padding: 14px 16px;
+  color: #30232b;
+  background: rgba(75, 46, 51, 0.05);
+  font-family: 'Manrope Variable', sans-serif;
+  font-size: 0.82rem;
+  line-height: 1.55;
+}
+
+.commission-tracker__cancel {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  justify-content: space-between;
+  margin: 26px 0 0;
+  border: 1px solid rgba(168, 77, 63, 0.24);
+  border-radius: 18px;
+  padding: 20px;
+  background: rgba(168, 77, 63, 0.04);
+}
+
+.commission-tracker__cancel-eyebrow {
+  margin: 0 0 6px;
+  color: #a84d3f;
+  font-family: 'Manrope Variable', sans-serif;
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+}
+
+.commission-tracker__cancel-copy {
+  margin: 0;
+  color: #735f63;
+  font-family: 'Manrope Variable', sans-serif;
+  font-size: 0.82rem;
+  line-height: 1.55;
+}
+
+.commission-tracker__cancel-button {
+  flex: 0 0 auto;
+  border: 1px solid #a84d3f;
+  border-radius: 999px;
+  padding: 12px 18px;
+  color: #a84d3f;
+  background: transparent;
+  font-family: 'Manrope Variable', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition:
+    background 180ms ease,
+    color 180ms ease;
+}
+
+.commission-tracker__cancel-button:hover {
+  color: #fffaf3;
+  background: #a84d3f;
+}
+
+/* Cancel confirm dialog */
+
+.commission-cancel-dialog {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+}
+
+.commission-cancel-dialog__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(20, 12, 18, 0.55);
+  backdrop-filter: blur(4px);
+}
+
+.commission-cancel-dialog__panel {
+  position: relative;
+  z-index: 1;
+  width: min(100%, 520px);
+  border: 1px solid rgba(78, 44, 52, 0.22);
+  border-radius: 22px;
+  padding: clamp(24px, 5vw, 36px);
+  color: #30232b;
+  background: #fffaf3;
+  box-shadow: 0 30px 80px rgba(20, 12, 18, 0.35);
+}
+
+.commission-cancel-dialog__eyebrow {
+  margin: 0;
+  color: #a84d3f;
+  font-family: 'Manrope Variable', sans-serif;
+  font-size: 0.66rem;
+  font-weight: 800;
+  letter-spacing: 0.13em;
+}
+
+.commission-cancel-dialog__panel h2 {
+  margin: 8px 0 0;
+  font-family: 'Cormorant Garamond Variable', Georgia, serif;
+  font-size: clamp(2rem, 4vw, 2.6rem);
+  font-weight: 550;
+  letter-spacing: -0.04em;
+  line-height: 0.95;
+}
+
+.commission-cancel-dialog__warning {
+  margin: 18px 0 0;
+  border-left: 3px solid #a84d3f;
+  padding: 4px 0 4px 16px;
+  color: #30232b;
+  font-family: 'Manrope Variable', sans-serif;
+  font-size: 0.92rem;
+  line-height: 1.65;
+}
+
+.commission-cancel-dialog__note {
+  margin: 16px 0 0;
+  color: #8b777a;
+  font-family: 'Manrope Variable', sans-serif;
+  font-size: 0.78rem;
+  line-height: 1.55;
+}
+
+.commission-cancel-dialog__actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 26px;
+  flex-wrap: wrap;
+}
+
+.commission-cancel-dialog__secondary,
+.commission-cancel-dialog__primary {
+  border-radius: 999px;
+  padding: 12px 20px;
+  font-family: 'Manrope Variable', sans-serif;
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  transition:
+    opacity 180ms ease,
+    transform 180ms ease;
+}
+
+.commission-cancel-dialog__secondary {
+  border: 1px solid rgba(78, 44, 52, 0.24);
+  color: #30232b;
+  background: transparent;
+}
+
+.commission-cancel-dialog__primary {
+  border: 1px solid #a84d3f;
+  color: #fffaf3;
+  background: #a84d3f;
+}
+
+.commission-cancel-dialog__secondary:hover:not(:disabled),
+.commission-cancel-dialog__primary:hover:not(:disabled) {
+  transform: translateY(-2px);
+}
+
+.commission-cancel-dialog__secondary:disabled,
+.commission-cancel-dialog__primary:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
+@media (max-width: 640px) {
+  .commission-tracker__cancel {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .commission-tracker__cancel-button {
+    width: 100%;
+  }
+
+  .commission-cancel-dialog__actions {
+    flex-direction: column-reverse;
+  }
+
+  .commission-cancel-dialog__secondary,
+  .commission-cancel-dialog__primary {
+    width: 100%;
+  }
+}

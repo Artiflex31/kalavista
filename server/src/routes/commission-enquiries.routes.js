@@ -6,6 +6,10 @@ import {
   sendCommissionCancellationEmail,
   sendCommissionQuoteEmail,
 } from '../lib/email.js'
+import {
+  buildOutcomeMessage,
+  performCommissionCancellation,
+} from '../lib/commission-cancel.js'
 
 const router = Router()
 
@@ -417,157 +421,37 @@ router.post('/:id/cancel', requireAdmin, async (req, res, next) => {
       })
     }
 
-    const enquiry = await prisma.commissionEnquiry.findUnique({
-      where: { id: enquiryId },
-      include: { payment: true },
-    })
+    const result = await performCommissionCancellation(enquiryId)
 
-    if (!enquiry) {
+    if (result.error === 'not_found') {
       return res.status(404).json({
         success: false,
         message: 'Commission enquiry not found.',
       })
     }
 
-    if (enquiry.progress === 'CANCELLED') {
+    if (result.error === 'already_cancelled') {
       return res.json({
         success: true,
         message: 'This commission is already cancelled.',
-        data: enquiry,
+        data: result.enquiry,
       })
     }
 
-    const inProductionStages = ['IN_PROGRESS', 'PREVIEW_READY', 'COMPLETED']
-    const isInProduction = inProductionStages.includes(enquiry.progress)
-
-    const hasPayment =
-      enquiry.payment &&
-      (enquiry.payment.status === 'ADVANCE_PAID' ||
-        enquiry.payment.status === 'FULLY_PAID')
-
-    // ─── Refund decision ────────────────────────────────────────────
-    let refundAmountInPaise = 0
-    let retainedAmountInPaise = 0
-    let outcomeType = 'no_payment' // default
-
-    if (hasPayment) {
-      const total = enquiry.payment.totalPriceInPaise
-      const advance = enquiry.payment.advanceInPaise
-      const isFullyPaid = enquiry.payment.status === 'FULLY_PAID'
-
-      if (isInProduction) {
-        if (isFullyPaid) {
-          // Production started + fully paid → refund final 40%, retain 60%
-          refundAmountInPaise = total - advance
-          retainedAmountInPaise = advance
-          outcomeType = 'partial_refund'
-        } else {
-          // Production started + advance only → retain advance, no refund
-          refundAmountInPaise = 0
-          retainedAmountInPaise = advance
-          outcomeType = 'no_refund'
-        }
-      } else {
-        // Not in production → full refund of whatever was paid
-        refundAmountInPaise = isFullyPaid ? total : advance
-        retainedAmountInPaise = 0
-        outcomeType = 'full_refund'
-      }
-    }
-    // ────────────────────────────────────────────────────────────────
-
-    const result = await prisma.$transaction(async (transaction) => {
-      const updatedEnquiry = await transaction.commissionEnquiry.update({
-        where: { id: enquiry.id },
-        data: {
-          status: 'DECLINED',
-          progress: 'CANCELLED',
-        },
-        include: {
-          payment: true,
-          artwork: {
-            select: { slug: true, title: true },
-          },
-        },
-      })
-
-      if (enquiry.payment) {
-        await transaction.commissionPayment.update({
-          where: { id: enquiry.payment.id },
-          data: { status: 'CANCELLED' },
-        })
-      }
-
-      return updatedEnquiry
-    })
-
-    let emailSent = false
-
-    if (enquiry.email) {
-      try {
-        await sendCommissionCancellationEmail({
-          customerName: enquiry.name,
-          customerEmail: enquiry.email,
-          artworkType: enquiry.artworkType,
-          refundAmountInPaise,
-          retainedAmountInPaise,
-          totalPriceInPaise: enquiry.payment?.totalPriceInPaise ?? 0,
-          currency: enquiry.payment?.currency ?? 'INR',
-          outcomeType,
-        })
-        emailSent = true
-      } catch (emailError) {
-        console.error('Commission cancellation email failed:', emailError)
-      }
-    }
-
-    // Build a clear message for the admin UI.
-    let outcomeMessage
-
-    if (outcomeType === 'no_payment') {
-      outcomeMessage =
-        'Commission cancelled. No payment was recorded, so no refund is needed.'
-    } else if (outcomeType === 'full_refund') {
-      outcomeMessage = `Commission cancelled. Full refund of ${formatInr(
-        refundAmountInPaise,
-      )} to be processed.`
-    } else if (outcomeType === 'partial_refund') {
-      outcomeMessage = `Commission cancelled. Refund of ${formatInr(
-        refundAmountInPaise,
-      )} (final 40%) to be processed. Advance of ${formatInr(
-        retainedAmountInPaise,
-      )} retained per policy.`
-    } else {
-      // no_refund
-      outcomeMessage = `Commission cancelled. Advance of ${formatInr(
-        retainedAmountInPaise,
-      )} retained per policy (artwork was in production).`
-    }
+    const message = buildOutcomeMessage(result.outcome)
 
     res.json({
       success: true,
-      message: outcomeMessage,
-      data: result,
+      message,
+      data: result.enquiry,
       outcome: {
-        outcomeType,
-        refundAmountInPaise,
-        retainedAmountInPaise,
-        hasPayment,
-        isInProduction,
-        emailSent,
+        ...result.outcome,
+        emailSent: result.emailSent,
       },
     })
   } catch (error) {
     next(error)
   }
 })
-
-function formatInr(amountInPaise) {
-  return new Intl.NumberFormat('en-IN', {
-    style: 'currency',
-    currency: 'INR',
-    maximumFractionDigits: 0,
-  }).format((amountInPaise ?? 0) / 100)
-}
 
 export default router

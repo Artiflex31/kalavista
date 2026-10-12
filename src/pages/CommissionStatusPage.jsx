@@ -37,6 +37,8 @@ const journeyStages = [
   },
 ]
 
+const IN_PRODUCTION_STAGES = ['IN_PROGRESS', 'PREVIEW_READY', 'COMPLETED']
+
 function formatPrice(amountInPaise, currency = 'INR') {
   if (typeof amountInPaise !== 'number') {
     return '—'
@@ -81,12 +83,63 @@ function getPaymentSummary(payment) {
   }
 }
 
+/*
+  Build a warning that matches the studio's refund policy.
+  Shown to the client before they cancel — same rules the admin sees.
+*/
+function getCancelWarning(tracking) {
+  if (!tracking) {
+    return ''
+  }
+
+  const hasPayment =
+    tracking.payment &&
+    (tracking.payment.status === 'ADVANCE_PAID' ||
+      tracking.payment.status === 'FULLY_PAID')
+
+  const inProduction = IN_PRODUCTION_STAGES.includes(tracking.progress)
+
+  if (!hasPayment) {
+    return 'No payment has been recorded, so no refund is applicable. Your commission will be cancelled.'
+  }
+
+  const total = tracking.payment.totalPriceInPaise
+  const advance = tracking.payment.advanceInPaise
+  const isFullyPaid = tracking.payment.status === 'FULLY_PAID'
+
+  if (!inProduction) {
+    const refundAmount = isFullyPaid ? total : advance
+    return `Work has not yet begun, so you will receive a full refund of ${formatPrice(
+      refundAmount,
+      tracking.payment.currency,
+    )}. The refund will be credited to your original payment method within 5-7 business days.`
+  }
+
+  if (isFullyPaid) {
+    const refundAmount = total - advance
+    return `Your commission has entered production. Per our Refund Policy, the 60% advance of ${formatPrice(
+      advance,
+      tracking.payment.currency,
+    )} is retained. The final 40% of ${formatPrice(
+      refundAmount,
+      tracking.payment.currency,
+    )} will be refunded to you within 5-7 business days.`
+  }
+
+  return `Your commission has entered production. Per our Refund Policy, the 60% advance of ${formatPrice(
+    advance,
+    tracking.payment.currency,
+  )} is retained to cover the labour and materials already invested in your unique artwork. No refund will be issued.`
+}
+
 function CommissionStatusPage() {
   const { trackingReference } = useParams()
 
   const [tracking, setTracking] = useState(null)
   const [pageStatus, setPageStatus] = useState('loading')
   const [message, setMessage] = useState('')
+  const [isCancelling, setIsCancelling] = useState(false)
+  const [isCancelDialogOpen, setIsCancelDialogOpen] = useState(false)
 
   useEffect(() => {
     const controller = new AbortController()
@@ -141,6 +194,57 @@ function CommissionStatusPage() {
     )
   }, [tracking])
 
+  const canCancel =
+    tracking &&
+    tracking.progress !== 'CANCELLED' &&
+    tracking.progress !== 'COMPLETED'
+
+  const cancelWarning = useMemo(
+    () => (canCancel ? getCancelWarning(tracking) : ''),
+    [canCancel, tracking],
+  )
+
+  function openCancelDialog() {
+    setIsCancelDialogOpen(true)
+  }
+
+  function closeCancelDialog() {
+    setIsCancelDialogOpen(false)
+  }
+
+  async function confirmCancel() {
+    setIsCancelling(true)
+    setMessage('')
+
+    try {
+      const response = await fetch(
+        `${API_URL}/api/commission-tracking/${encodeURIComponent(
+          trackingReference,
+        )}/cancel`,
+        {
+          method: 'POST',
+        },
+      )
+
+      const result = await response.json()
+
+      if (!response.ok) {
+        throw new Error(result.message ?? 'Could not cancel commission.')
+      }
+
+      // Reload the tracker to reflect the new state.
+      setTracking((current) =>
+        current ? { ...current, progress: 'CANCELLED' } : current,
+      )
+      setIsCancelDialogOpen(false)
+      setMessage(result.message)
+    } catch (error) {
+      setMessage(error.message ?? 'Could not cancel commission.')
+    } finally {
+      setIsCancelling(false)
+    }
+  }
+
   if (pageStatus === 'loading') {
     return (
       <section className="commission-tracker">
@@ -176,8 +280,8 @@ function CommissionStatusPage() {
           <p className="commission-tracker__eyebrow">COMMISSION TRACKER</p>
           <h1>This commission is no longer active.</h1>
           <p>
-            Please contact the KalaVista studio if you have a question about
-            your request.
+            {message ||
+              'Your commission has been cancelled. If you had a payment recorded, please check your email for refund details.'}
           </p>
 
           <Link className="commission-tracker__back-link" to="/">
@@ -213,6 +317,12 @@ function CommissionStatusPage() {
             Ref. {tracking.trackingReference.slice(-8).toUpperCase()}
           </span>
         </header>
+
+        {message && (
+          <p className="commission-tracker__notice" role="status">
+            {message}
+          </p>
+        )}
 
         {paymentSummary && (
           <section className="commission-tracker__payment">
@@ -282,6 +392,28 @@ function CommissionStatusPage() {
           })}
         </section>
 
+        {canCancel && (
+          <section className="commission-tracker__cancel">
+            <div>
+              <p className="commission-tracker__cancel-eyebrow">
+                NEED TO CANCEL?
+              </p>
+              <p className="commission-tracker__cancel-copy">
+                You can cancel this commission. The refund policy depends on the
+                current stage and how much you have paid.
+              </p>
+            </div>
+
+            <button
+              className="commission-tracker__cancel-button"
+              type="button"
+              onClick={openCancelDialog}
+            >
+              Cancel this commission
+            </button>
+          </section>
+        )}
+
         <footer className="commission-tracker__footer">
           <p>
             Last updated {formatDate(tracking.updatedAt)}. Keep this link
@@ -293,6 +425,54 @@ function CommissionStatusPage() {
           </Link>
         </footer>
       </div>
+
+      {isCancelDialogOpen && (
+        <div
+          className="commission-cancel-dialog"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="cancel-dialog-title"
+        >
+          <div
+            className="commission-cancel-dialog__backdrop"
+            onClick={isCancelling ? undefined : closeCancelDialog}
+          />
+
+          <div className="commission-cancel-dialog__panel">
+            <p className="commission-cancel-dialog__eyebrow">
+              CANCEL COMMISSION
+            </p>
+            <h2 id="cancel-dialog-title">Are you sure?</h2>
+
+            <p className="commission-cancel-dialog__warning">{cancelWarning}</p>
+
+            <p className="commission-cancel-dialog__note">
+              This action cannot be undone. You will receive a confirmation
+              email once the cancellation is processed.
+            </p>
+
+            <div className="commission-cancel-dialog__actions">
+              <button
+                className="commission-cancel-dialog__secondary"
+                type="button"
+                onClick={closeCancelDialog}
+                disabled={isCancelling}
+              >
+                Keep my commission
+              </button>
+
+              <button
+                className="commission-cancel-dialog__primary"
+                type="button"
+                onClick={confirmCancel}
+                disabled={isCancelling}
+              >
+                {isCancelling ? 'Cancelling…' : 'Yes, cancel it'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   )
 }
