@@ -1,20 +1,4 @@
-import { Resend } from 'resend'
-
-function getResendClient() {
-  if (!process.env.RESEND_API_KEY) {
-    throw new Error('RESEND_API_KEY is missing from server/.env.')
-  }
-
-  return new Resend(process.env.RESEND_API_KEY)
-}
-
-function getSender() {
-  if (!process.env.EMAIL_FROM) {
-    throw new Error('EMAIL_FROM is missing from server/.env.')
-  }
-
-  return process.env.EMAIL_FROM
-}
+import { getMailTransporter, getMailSender } from './mailer.js'
 
 function escapeHtml(value = '') {
   return String(value)
@@ -52,6 +36,11 @@ function getProgressCopy(progress) {
       description:
         'We hope the artwork finds a meaningful place in your space.',
     },
+    REFUNDED: {
+      title: 'Your refund has been initiated.',
+      description:
+        'We have initiated your refund. The amount will be credited to your original payment method within 5-7 business days. Thank you for your patience.',
+    },
   }
 
   return progressCopy[progress] ?? progressCopy.PAYMENT_RECEIVED
@@ -66,9 +55,8 @@ export async function sendArtworkOrderUpdateEmail({
   trackingNumber,
   trackingUrl,
 }) {
-  const resend = getResendClient()
-  const sender = getSender()
   const copy = getProgressCopy(progress)
+  const isRefund = progress === 'REFUNDED'
 
   const courierDetails =
     progress === 'SHIPPED' && (courierName || trackingNumber)
@@ -88,9 +76,36 @@ export async function sendArtworkOrderUpdateEmail({
       `
       : ''
 
-  const { data, error } = await resend.emails.send({
-    from: sender,
-    to: [customerEmail],
+  const actionButton =
+    isRefund || !trackingUrl
+      ? ''
+      : `
+          <p style="margin:30px 0 0;">
+            <a
+              href="${trackingUrl}"
+              style="display:inline-block;padding:14px 20px;border-radius:999px;background:#a84d3f;color:#fffdf9;font-size:14px;font-weight:700;text-decoration:none;"
+            >
+              Track your artwork order
+            </a>
+          </p>
+        `
+
+  const refundNote = isRefund
+    ? `
+        <p style="margin:24px 0 0;padding:16px;border-radius:12px;background:#f4efe7;font-size:14px;line-height:1.6;">
+          If you have any questions about this refund, please contact us at
+          <a href="mailto:kalavista24x7@gmail.com" style="color:#a84d3f;text-decoration:none;">
+            kalavista24x7@gmail.com
+          </a>.
+        </p>
+      `
+    : ''
+
+  const transporter = getMailTransporter()
+
+  const info = await transporter.sendMail({
+    from: getMailSender(),
+    to: customerEmail,
     subject: `${copy.title} · KalaVista`,
     html: `
       <main style="margin:0;padding:32px 16px;background:#f4efe7;font-family:Arial,sans-serif;color:#2b2028;">
@@ -116,15 +131,8 @@ export async function sendArtworkOrderUpdateEmail({
           </p>
 
           ${courierDetails}
-
-          <p style="margin:30px 0 0;">
-            <a
-              href="${trackingUrl}"
-              style="display:inline-block;padding:14px 20px;border-radius:999px;background:#a84d3f;color:#fffdf9;font-size:14px;font-weight:700;text-decoration:none;"
-            >
-              Track your artwork order
-            </a>
-          </p>
+          ${refundNote}
+          ${actionButton}
         </section>
       </main>
     `,
@@ -138,13 +146,8 @@ Artwork: ${artworkTitle}
 ${courierName ? `Courier: ${courierName}` : ''}
 ${trackingNumber ? `Tracking number: ${trackingNumber}` : ''}
 
-Track your order:
-${trackingUrl}`,
+${isRefund ? 'For refund-related questions, email kalavista24x7@gmail.com.' : `Track your order: ${trackingUrl}`}`,
   })
 
-  if (error) {
-    throw new Error(error.message ?? 'Could not send order update email.')
-  }
-
-  return data
+  return { id: info.messageId }
 }

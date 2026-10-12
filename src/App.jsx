@@ -19,6 +19,11 @@ import CommissionPaymentPage from './pages/CommissionPaymentPage'
 import CommissionStatusPage from './pages/CommissionStatusPage'
 import OrderStatusPage from './pages/OrderStatusPage'
 import CommissionFinalPaymentPage from './pages/CommissionFinalPaymentPage'
+import TermsPage from './pages/legal/TermsPage'
+import PrivacyPage from './pages/legal/PrivacyPage'
+import RefundPage from './pages/legal/RefundPage'
+import ShippingPage from './pages/legal/ShippingPage'
+import ContactPage from './pages/legal/ContactPage'
 import './App.css'
 
 const navigationItems = [
@@ -184,8 +189,27 @@ function App() {
           path="/commission-final-payment/:reference"
           element={<CommissionFinalPaymentPage />}
         />
+        <Route path="/terms" element={<TermsPage />} />
+        <Route path="/privacy" element={<PrivacyPage />} />
+        <Route path="/refund" element={<RefundPage />} />
+        <Route path="/shipping" element={<ShippingPage />} />
+        <Route path="/contact" element={<ContactPage />} />
         <Route path="*" element={<Navigate replace to="/" />} />
       </Routes>
+      <footer className="site-footer">
+        <div className="site-footer__inner">
+          <p className="site-footer__copyright">
+            © {new Date().getFullYear()} KalaVista. All rights reserved.
+          </p>
+          <nav className="site-footer__links" aria-label="Legal">
+            <Link to="/terms">Terms</Link>
+            <Link to="/privacy">Privacy</Link>
+            <Link to="/refund">Refund</Link>
+            <Link to="/shipping">Shipping</Link>
+            <Link to="/contact">Contact</Link>
+          </nav>
+        </div>
+      </footer>
     </main>
   )
 }

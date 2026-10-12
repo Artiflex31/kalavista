@@ -1,4 +1,4 @@
-import { Resend } from 'resend'
+import { getMailTransporter, getMailSender } from './mailer.js'
 
 function formatPrice(amountInPaise, currency = 'INR') {
   return new Intl.NumberFormat('en-IN', {
@@ -6,14 +6,6 @@ function formatPrice(amountInPaise, currency = 'INR') {
     currency,
     maximumFractionDigits: 0,
   }).format((amountInPaise ?? 0) / 100)
-}
-
-function getResendClient() {
-  if (!process.env.RESEND_API_KEY || !process.env.EMAIL_FROM) {
-    throw new Error('Resend email configuration is missing.')
-  }
-
-  return new Resend(process.env.RESEND_API_KEY)
 }
 
 export async function sendFinalPaymentRequestEmail({
@@ -25,11 +17,11 @@ export async function sendFinalPaymentRequestEmail({
   trackingUrl,
 }) {
   const amount = formatPrice(finalAmountInPaise, currency)
-  const resend = getResendClient()
+  const transporter = getMailTransporter()
 
-  const { data, error } = await resend.emails.send({
-    from: process.env.EMAIL_FROM,
-    to: [customerEmail],
+  const info = await transporter.sendMail({
+    from: getMailSender(),
+    to: customerEmail,
     subject: 'Your KalaVista commission is ready for its final payment',
     html: `
       <main style="padding:32px 16px;background:#f4efe7;font-family:Arial,sans-serif;color:#2b2028;">
@@ -56,11 +48,7 @@ Pay securely: ${paymentUrl}
 Track your commission: ${trackingUrl}`,
   })
 
-  if (error) {
-    throw new Error(error.message ?? 'Could not send final-payment email.')
-  }
-
-  return data
+  return { id: info.messageId }
 }
 
 export async function sendFinalPaymentConfirmationEmail({
@@ -71,11 +59,11 @@ export async function sendFinalPaymentConfirmationEmail({
   trackingUrl,
 }) {
   const amount = formatPrice(finalAmountInPaise, currency)
-  const resend = getResendClient()
+  const transporter = getMailTransporter()
 
-  const { data, error } = await resend.emails.send({
-    from: process.env.EMAIL_FROM,
-    to: [customerEmail],
+  const info = await transporter.sendMail({
+    from: getMailSender(),
+    to: customerEmail,
     subject: 'Your KalaVista commission is fully paid',
     html: `
       <main style="padding:32px 16px;background:#f4efe7;font-family:Arial,sans-serif;color:#2b2028;">
@@ -101,11 +89,5 @@ Track your commission:
 ${trackingUrl}`,
   })
 
-  if (error) {
-    throw new Error(
-      error.message ?? 'Could not send final-payment confirmation.',
-    )
-  }
-
-  return data
+  return { id: info.messageId }
 }

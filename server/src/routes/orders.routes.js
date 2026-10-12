@@ -185,7 +185,99 @@ router.patch(
     }
   },
 )
+/*
+  Protected: mark a paid order as refunded.
+  The actual money refund is processed manually via Razorpay dashboard
+  or UPI transfer. This endpoint updates the database, releases the
+  artwork back to the studio, and emails the customer.
+*/
+router.patch(
+  '/admin/:reference/mark-refunded',
+  requireAdmin,
+  async (req, res, next) => {
+    try {
+      const order = await prisma.artworkOrder.findUnique({
+        where: { reference: req.params.reference },
+        include: {
+          artwork: {
+            select: { title: true },
+          },
+        },
+      })
 
+      if (!order) {
+        return res.status(404).json({
+          success: false,
+          message: 'Order not found.',
+        })
+      }
+
+      if (order.status === 'REFUNDED') {
+        return res.json({
+          success: true,
+          message: 'Order is already marked as refunded.',
+          data: order,
+        })
+      }
+
+      if (order.status !== 'PAID' && order.status !== 'FULFILLED') {
+        return res.status(400).json({
+          success: false,
+          message: 'Only a paid order can be marked as refunded.',
+        })
+      }
+
+      const updatedOrder = await prisma.$transaction(async (transaction) => {
+        const saved = await transaction.artworkOrder.update({
+          where: { id: order.id },
+          data: { status: 'REFUNDED' },
+          include: {
+            artwork: {
+              select: { title: true },
+            },
+          },
+        })
+
+        // Release the artwork back to the studio so it can be sold again.
+        await transaction.artwork.update({
+          where: { id: order.artworkId },
+          data: { availability: 'AVAILABLE' },
+        })
+
+        return saved
+      })
+
+      const trackingUrl = `${getClientUrl()}/order-status/${updatedOrder.reference}`
+
+      let emailSent = false
+
+      try {
+        const emailResult = await sendArtworkOrderUpdateEmail({
+          customerName: updatedOrder.customerName,
+          customerEmail: updatedOrder.customerEmail,
+          artworkTitle: updatedOrder.artwork.title,
+          progress: 'REFUNDED',
+          trackingUrl,
+        })
+
+        emailSent = Boolean(emailResult?.id)
+      } catch (emailError) {
+        console.error('Refund notification email failed:', emailError)
+      }
+
+      res.json({
+        success: true,
+        message: emailSent
+          ? 'Order marked as refunded. Customer has been emailed.'
+          : 'Order marked as refunded, but the email could not be sent. Please email the customer manually.',
+        data: updatedOrder,
+        emailSent,
+      })
+    } catch (error) {
+      next(error)
+    }
+  },
+)
 /*
   Public: safe buyer-facing tracking data.
   The random order reference acts as the secure tracking key.

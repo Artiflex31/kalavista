@@ -143,6 +143,52 @@ function AdminOrders({ token }) {
       setUpdatingReference(null)
     }
   }
+  async function markRefunded(order) {
+    const confirmed = window.confirm(
+      `Mark order #${order.reference} as REFUNDED?\n\nThis will:\n• Update the order status to "Refunded"\n• Release the artwork back to the studio\n• Email the customer\n\nHave you ALREADY processed the actual refund via Razorpay or UPI?\nIf not, do that first.`,
+    )
+
+    if (!confirmed) {
+      return
+    }
+
+    setUpdatingReference(order.reference)
+    setMessage('')
+
+    try {
+      const response = await fetch(
+        `${API_URL}/api/orders/admin/${encodeURIComponent(
+          order.reference,
+        )}/mark-refunded`,
+        {
+          method: 'PATCH',
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      )
+
+      const result = await response.json()
+
+      if (!response.ok) {
+        throw new Error(result.message ?? 'Could not mark as refunded.')
+      }
+
+      setOrders((currentOrders) =>
+        currentOrders.map((currentOrder) =>
+          currentOrder.reference === order.reference
+            ? result.data
+            : currentOrder,
+        ),
+      )
+
+      setMessage(result.message)
+    } catch (error) {
+      setMessage(error.message ?? 'Could not mark as refunded.')
+    } finally {
+      setUpdatingReference(null)
+    }
+  }
 
   async function copyTrackingLink(reference) {
     const trackingUrl = `${window.location.origin}/order-status/${reference}`
@@ -319,6 +365,16 @@ function AdminOrders({ token }) {
                       {updatingReference === order.reference
                         ? 'Saving…'
                         : 'Save update & email buyer'}
+                    </button>
+                    <button
+                      className="admin-order-refund-button"
+                      type="button"
+                      disabled={updatingReference === order.reference}
+                      onClick={() => markRefunded(order)}
+                    >
+                      {updatingReference === order.reference
+                        ? 'Processing…'
+                        : 'Mark as refunded'}
                     </button>
                   </div>
                 )}

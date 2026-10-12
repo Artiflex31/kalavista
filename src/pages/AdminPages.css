@@ -1551,3 +1551,72 @@
     grid-template-columns: 1fr;
   }
 }
+.admin-order-refund-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 10px;
+  border: 1px solid rgba(173, 68, 60, 0.45);
+  border-radius: 999px;
+  padding: 10px 16px;
+  color: #ad443c;
+  background: transparent;
+  font: inherit;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition:
+    background 180ms ease,
+    color 180ms ease;
+}
+
+.admin-order-refund-button:hover:not(:disabled) {
+  color: #fffaf5;
+  background: #ad443c;
+}
+
+.admin-order-refund-button:disabled {
+  cursor: wait;
+  opacity: 0.6;
+}
+.admin-enquiry-cancel-commission-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(173, 68, 60, 0.45);
+  border-radius: 999px;
+  padding: 10px 14px;
+  color: #ad443c;
+  background: transparent;
+  font: inherit;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition:
+    background 180ms ease,
+    color 180ms ease;
+}
+
+.admin-enquiry-cancel-commission-button:hover:not(:disabled) {
+  color: #fffaf5;
+  background: #ad443c;
+}
+
+.admin-enquiry-cancel-commission-button:disabled {
+  cursor: wait;
+  opacity: 0.6;
+}
+
+@media (max-width: 640px) {
+  .admin-enquiry-card__controls {
+    flex-wrap: wrap;
+  }
+
+  .admin-enquiry-cancel-commission-button {
+    width: 100%;
+  }
+}
