@@ -1,0 +1,517 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>KalaVista · क brush concepts</title>
+    <style>
+      body {
+        font-family: system-ui, sans-serif;
+        margin: 0;
+        padding: 40px 24px;
+        background: #f5efe6;
+        color: #2b2028;
+      }
+      h1 {
+        font-size: 1.4rem;
+        margin: 0 0 8px;
+      }
+      p.lead {
+        margin: 0 0 32px;
+        color: #6a5a5f;
+        font-size: 0.9rem;
+        max-width: 70ch;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+        gap: 22px;
+        max-width: 1300px;
+      }
+      .card {
+        display: grid;
+        gap: 14px;
+        padding: 20px;
+        border: 1px solid rgba(61, 42, 48, 0.15);
+        border-radius: 18px;
+        background: #fffdf9;
+        box-shadow: 0 6px 20px rgba(61, 42, 48, 0.06);
+      }
+      .preview {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        border-radius: 14px;
+        background: rgba(168, 77, 63, 0.05);
+        flex-wrap: wrap;
+      }
+      .preview svg {
+        display: block;
+      }
+      .card h2 {
+        margin: 0;
+        font-size: 0.92rem;
+        font-weight: 700;
+      }
+      .card p {
+        margin: 0;
+        font-size: 0.78rem;
+        color: #6a5a5f;
+        line-height: 1.55;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>KalaVista · क as brush-stroke</h1>
+    <p class="lead">
+      A brush forming क, with flowing multi-color pigment. Look at 16px (left) —
+      that is the browser tab size.
+    </p>
+
+    <div class="grid">
+      <!-- 1 — Simple: brush + one trailing क -->
+      <div class="card">
+        <div class="preview">
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 64 64"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <rect width="64" height="64" rx="14" fill="#fffaf0" />
+            <!-- brush handle (vertical, bottom to middle) -->
+            <rect x="28" y="26" width="6" height="30" rx="3" fill="#26365c" />
+            <!-- brush tip (mid) -->
+            <path d="M28 26 L31 18 L34 26 Z" fill="#4f8d91" />
+            <!-- क shape drawn by brush tip, colorful trailing -->
+            <path
+              d="M31 18 L31 30"
+              stroke="#e84a2b"
+              stroke-width="3.6"
+              stroke-linecap="round"
+            />
+            <path
+              d="M31 24 Q44 22, 44 34"
+              stroke="#f2ca73"
+              stroke-width="3.4"
+              fill="none"
+              stroke-linecap="round"
+            />
+            <path
+              d="M44 34 L44 44"
+              stroke="#26365c"
+              stroke-width="3.4"
+              stroke-linecap="round"
+            />
+            <!-- trailing pigment dots -->
+            <circle cx="48" cy="20" r="1.6" fill="#e84a2b" />
+            <circle cx="52" cy="30" r="1.3" fill="#f2ca73" />
+          </svg>
+          <svg
+            width="32"
+            height="32"
+            viewBox="0 0 64 64"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <rect width="64" height="64" rx="14" fill="#fffaf0" />
+            <rect x="28" y="26" width="6" height="30" rx="3" fill="#26365c" />
+            <path d="M28 26 L31 18 L34 26 Z" fill="#4f8d91" />
+            <path
+              d="M31 18 L31 30"
+              stroke="#e84a2b"
+              stroke-width="3.6"
+              stroke-linecap="round"
+            />
+            <path
+              d="M31 24 Q44 22, 44 34"
+              stroke="#f2ca73"
+              stroke-width="3.4"
+              fill="none"
+              stroke-linecap="round"
+            />
+            <path
+              d="M44 34 L44 44"
+              stroke="#26365c"
+              stroke-width="3.4"
+              stroke-linecap="round"
+            />
+            <circle cx="48" cy="20" r="1.6" fill="#e84a2b" />
+            <circle cx="52" cy="30" r="1.3" fill="#f2ca73" />
+          </svg>
+          <svg
+            width="64"
+            height="64"
+            viewBox="0 0 64 64"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <rect width="64" height="64" rx="14" fill="#fffaf0" />
+            <rect x="28" y="26" width="6" height="30" rx="3" fill="#26365c" />
+            <path d="M28 26 L31 18 L34 26 Z" fill="#4f8d91" />
+            <path
+              d="M31 18 L31 30"
+              stroke="#e84a2b"
+              stroke-width="3.6"
+              stroke-linecap="round"
+            />
+            <path
+              d="M31 24 Q44 22, 44 34"
+              stroke="#f2ca73"
+              stroke-width="3.4"
+              fill="none"
+              stroke-linecap="round"
+            />
+            <path
+              d="M44 34 L44 44"
+              stroke="#26365c"
+              stroke-width="3.4"
+              stroke-linecap="round"
+            />
+            <circle cx="48" cy="20" r="1.6" fill="#e84a2b" />
+            <circle cx="52" cy="30" r="1.3" fill="#f2ca73" />
+          </svg>
+        </div>
+        <h2>1. Brush + क minimal</h2>
+        <p>Clean brush painting क with warm trailing dots. Reads at 16px.</p>
+      </div>
+
+      <!-- 2 — Full painterly: brush with multi-color flowing strokes -->
+      <div class="card">
+        <div class="preview">
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 64 64"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <rect width="64" height="64" rx="14" fill="#fffaf0" />
+            <!-- brush handle -->
+            <rect x="26" y="28" width="5" height="28" rx="2.5" fill="#26365c" />
+            <!-- brush ferrule -->
+            <rect x="25.5" y="24" width="6" height="6" rx="1" fill="#f2ca73" />
+            <!-- brush bristles -->
+            <path d="M26 24 L28.5 16 L31 24 Z" fill="#4f8d91" />
+            <!-- क strokes from brush tip, in different pigments -->
+            <path
+              d="M28.5 16 L28.5 30"
+              stroke="#e84a2b"
+              stroke-width="3.4"
+              stroke-linecap="round"
+            />
+            <path
+              d="M28.5 22 Q42 20, 42 32"
+              stroke="#f2ca73"
+              stroke-width="3.2"
+              fill="none"
+              stroke-linecap="round"
+            />
+            <path
+              d="M42 32 L42 44"
+              stroke="#26365c"
+              stroke-width="3.2"
+              stroke-linecap="round"
+            />
+            <!-- pigment trails -->
+            <path
+              d="M46 24 Q50 20, 48 16"
+              stroke="#e84a2b"
+              stroke-width="1.6"
+              fill="none"
+              stroke-linecap="round"
+              opacity="0.8"
+            />
+            <path
+              d="M46 30 Q52 28, 52 22"
+              stroke="#4f8d91"
+              stroke-width="1.6"
+              fill="none"
+              stroke-linecap="round"
+              opacity="0.8"
+            />
+            <circle cx="46" cy="14" r="1.5" fill="#e84a2b" />
+            <circle cx="50" cy="34" r="1.3" fill="#f2ca73" />
+          </svg>
+          <svg
+            width="32"
+            height="32"
+            viewBox="0 0 64 64"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <rect width="64" height="64" rx="14" fill="#fffaf0" />
+            <rect x="26" y="28" width="5" height="28" rx="2.5" fill="#26365c" />
+            <rect x="25.5" y="24" width="6" height="6" rx="1" fill="#f2ca73" />
+            <path d="M26 24 L28.5 16 L31 24 Z" fill="#4f8d91" />
+            <path
+              d="M28.5 16 L28.5 30"
+              stroke="#e84a2b"
+              stroke-width="3.4"
+              stroke-linecap="round"
+            />
+            <path
+              d="M28.5 22 Q42 20, 42 32"
+              stroke="#f2ca73"
+              stroke-width="3.2"
+              fill="none"
+              stroke-linecap="round"
+            />
+            <path
+              d="M42 32 L42 44"
+              stroke="#26365c"
+              stroke-width="3.2"
+              stroke-linecap="round"
+            />
+            <path
+              d="M46 24 Q50 20, 48 16"
+              stroke="#e84a2b"
+              stroke-width="1.6"
+              fill="none"
+              stroke-linecap="round"
+              opacity="0.8"
+            />
+            <path
+              d="M46 30 Q52 28, 52 22"
+              stroke="#4f8d91"
+              stroke-width="1.6"
+              fill="none"
+              stroke-linecap="round"
+              opacity="0.8"
+            />
+            <circle cx="46" cy="14" r="1.5" fill="#e84a2b" />
+            <circle cx="50" cy="34" r="1.3" fill="#f2ca73" />
+          </svg>
+          <svg
+            width="64"
+            height="64"
+            viewBox="0 0 64 64"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <rect width="64" height="64" rx="14" fill="#fffaf0" />
+            <rect x="26" y="28" width="5" height="28" rx="2.5" fill="#26365c" />
+            <rect x="25.5" y="24" width="6" height="6" rx="1" fill="#f2ca73" />
+            <path d="M26 24 L28.5 16 L31 24 Z" fill="#4f8d91" />
+            <path
+              d="M28.5 16 L28.5 30"
+              stroke="#e84a2b"
+              stroke-width="3.4"
+              stroke-linecap="round"
+            />
+            <path
+              d="M28.5 22 Q42 20, 42 32"
+              stroke="#f2ca73"
+              stroke-width="3.2"
+              fill="none"
+              stroke-linecap="round"
+            />
+            <path
+              d="M42 32 L42 44"
+              stroke="#26365c"
+              stroke-width="3.2"
+              stroke-linecap="round"
+            />
+            <path
+              d="M46 24 Q50 20, 48 16"
+              stroke="#e84a2b"
+              stroke-width="1.6"
+              fill="none"
+              stroke-linecap="round"
+              opacity="0.8"
+            />
+            <path
+              d="M46 30 Q52 28, 52 22"
+              stroke="#4f8d91"
+              stroke-width="1.6"
+              fill="none"
+              stroke-linecap="round"
+              opacity="0.8"
+            />
+            <circle cx="46" cy="14" r="1.5" fill="#e84a2b" />
+            <circle cx="50" cy="34" r="1.3" fill="#f2ca73" />
+          </svg>
+        </div>
+        <h2>2. Painterly brush + pigment trails</h2>
+        <p>
+          Full brush with ferrule, bristles, and colorful pigment streaks
+          curling away.
+        </p>
+      </div>
+
+      <!-- 3 — Brush blending into क (organic) -->
+      <div class="card">
+        <div class="preview">
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 64 64"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <rect width="64" height="64" rx="14" fill="#26365c" />
+            <!-- Brush handle becoming the vertical of क -->
+            <path
+              d="M30 52 L30 30 Q30 20, 40 20 Q48 20, 48 30"
+              stroke="#fffaf0"
+              stroke-width="5"
+              fill="none"
+              stroke-linecap="round"
+            />
+            <path
+              d="M48 30 L48 44"
+              stroke="#fffaf0"
+              stroke-width="5"
+              stroke-linecap="round"
+            />
+            <!-- Handle (bottom) -->
+            <rect x="27" y="44" width="6" height="14" rx="2" fill="#f2ca73" />
+            <!-- bristle tip -->
+            <path d="M27 44 L30 36 L33 44 Z" fill="#e84a2b" />
+            <!-- pigment accent -->
+            <circle cx="44" cy="14" r="2.2" fill="#e84a2b" />
+            <circle cx="52" cy="18" r="1.6" fill="#4f8d91" />
+          </svg>
+          <svg
+            width="32"
+            height="32"
+            viewBox="0 0 64 64"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <rect width="64" height="64" rx="14" fill="#26365c" />
+            <path
+              d="M30 52 L30 30 Q30 20, 40 20 Q48 20, 48 30"
+              stroke="#fffaf0"
+              stroke-width="5"
+              fill="none"
+              stroke-linecap="round"
+            />
+            <path
+              d="M48 30 L48 44"
+              stroke="#fffaf0"
+              stroke-width="5"
+              stroke-linecap="round"
+            />
+            <rect x="27" y="44" width="6" height="14" rx="2" fill="#f2ca73" />
+            <path d="M27 44 L30 36 L33 44 Z" fill="#e84a2b" />
+            <circle cx="44" cy="14" r="2.2" fill="#e84a2b" />
+            <circle cx="52" cy="18" r="1.6" fill="#4f8d91" />
+          </svg>
+          <svg
+            width="64"
+            height="64"
+            viewBox="0 0 64 64"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <rect width="64" height="64" rx="14" fill="#26365c" />
+            <path
+              d="M30 52 L30 30 Q30 20, 40 20 Q48 20, 48 30"
+              stroke="#fffaf0"
+              stroke-width="5"
+              fill="none"
+              stroke-linecap="round"
+            />
+            <path
+              d="M48 30 L48 44"
+              stroke="#fffaf0"
+              stroke-width="5"
+              stroke-linecap="round"
+            />
+            <rect x="27" y="44" width="6" height="14" rx="2" fill="#f2ca73" />
+            <path d="M27 44 L30 36 L33 44 Z" fill="#e84a2b" />
+            <circle cx="44" cy="14" r="2.2" fill="#e84a2b" />
+            <circle cx="52" cy="18" r="1.6" fill="#4f8d91" />
+          </svg>
+        </div>
+        <h2>3. क drawn by brush (organic)</h2>
+        <p>
+          Navy background, gold handle, brush tip turning into क. Feather-like,
+          elegant.
+        </p>
+      </div>
+
+      <!-- 4 — Bold brush stroke forming क -->
+      <div class="card">
+        <div class="preview">
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 64 64"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <rect width="64" height="64" rx="14" fill="url(#kv-grad)" />
+            <defs>
+              <linearGradient id="kv-grad" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#e84a2b" />
+                <stop offset="50%" stop-color="#f2ca73" />
+                <stop offset="100%" stop-color="#4f8d91" />
+              </linearGradient>
+            </defs>
+            <!-- Thick क in white with brush-stroke texture -->
+            <path
+              d="M22 14 L22 50 M22 32 Q22 18, 34 18 Q46 18, 46 32 L46 50"
+              stroke="#fffaf0"
+              stroke-width="6"
+              fill="none"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+            <!-- brush tip at top of vertical -->
+            <path d="M19 14 L22 6 L25 14 Z" fill="#fffaf0" />
+            <circle cx="22" cy="6" r="2.2" fill="#26365c" />
+          </svg>
+          <svg
+            width="32"
+            height="32"
+            viewBox="0 0 64 64"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <rect width="64" height="64" rx="14" fill="url(#kv-grad)" />
+            <defs>
+              <linearGradient id="kv-grad" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#e84a2b" />
+                <stop offset="50%" stop-color="#f2ca73" />
+                <stop offset="100%" stop-color="#4f8d91" />
+              </linearGradient>
+            </defs>
+            <path
+              d="M22 14 L22 50 M22 32 Q22 18, 34 18 Q46 18, 46 32 L46 50"
+              stroke="#fffaf0"
+              stroke-width="6"
+              fill="none"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+            <path d="M19 14 L22 6 L25 14 Z" fill="#fffaf0" />
+            <circle cx="22" cy="6" r="2.2" fill="#26365c" />
+          </svg>
+          <svg
+            width="64"
+            height="64"
+            viewBox="0 0 64 64"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <rect width="64" height="64" rx="14" fill="url(#kv-grad)" />
+            <defs>
+              <linearGradient id="kv-grad" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#e84a2b" />
+                <stop offset="50%" stop-color="#f2ca73" />
+                <stop offset="100%" stop-color="#4f8d91" />
+              </linearGradient>
+            </defs>
+            <path
+              d="M22 14 L22 50 M22 32 Q22 18, 34 18 Q46 18, 46 32 L46 50"
+              stroke="#fffaf0"
+              stroke-width="6"
+              fill="none"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+            <path d="M19 14 L22 6 L25 14 Z" fill="#fffaf0" />
+            <circle cx="22" cy="6" r="2.2" fill="#26365c" />
+          </svg>
+        </div>
+        <h2>4. क as paint stroke</h2>
+        <p>
+          Bold white क on a gradient of three pigments (terracotta → gold →
+          teal). Modern.
+        </p>
+      </div>
+    </div>
+  </body>
+</html>

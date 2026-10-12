@@ -1564,3 +1564,35 @@
   opacity: 0.72;
   transform: none;
 }
+/*
+  Mobile: the pond form section gets tall because of the form.
+  Add a soft gradient so the stretched lower portion of the image
+  blends into the deep teal instead of showing obvious stretching.
+  Ripples still run over the whole section.
+*/
+@media (max-width: 899px), (pointer: coarse) {
+  .real-water-pond.commissions-page__request::before {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    content: '';
+    background: linear-gradient(
+      180deg,
+      rgba(12, 79, 83, 0) 0%,
+      rgba(12, 79, 83, 0) 30%,
+      rgba(12, 79, 83, 0.35) 55%,
+      rgba(12, 79, 83, 0.72) 80%,
+      rgba(12, 79, 83, 0.92) 100%
+    );
+    pointer-events: none;
+  }
+
+  /* Keep the canvas above the gradient but below the content. */
+  .real-water-pond.commissions-page__request > canvas {
+    z-index: 0 !important;
+  }
+
+  .commission-water__content {
+    z-index: 1;
+  }
+}
