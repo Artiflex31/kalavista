@@ -79,11 +79,17 @@ const RealWaterPond = forwardRef(function RealWaterPond(
 
         $pond = $(hostRef.current)
 
+        $ // Lower resolution on small / touch screens keeps the
+        // simulation smooth without draining phone batteries.
+        const isSmallScreen = window.matchMedia(
+          '(max-width: 899px), (pointer: coarse)',
+        ).matches
+
         $pond.ripples({
           imageUrl: pondImage,
-          resolution: 200,
-          dropRadius: 24,
-          perturbance: 0.026,
+          resolution: isSmallScreen ? 128 : 200,
+          dropRadius: isSmallScreen ? 18 : 24,
+          perturbance: isSmallScreen ? 0.02 : 0.026,
           interactive: false,
         })
 

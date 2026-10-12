@@ -12,12 +12,10 @@ function getArtworkImage(artwork) {
 }
 
 function getCardArtwork(category, index, allArtworks) {
-  // Admin-uploaded category image always wins.
   if (category.imageUrl) {
     return category.imageUrl
   }
 
-  // Otherwise, use the first artwork that belongs to this category.
   const matchingArtwork = allArtworks.find((artwork) =>
     (artwork.categories ?? []).includes(category.value),
   )
@@ -26,7 +24,6 @@ function getCardArtwork(category, index, allArtworks) {
     return getArtworkImage(matchingArtwork)
   }
 
-  // Final fallback: any artwork at all.
   const fallbackArtwork =
     allArtworks.length > 0 ? allArtworks[index % allArtworks.length] : null
 
@@ -50,6 +47,86 @@ function getFocusedIndex(categoryCount, phase) {
   return focusedIndex
 }
 
+function useIsCompact() {
+  const [isCompact, setIsCompact] = useState(false)
+
+  useEffect(() => {
+    const query = window.matchMedia(
+      '(max-width: 760px), (pointer: coarse), (prefers-reduced-motion: reduce)',
+    )
+
+    function update() {
+      setIsCompact(query.matches)
+    }
+
+    update()
+    query.addEventListener('change', update)
+
+    return () => query.removeEventListener('change', update)
+  }, [])
+
+  return isCompact
+}
+
+function MobileCategoryGrid({ categories, onSelectCategory, artworks }) {
+  return (
+    <section
+      className="category-mobile-grid"
+      aria-labelledby="category-mobile-title"
+    >
+      <header className="category-mobile-grid__header">
+        <p className="category-mobile-grid__eyebrow">THE KALAVISTA ARCHIVE</p>
+        <h1 id="category-mobile-title">Browse the studio.</h1>
+        <p className="category-mobile-grid__intro">
+          Tap any category to see the works inside.
+        </p>
+      </header>
+
+      <ul className="category-mobile-grid__list">
+        {categories.map((category, index) => {
+          const artworkCount = category.count ?? 0
+          const artworkCountText =
+            artworkCount === 0
+              ? 'Coming soon'
+              : artworkCount === 1
+                ? '1 work'
+                : `${artworkCount} works`
+          const cardImage = getCardArtwork(category, index, artworks)
+
+          return (
+            <li key={category.value}>
+              <button
+                className="category-mobile-grid__card"
+                type="button"
+                onClick={() => onSelectCategory(category.value)}
+                style={{ '--card-accent': category.accent ?? '#9c4135' }}
+              >
+                <span className="category-mobile-grid__art" aria-hidden="true">
+                  {cardImage ? (
+                    <img src={cardImage} alt="" loading="lazy" />
+                  ) : null}
+                </span>
+
+                <span className="category-mobile-grid__body">
+                  <strong>{category.label}</strong>
+                  <small>{artworkCountText}</small>
+                </span>
+
+                <span
+                  className="category-mobile-grid__arrow"
+                  aria-hidden="true"
+                >
+                  ↗
+                </span>
+              </button>
+            </li>
+          )
+        })}
+      </ul>
+    </section>
+  )
+}
+
 function CategoryConveyor({
   categories,
   selectedCategory,
@@ -57,6 +134,7 @@ function CategoryConveyor({
   artworks = [],
 }) {
   const conveyorRef = useRef(null)
+  const isCompact = useIsCompact()
 
   const [scrollProgress, setScrollProgress] = useState(0)
   const [viewport, setViewport] = useState({
@@ -81,6 +159,10 @@ function CategoryConveyor({
   }, [])
 
   useEffect(() => {
+    if (isCompact) {
+      return undefined
+    }
+
     let animationFrameId = 0
 
     function updateScrollProgress() {
@@ -119,9 +201,7 @@ function CategoryConveyor({
 
     updateScrollProgress()
 
-    window.addEventListener('scroll', requestScrollUpdate, {
-      passive: true,
-    })
+    window.addEventListener('scroll', requestScrollUpdate, { passive: true })
     window.addEventListener('resize', requestScrollUpdate)
 
     return () => {
@@ -132,19 +212,28 @@ function CategoryConveyor({
         window.cancelAnimationFrame(animationFrameId)
       }
     }
-  }, [])
+  }, [isCompact])
 
   if (categories.length === 0) {
     return null
   }
 
-  // More than one visual rotation while the visitor scrolls.
+  // Mobile / coarse pointer / reduced-motion: simple grid.
+  if (isCompact) {
+    return (
+      <MobileCategoryGrid
+        categories={categories}
+        onSelectCategory={onSelectCategory}
+        artworks={artworks}
+      />
+    )
+  }
+
   const totalRotationSteps = categories.length * 1.35
   const phase = scrollProgress * totalRotationSteps
   const focusedIndex = getFocusedIndex(categories.length, phase)
   const focusedCategory = categories[focusedIndex]
 
-  // These keep every card within the viewport.
   const radiusX = Math.min(viewport.width * 0.4, 600)
   const radiusY = Math.min(viewport.height * 0.26, 225)
 
@@ -178,7 +267,6 @@ function CategoryConveyor({
 
         <div className="category-conveyor__focus-readout">
           <h1 id="category-conveyor-title">{focusedCategory.label}</h1>
-
           <span>{focusedCountText} · click the card to explore</span>
         </div>
 
@@ -190,7 +278,6 @@ function CategoryConveyor({
             {categories.map((category, index) => {
               const angle = ((index - phase) / categories.length) * TAU
 
-              // angle 0 = lower middle/front of the oval
               const x = Math.sin(angle) * radiusX
               const y = Math.cos(angle) * radiusY
 

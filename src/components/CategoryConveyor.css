@@ -1,3 +1,4 @@
+@import './MobileCategoryGrid.css';
 .category-conveyor,
 .category-conveyor * {
   box-sizing: border-box;
