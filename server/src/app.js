@@ -13,6 +13,7 @@ const app = express()
 
 const allowedOrigins = [
   process.env.CLIENT_URL,
+  'https://kalavista-ashy.vercel.app', // ← your Vercel URL
   'http://localhost:5173',
   'http://localhost:5174',
   'http://127.0.0.1:5173',
@@ -22,17 +23,15 @@ const allowedOrigins = [
 app.use(
   cors({
     origin: (origin, callback) => {
+      // Allow requests without an Origin header (curl, server-to-server).
       if (!origin) return callback(null, true)
-
-      if (allowedOrigins.includes(origin)) {
-        return callback(null, true)
-      }
+      if (allowedOrigins.includes(origin)) return callback(null, true)
+      // Do not throw — just omit CORS headers.
       return callback(null, false)
     },
     credentials: true,
   }),
 )
-
 app.post(
   '/api/webhooks/razorpay',
   express.raw({ type: 'application/json' }),
