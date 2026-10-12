@@ -1,0 +1,153 @@
+.home-static-hero {
+  position: relative;
+  height: 100svh;
+  max-height: 100svh;
+  overflow: hidden;
+  background-color: #15274c;
+  background-position: center;
+  background-size: cover;
+  color: #fff9ee;
+  isolation: isolate;
+}
+
+.home-static-hero__overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(18, 32, 65, 0.15) 0%,
+      rgba(17, 23, 45, 0.9) 100%
+    ),
+    radial-gradient(
+      circle at 75% 30%,
+      rgba(242, 202, 115, 0.15),
+      transparent 45%
+    );
+  pointer-events: none;
+}
+
+.home-static-hero__content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 0.85rem;
+  height: 100%;
+  padding: 5rem 1.25rem 2.5rem;
+  box-sizing: border-box;
+}
+
+.home-static-hero__card {
+  max-width: 32rem;
+  padding: 1.15rem 1.3rem 1.3rem;
+  border: 1px solid rgba(255, 239, 197, 0.36);
+  border-radius: 1.1rem;
+  background: rgba(17, 25, 48, 0.68);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow: 0 1.2rem 4rem rgba(5, 10, 25, 0.25);
+}
+
+.home-static-hero__eyebrow {
+  margin: 0 0 0.6rem;
+  color: #f2ca73;
+  font-family: 'Manrope Variable', sans-serif;
+  font-size: 0.58rem;
+  font-weight: 800;
+  letter-spacing: 0.17em;
+  text-transform: uppercase;
+}
+
+.home-static-hero__card h1 {
+  margin: 0;
+  font-family: 'Cormorant Garamond Variable', Georgia, serif;
+  font-size: clamp(2.3rem, 10vw, 3.4rem);
+  font-weight: 550;
+  letter-spacing: -0.055em;
+  line-height: 0.9;
+}
+
+.home-static-hero__card p:not(.home-static-hero__eyebrow) {
+  margin: 0.75rem 0 1rem;
+  color: rgba(255, 249, 238, 0.82);
+  font-family: 'Manrope Variable', sans-serif;
+  font-size: 0.85rem;
+  line-height: 1.65;
+}
+
+.home-static-hero__link {
+  display: inline-flex;
+  gap: 0.55rem;
+  align-items: center;
+  color: #fff9ee;
+  font-family: 'Manrope Variable', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.07em;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
+.home-static-hero__link span {
+  color: #f2ca73;
+  font-size: 1rem;
+  transition: transform 180ms ease;
+}
+
+.home-static-hero__link:hover span,
+.home-static-hero__link:focus-visible span {
+  transform: translate(0.22rem, -0.22rem);
+}
+
+.home-static-hero__link:focus-visible,
+.home-static-hero__quick-link:focus-visible {
+  outline: 2px solid #f2ca73;
+  outline-offset: 0.4rem;
+  border-radius: 0.2rem;
+}
+
+.home-static-hero__quick-links {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.home-static-hero__quick-link {
+  border-bottom: 1px solid rgba(255, 249, 238, 0.4);
+  padding-bottom: 2px;
+  color: rgba(255, 249, 238, 0.85);
+  font-family: 'Manrope Variable', sans-serif;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-decoration: none;
+  text-transform: uppercase;
+  transition:
+    border-color 180ms ease,
+    color 180ms ease;
+}
+
+.home-static-hero__quick-link:hover {
+  border-color: #f2ca73;
+  color: #f2ca73;
+}
+
+@media (min-width: 761px) {
+  .home-static-hero__content {
+    padding: 8rem 4rem 4rem;
+    gap: 1.5rem;
+  }
+
+  .home-static-hero__card {
+    padding: 1.6rem 1.75rem 1.8rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home-static-hero__link span {
+    transition: none;
+  }
+}
