@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Link, useNavigate } from 'react-router'
+import { Link, useNavigate, useSearchParams } from 'react-router'
 import AdminArtworkForm from '../components/AdminArtworkForm'
 import AdminArtworkManager from '../components/AdminArtworkManager'
 import AdminOrders from '../components/AdminOrders'
@@ -47,8 +47,8 @@ function AdminDashboardPage() {
   const [deletingId, setDeletingId] = useState(null)
   const [message, setMessage] = useState('')
   const [artworkRefreshKey, setArtworkRefreshKey] = useState(0)
-
-  const [activeTab, setActiveTab] = useState('publish')
+  const [searchParams, setSearchParams] = useSearchParams()
+  const activeTab = searchParams.get('tab') || 'publish'
   const [isMenuOpen, setIsMenuOpen] = useState(false)
 
   useEffect(() => {
@@ -149,7 +149,84 @@ function AdminDashboardPage() {
       setDeletingId(null)
     }
   }
+  async function cancelCommission(enquiry) {
+    const hasPayment =
+      enquiry.payment &&
+      (enquiry.payment.status === 'ADVANCE_PAID' ||
+        enquiry.payment.status === 'FULLY_PAID')
 
+    const inProduction = ['IN_PROGRESS', 'PREVIEW_READY', 'COMPLETED'].includes(
+      enquiry.progress,
+    )
+
+    const isFullyPaid = enquiry.payment?.status === 'FULLY_PAID'
+    const advanceRupees = enquiry.payment
+      ? (enquiry.payment.advanceInPaise / 100).toFixed(0)
+      : '0'
+    const totalRupees = enquiry.payment
+      ? (enquiry.payment.totalPriceInPaise / 100).toFixed(0)
+      : '0'
+    const finalRupees = enquiry.payment
+      ? (
+          (enquiry.payment.totalPriceInPaise - enquiry.payment.advanceInPaise) /
+          100
+        ).toFixed(0)
+      : '0'
+
+    let consequence = ''
+
+    if (!hasPayment) {
+      consequence =
+        'No payment has been recorded, so no refund will be issued. The customer will be notified.'
+    } else if (inProduction && isFullyPaid) {
+      consequence = `The commission has entered production. The 60% advance (₹${advanceRupees}) will be RETAINED per policy. The final 40% (₹${finalRupees}) will be refunded to the customer.`
+    } else if (inProduction && !isFullyPaid) {
+      consequence = `The commission has entered production. The advance of ₹${advanceRupees} will be RETAINED per policy. No refund will be issued.`
+    } else if (isFullyPaid) {
+      consequence = `Work has not yet begun. A FULL refund of ₹${totalRupees} will be processed.`
+    } else {
+      consequence = `Work has not yet begun. A FULL refund of the advance (₹${advanceRupees}) will be processed.`
+    }
+
+    const confirmed = window.confirm(
+      `Cancel this commission?\n\n${consequence}\n\nHave you ALREADY processed the actual refund (if applicable) via Razorpay or UPI?`,
+    )
+
+    if (!confirmed) {
+      return
+    }
+
+    setUpdatingId(enquiry.id)
+    setMessage('')
+
+    try {
+      const response = await fetch(
+        `${API_URL}/api/commission-enquiries/${enquiry.id}/cancel`,
+        {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${session.token}`,
+          },
+        },
+      )
+
+      const result = await response.json()
+
+      if (!response.ok) {
+        throw new Error(result.message ?? 'Could not cancel commission.')
+      }
+
+      setEnquiries((current) =>
+        current.map((item) => (item.id === enquiry.id ? result.data : item)),
+      )
+
+      setMessage(result.message)
+    } catch (error) {
+      setMessage(error.message ?? 'Could not cancel commission.')
+    } finally {
+      setUpdatingId(null)
+    }
+  }
   function handleSignOut() {
     try {
       sessionStorage.removeItem('kalavista-admin-session')
@@ -161,7 +238,7 @@ function AdminDashboardPage() {
   }
 
   function selectTab(tabId) {
-    setActiveTab(tabId)
+    setSearchParams({ tab: tabId })
     setIsMenuOpen(false)
     window.scrollTo({ top: 0, behavior: 'auto' })
   }
@@ -323,6 +400,18 @@ function AdminDashboardPage() {
                       >
                         {deletingId === enquiry.id ? 'Archiving…' : 'Delete'}
                       </button>
+                      {enquiry.progress !== 'CANCELLED' && (
+                        <button
+                          className="admin-enquiry-cancel-commission-button"
+                          type="button"
+                          disabled={updatingId === enquiry.id}
+                          onClick={() => cancelCommission(enquiry)}
+                        >
+                          {updatingId === enquiry.id
+                            ? 'Cancelling…'
+                            : 'Cancel commission'}
+                        </button>
+                      )}
                     </div>
                   </div>
 

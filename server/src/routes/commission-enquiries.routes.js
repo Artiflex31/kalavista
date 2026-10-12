@@ -2,7 +2,10 @@ import { Router } from 'express'
 import { z } from 'zod'
 import prisma from '../lib/prisma.js'
 import requireAdmin from '../middleware/requireAdmin.js'
-import { sendCommissionQuoteEmail } from '../lib/email.js'
+import {
+  sendCommissionCancellationEmail,
+  sendCommissionQuoteEmail,
+} from '../lib/email.js'
 
 const router = Router()
 
@@ -306,7 +309,6 @@ router.post('/:id/quote', requireAdmin, async (req, res, next) => {
     const paymentUrl = `${clientUrl}/commission-payment/${payment.reference}`
     const trackingUrl = `${clientUrl}/commission-status/${enquiry.trackingReference}`
 
-    // Email failure does not undo a valid quote in the database.
     let quoteEmailSent = false
 
     try {
@@ -396,44 +398,176 @@ router.patch('/:id/progress', requireAdmin, async (req, res, next) => {
     next(error)
   }
 })
+
 /*
-  Protected: soft-delete an enquiry.
-  Preserves payment history. Recoverable from the database if needed.
+  Protected: cancel a commission and handle the refund outcome.
+  Refund matrix:
+    - Not yet IN_PROGRESS: refund 100% of what was paid.
+    - IN_PROGRESS+, advance only: retain advance, no refund.
+    - IN_PROGRESS+, fully paid: refund final 40%, retain 60% advance.
 */
-router.delete('/:id', requireAdmin, async (req, res, next) => {
+router.post('/:id/cancel', requireAdmin, async (req, res, next) => {
   try {
     const enquiryId = Number(req.params.id)
 
     if (!Number.isInteger(enquiryId) || enquiryId < 1) {
       return res.status(400).json({
         success: false,
-        message: 'Invalid enquiry id.',
+        message: 'Invalid commission enquiry id.',
       })
     }
 
     const enquiry = await prisma.commissionEnquiry.findUnique({
       where: { id: enquiryId },
-      select: { id: true, name: true, deletedAt: true },
+      include: { payment: true },
     })
 
-    if (!enquiry || enquiry.deletedAt) {
+    if (!enquiry) {
       return res.status(404).json({
         success: false,
-        message: 'Enquiry not found.',
+        message: 'Commission enquiry not found.',
       })
     }
 
-    await prisma.commissionEnquiry.update({
-      where: { id: enquiryId },
-      data: { deletedAt: new Date() },
+    if (enquiry.progress === 'CANCELLED') {
+      return res.json({
+        success: true,
+        message: 'This commission is already cancelled.',
+        data: enquiry,
+      })
+    }
+
+    const inProductionStages = ['IN_PROGRESS', 'PREVIEW_READY', 'COMPLETED']
+    const isInProduction = inProductionStages.includes(enquiry.progress)
+
+    const hasPayment =
+      enquiry.payment &&
+      (enquiry.payment.status === 'ADVANCE_PAID' ||
+        enquiry.payment.status === 'FULLY_PAID')
+
+    // ─── Refund decision ────────────────────────────────────────────
+    let refundAmountInPaise = 0
+    let retainedAmountInPaise = 0
+    let outcomeType = 'no_payment' // default
+
+    if (hasPayment) {
+      const total = enquiry.payment.totalPriceInPaise
+      const advance = enquiry.payment.advanceInPaise
+      const isFullyPaid = enquiry.payment.status === 'FULLY_PAID'
+
+      if (isInProduction) {
+        if (isFullyPaid) {
+          // Production started + fully paid → refund final 40%, retain 60%
+          refundAmountInPaise = total - advance
+          retainedAmountInPaise = advance
+          outcomeType = 'partial_refund'
+        } else {
+          // Production started + advance only → retain advance, no refund
+          refundAmountInPaise = 0
+          retainedAmountInPaise = advance
+          outcomeType = 'no_refund'
+        }
+      } else {
+        // Not in production → full refund of whatever was paid
+        refundAmountInPaise = isFullyPaid ? total : advance
+        retainedAmountInPaise = 0
+        outcomeType = 'full_refund'
+      }
+    }
+    // ────────────────────────────────────────────────────────────────
+
+    const result = await prisma.$transaction(async (transaction) => {
+      const updatedEnquiry = await transaction.commissionEnquiry.update({
+        where: { id: enquiry.id },
+        data: {
+          status: 'DECLINED',
+          progress: 'CANCELLED',
+        },
+        include: {
+          payment: true,
+          artwork: {
+            select: { slug: true, title: true },
+          },
+        },
+      })
+
+      if (enquiry.payment) {
+        await transaction.commissionPayment.update({
+          where: { id: enquiry.payment.id },
+          data: { status: 'CANCELLED' },
+        })
+      }
+
+      return updatedEnquiry
     })
+
+    let emailSent = false
+
+    if (enquiry.email) {
+      try {
+        await sendCommissionCancellationEmail({
+          customerName: enquiry.name,
+          customerEmail: enquiry.email,
+          artworkType: enquiry.artworkType,
+          refundAmountInPaise,
+          retainedAmountInPaise,
+          totalPriceInPaise: enquiry.payment?.totalPriceInPaise ?? 0,
+          currency: enquiry.payment?.currency ?? 'INR',
+          outcomeType,
+        })
+        emailSent = true
+      } catch (emailError) {
+        console.error('Commission cancellation email failed:', emailError)
+      }
+    }
+
+    // Build a clear message for the admin UI.
+    let outcomeMessage
+
+    if (outcomeType === 'no_payment') {
+      outcomeMessage =
+        'Commission cancelled. No payment was recorded, so no refund is needed.'
+    } else if (outcomeType === 'full_refund') {
+      outcomeMessage = `Commission cancelled. Full refund of ${formatInr(
+        refundAmountInPaise,
+      )} to be processed.`
+    } else if (outcomeType === 'partial_refund') {
+      outcomeMessage = `Commission cancelled. Refund of ${formatInr(
+        refundAmountInPaise,
+      )} (final 40%) to be processed. Advance of ${formatInr(
+        retainedAmountInPaise,
+      )} retained per policy.`
+    } else {
+      // no_refund
+      outcomeMessage = `Commission cancelled. Advance of ${formatInr(
+        retainedAmountInPaise,
+      )} retained per policy (artwork was in production).`
+    }
 
     res.json({
       success: true,
-      message: `Enquiry from "${enquiry.name}" was archived.`,
+      message: outcomeMessage,
+      data: result,
+      outcome: {
+        outcomeType,
+        refundAmountInPaise,
+        retainedAmountInPaise,
+        hasPayment,
+        isInProduction,
+        emailSent,
+      },
     })
   } catch (error) {
     next(error)
   }
 })
+
+function formatInr(amountInPaise) {
+  return new Intl.NumberFormat('en-IN', {
+    style: 'currency',
+    currency: 'INR',
+    maximumFractionDigits: 0,
+  }).format((amountInPaise ?? 0) / 100)
+}
+
 export default router

@@ -1,20 +1,4 @@
-import { Resend } from 'resend'
-
-function getResendClient() {
-  if (!process.env.RESEND_API_KEY) {
-    throw new Error('RESEND_API_KEY is missing from server/.env.')
-  }
-
-  return new Resend(process.env.RESEND_API_KEY)
-}
-
-function getSender() {
-  if (!process.env.EMAIL_FROM) {
-    throw new Error('EMAIL_FROM is missing from server/.env.')
-  }
-
-  return process.env.EMAIL_FROM
-}
+import { getMailTransporter, getMailSender } from './mailer.js'
 
 function formatCurrency(amountInPaise, currency = 'INR') {
   const amount = Number(amountInPaise ?? 0) / 100
@@ -77,21 +61,17 @@ function emailLayout({ title, greeting, content, buttonLabel, buttonUrl }) {
 }
 
 async function sendEmail({ to, subject, html, text }) {
-  const resend = getResendClient()
+  const transporter = getMailTransporter()
 
-  const { data, error } = await resend.emails.send({
-    from: getSender(),
-    to: [to],
+  const info = await transporter.sendMail({
+    from: getMailSender(),
+    to,
     subject,
     html,
     text,
   })
 
-  if (error) {
-    throw new Error(error.message ?? 'Resend could not send the email.')
-  }
-
-  return data
+  return { id: info.messageId }
 }
 
 /*
@@ -202,5 +182,117 @@ ${paymentLabel}: ${paidAmount}.
 
 Track your commission progress:
 ${trackingUrl}`,
+  })
+}
+/*
+  Event 3: Sent when a commission is cancelled by the studio.
+  Tells the client whether a refund is being processed or the advance
+  is retained per policy.
+*/
+export async function sendCommissionCancellationEmail({
+  customerName,
+  customerEmail,
+  artworkType,
+  refundAmountInPaise,
+  retainedAmountInPaise,
+  totalPriceInPaise,
+  currency,
+  outcomeType, // 'no_payment' | 'full_refund' | 'partial_refund' | 'no_refund'
+}) {
+  const refundAmount = formatCurrency(refundAmountInPaise, currency)
+  const retainedAmount = formatCurrency(retainedAmountInPaise, currency)
+  const totalAmount = formatCurrency(totalPriceInPaise, currency)
+
+  let bodyContent = ''
+  let subject = 'Your KalaVista commission has been cancelled'
+
+  if (outcomeType === 'no_payment') {
+    bodyContent = `
+        <p style="font-size:16px;line-height:1.7;">
+          Your commission for <strong>${escapeHtml(artworkType)}</strong> has been
+          cancelled. No payment had been recorded, so no refund is applicable.
+        </p>
+
+        <p style="font-size:16px;line-height:1.7;">
+          If you have any questions, or would like to start a new commission,
+          reply to this email and we will be happy to help.
+        </p>
+      `
+  } else if (outcomeType === 'full_refund') {
+    bodyContent = `
+        <p style="font-size:16px;line-height:1.7;">
+          Your commission for <strong>${escapeHtml(artworkType)}</strong> has been
+          cancelled. Since work had not yet begun, we are processing a
+          <strong>full refund of ${escapeHtml(refundAmount)}</strong>.
+        </p>
+
+        <p style="font-size:16px;line-height:1.7;">
+          The refund will be credited to your original payment method within
+          5-7 business days. You will receive a separate confirmation from the
+          payment provider.
+        </p>
+      `
+  } else if (outcomeType === 'partial_refund') {
+    bodyContent = `
+        <p style="font-size:16px;line-height:1.7;">
+          Your commission for <strong>${escapeHtml(artworkType)}</strong> has been
+          cancelled. The artwork had already entered production, so per our
+          Refund Policy the 60% advance is retained.
+        </p>
+
+        <div style="margin:24px 0;padding:20px;border-radius:14px;background:#f4efe7;">
+          <p style="margin:0 0 9px;">Total paid: <strong>${escapeHtml(totalAmount)}</strong></p>
+          <p style="margin:0 0 9px;">Advance retained (60%): <strong>${escapeHtml(retainedAmount)}</strong></p>
+          <p style="margin:0;">Refund to be processed (40%): <strong>${escapeHtml(refundAmount)}</strong></p>
+        </div>
+
+        <p style="font-size:16px;line-height:1.7;">
+          The refund will be credited to your original payment method within
+          5-7 business days. You will receive a separate confirmation from the
+          payment provider.
+        </p>
+      `
+  } else {
+    // no_refund
+    bodyContent = `
+        <p style="font-size:16px;line-height:1.7;">
+          Your commission for <strong>${escapeHtml(artworkType)}</strong> has been
+          cancelled. Since the artwork had already entered production, the
+          <strong>60% advance of ${escapeHtml(retainedAmount)}</strong> is retained
+          per our Refund Policy. This covers the initial labour and materials
+          already invested in your unique artwork.
+        </p>
+
+        <p style="font-size:16px;line-height:1.7;">
+          If you believe this decision was made in error, or if you would like to
+          discuss an alternative resolution, please reply to this email and we
+          will work with you.
+        </p>
+      `
+  }
+
+  return sendEmail({
+    to: customerEmail,
+    subject,
+    html: emailLayout({
+      title: 'Your commission has been cancelled.',
+      greeting: `Hello ${customerName},`,
+      content: bodyContent,
+    }),
+    text: `Hello ${customerName},
+
+Your KalaVista commission for ${artworkType} has been cancelled.
+
+${
+  outcomeType === 'no_payment'
+    ? 'No payment had been recorded, so no refund is applicable.'
+    : outcomeType === 'full_refund'
+      ? `A full refund of ${refundAmount} is being processed. It will be credited to your original payment method within 5-7 business days.`
+      : outcomeType === 'partial_refund'
+        ? `Total paid: ${totalAmount}. Advance retained (60%): ${retainedAmount}. Refund to be processed (40%): ${refundAmount}. The refund will be credited within 5-7 business days.`
+        : `The 60% advance of ${retainedAmount} is retained per our Refund Policy, as the artwork had already entered production.`
+}
+
+If you have any questions, reply to this email.`,
   })
 }
