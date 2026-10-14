@@ -504,3 +504,104 @@
   font-weight: 700;
   line-height: 1.5;
 }
+/* ==================================================
+   Gallery desktop overflow fix
+   Keep the page within the viewport and wrap moods.
+   ================================================== */
+
+html,
+body,
+#root {
+  max-width: 100%;
+  min-width: 0;
+}
+
+body {
+  overflow-x: clip;
+}
+
+.app {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: clip;
+}
+
+/* Constrain the gallery itself */
+.app .gallery.gallery-page {
+  width: min(100%, 1440px);
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+/* Allow grid children to shrink to the available width */
+.app .gallery-controls {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  width: 100%;
+  min-width: 0;
+}
+
+.app .gallery-controls > * {
+  min-width: 0;
+  max-width: 100%;
+}
+
+/* Keep the mood filters on their own row and wrap them */
+.app
+  .gallery-controls
+  > .gallery-filter-list[aria-label='Filter artworks by mood'] {
+  display: flex;
+  flex-wrap: wrap !important;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  margin-inline: 0;
+  padding-inline: 0;
+  overflow: visible;
+}
+
+.app
+  .gallery-controls
+  > .gallery-filter-list[aria-label='Filter artworks by mood']
+  .filter-chip {
+  flex: 0 1 auto;
+  min-width: 0;
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+/* Keep other filter controls within the gallery */
+.app .gallery-filter-row {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  flex-wrap: wrap;
+}
+
+/* Prevent the medium selector from stretching unexpectedly */
+.app .gallery-controls .gallery-select {
+  justify-self: start;
+  width: fit-content;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.app .gallery-controls .gallery-select select {
+  width: auto;
+  min-width: 0;
+  max-width: 100%;
+}
+
+/* Preserve the existing full-width medium selector on mobile */
+@media (max-width: 640px) {
+  .app .gallery-controls .gallery-select {
+    width: 100%;
+  }
+
+  .app .gallery-controls .gallery-select select {
+    flex: 1;
+    width: 100%;
+  }
+}

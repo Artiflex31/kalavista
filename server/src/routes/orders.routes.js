@@ -350,12 +350,23 @@ router.post('/', async (req, res, next) => {
         throw new Error('Artwork not found.')
       }
 
-      if (artwork.availability !== 'AVAILABLE') {
-        throw new Error('This artwork is no longer available to purchase.')
-      }
-
       if (!artwork.priceInPaise || artwork.priceInPaise < 1) {
         throw new Error('This artwork does not have a purchase price yet.')
+      }
+
+      // Atomically claim the artwork only if its availability is still AVAILABLE
+      const updatedArtworkResult = await transaction.artwork.updateMany({
+        where: {
+          id: artwork.id,
+          availability: 'AVAILABLE',
+        },
+        data: {
+          availability: 'RESERVED',
+        },
+      })
+
+      if (updatedArtworkResult.count === 0) {
+        throw new Error('This artwork is no longer available to purchase.')
       }
 
       const order = await transaction.artworkOrder.create({
@@ -372,15 +383,6 @@ router.post('/', async (req, res, next) => {
           currency: artwork.currency,
           status: 'PENDING_PAYMENT',
           deliveryProgress: 'PAYMENT_RECEIVED',
-        },
-      })
-
-      await transaction.artwork.update({
-        where: {
-          id: artwork.id,
-        },
-        data: {
-          availability: 'RESERVED',
         },
       })
 
@@ -456,7 +458,9 @@ router.post('/', async (req, res, next) => {
     ].includes(error.message)
 
     if (knownMessage) {
-      return res.status(400).json({
+      const isConflict =
+        error.message === 'This artwork is no longer available to purchase.'
+      return res.status(isConflict ? 409 : 400).json({
         success: false,
         message: error.message,
       })

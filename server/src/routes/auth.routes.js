@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken'
 import { z } from 'zod'
 import prisma from '../lib/prisma.js'
 import requireAdmin from '../middleware/requireAdmin.js'
+import { loginRateLimiter } from '../middleware/rateLimiter.js'
 
 const router = Router()
 
@@ -12,7 +13,7 @@ const loginSchema = z.object({
   password: z.string().min(1, 'Password is required.'),
 })
 
-router.post('/login', async (req, res, next) => {
+router.post('/login', loginRateLimiter, async (req, res, next) => {
   try {
     const result = loginSchema.safeParse(req.body)
 
