@@ -342,12 +342,12 @@
 }
 /* Only Home / Gallery / About / Commissions on the bright final scene */
 
-.app:has(.about-zoom[data-nav-tone='dark']) .nav-link {
+.app:not([data-theme='dark']):has(.about-zoom[data-nav-tone='dark']) .nav-link {
   color: #3a2431 !important;
 }
 
-.app:has(.about-zoom[data-nav-tone='dark']) .nav-link:hover,
-.app:has(.about-zoom[data-nav-tone='dark']) .nav-link.active {
+.app:not([data-theme='dark']):has(.about-zoom[data-nav-tone='dark']) .nav-link:hover,
+.app:not([data-theme='dark']):has(.about-zoom[data-nav-tone='dark']) .nav-link.active {
   color: #a44639 !important;
 }
 .admin-dashboard-header {

@@ -32,6 +32,8 @@ function AdminArtworkForm({ token, onArtworkCreated }) {
   const [imageFile, setImageFile] = useState(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [message, setMessage] = useState('')
+  const [aiGuidance, setAiGuidance] = useState('')
+  const [isGeneratingAi, setIsGeneratingAi] = useState(false)
 
   const [categories, setCategories] = useState([])
   const [categoriesLoading, setCategoriesLoading] = useState(true)
@@ -91,6 +93,75 @@ function AdminArtworkForm({ token, onArtworkCreated }) {
     const selectedFile = event.target.files?.[0] ?? null
     setImageFile(selectedFile)
     setMessage('')
+  }
+
+  async function handleGenerateWithAI() {
+    if (!imageFile) {
+      setMessage('Please select an artwork image first.')
+      return
+    }
+
+    if (imageFile.size > 8 * 1024 * 1024) {
+      setMessage('The image must be 8 MB or smaller.')
+      return
+    }
+
+    setIsGeneratingAi(true)
+    setMessage('')
+
+    try {
+      const uploadData = new FormData()
+
+      // Use the SAME file selected in the Artwork image input.
+      uploadData.append('image', imageFile)
+
+      // Send the notes and existing values as contextual hints.
+      uploadData.append('guidance', aiGuidance.trim())
+      uploadData.append('title', form.title)
+      uploadData.append('medium', form.medium)
+      uploadData.append('collection', form.collection)
+      uploadData.append('moods', form.moods)
+
+      const response = await fetch(`${API_URL}/api/ai/art-description`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: uploadData,
+      })
+
+      const result = await response.json()
+
+      if (!response.ok) {
+        throw new Error(result.message ?? 'Could not generate AI suggestions.')
+      }
+
+      if (!result.data) {
+        throw new Error('The AI response did not contain artwork details.')
+      }
+
+      const suggestions = result.data
+
+      setForm((current) => ({
+        ...current,
+        title: suggestions.title || current.title,
+        alt: suggestions.alt || current.alt,
+        story: suggestions.story || current.story,
+        medium: suggestions.medium || current.medium,
+        collection: suggestions.collection || current.collection,
+        moods: Array.isArray(suggestions.moods)
+          ? suggestions.moods.join(', ')
+          : current.moods,
+      }))
+
+      setMessage(
+        'AI suggestions added. Please review all fields before publishing.',
+      )
+    } catch (error) {
+      setMessage(error.message ?? 'Could not generate AI suggestions.')
+    } finally {
+      setIsGeneratingAi(false)
+    }
   }
 
   async function uploadArtworkImage() {
@@ -210,7 +281,11 @@ function AdminArtworkForm({ token, onArtworkCreated }) {
       setMessage(`Published: ${result.data.title}`)
       setForm(initialForm)
       setImageFile(null)
-      if (fileInputRef.current) fileInputRef.current.value = ''
+      setAiGuidance('')
+
+      if (fileInputRef.current) {
+        fileInputRef.current.value = ''
+      }
       onArtworkCreated?.(result.data)
     } catch (error) {
       setMessage(error.message ?? 'Something went wrong. Please try again.')
@@ -332,6 +407,39 @@ function AdminArtworkForm({ token, onArtworkCreated }) {
                 : 'JPG, PNG, or WEBP — maximum 8 MB.'}
             </small>
           </label>
+
+          <label className="admin-form-field admin-form-field--wide">
+            <span>AI Guidance (optional)</span>
+            <textarea
+              value={aiGuidance}
+              onChange={(event) => setAiGuidance(event.target.value)}
+              placeholder="Example: Inspired by childhood memories and monsoon. Keep the story emotional, poetic and concise."
+              rows={3}
+              maxLength={1500}
+            />
+            <small>
+              Describe your inspiration, preferred tone, theme or any detail you
+              want the AI to consider.
+            </small>
+          </label>
+
+          <div className="admin-form-field admin-form-field--wide">
+            <button
+              className="admin-primary-button"
+              type="button"
+              onClick={handleGenerateWithAI}
+              disabled={!imageFile || isGeneratingAi || isSubmitting}
+            >
+              {isGeneratingAi
+                ? '✨ Analysing your artwork…'
+                : '✨ Generate with AI'}
+            </button>
+
+            <small>
+              Uses your selected artwork image and AI Guidance to suggest the
+              title, image description, story, medium, collection and moods.
+            </small>
+          </div>
 
           <label className="admin-form-field">
             <span>Moods</span>

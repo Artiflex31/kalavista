@@ -103,7 +103,7 @@ ${moods || 'Not provided.'}
 Generate all six fields:
 
 1. title:
-A memorable, tasteful artwork title, usually 2–8 words.
+A memorable, tasteful artwork title, usually 2–8 words, include the original character/person name quality too if possible.
 
 2. alt:
 Accurate, concise visual description for screen-reader
@@ -114,7 +114,7 @@ Keep it under 250 characters.
 An engaging, natural art story inspired by the image and
 the artist's guidance. Aim for approximately 50–80 words. Be concise, natural,
 and specific to the artwork. Do not invent the artist's biography, real events or
-personal experiences that were not supplied.
+personal experiences that were not supplied. it should be focused on why did i draw this artwork!
 
 4. medium:
 If an existing medium is supplied, preserve its meaning

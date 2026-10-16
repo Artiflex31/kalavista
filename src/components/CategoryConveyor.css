@@ -486,7 +486,7 @@
 
 .app:has(.category-conveyor) .nav-link:hover,
 .app:has(.category-conveyor) .nav-link.active {
-  color: #ffffff;
+  color: var(--conveyor-accent);
 }
 
 .app:has(.category-conveyor) .theme-toggle {

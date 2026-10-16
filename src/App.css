@@ -1358,8 +1358,9 @@
 }
 
 .nav-link:hover,
-.nav-link--active {
-  color: var(--header-ink);
+.nav-link--active,
+.nav-link.active {
+  color: var(--header-accent);
 }
 
 .nav-link:hover::after,
@@ -1429,21 +1430,21 @@
 }
 /* High-contrast nav links on About and Commissions */
 
-.app:has(.about-zoom) .site-navigation .nav-link,
-.app:has(.commissions-page) .site-navigation .nav-link {
+.app:not([data-theme='dark']):has(.about-zoom) .site-navigation .nav-link,
+.app:not([data-theme='dark']):has(.commissions-page) .site-navigation .nav-link {
   color: #67352c !important;
   opacity: 1;
 }
 
-.app:has(.about-zoom) .site-navigation .nav-link:hover,
-.app:has(.about-zoom) .site-navigation .nav-link.active,
-.app:has(.commissions-page) .site-navigation .nav-link:hover,
-.app:has(.commissions-page) .site-navigation .nav-link.active {
+.app:not([data-theme='dark']):has(.about-zoom) .site-navigation .nav-link:hover,
+.app:not([data-theme='dark']):has(.about-zoom) .site-navigation .nav-link.active,
+.app:not([data-theme='dark']):has(.commissions-page) .site-navigation .nav-link:hover,
+.app:not([data-theme='dark']):has(.commissions-page) .site-navigation .nav-link.active {
   color: #ad4939 !important;
 }
 
-.app:has(.about-zoom) .theme-toggle,
-.app:has(.commissions-page) .theme-toggle {
+.app:not([data-theme='dark']):has(.about-zoom) .theme-toggle,
+.app:not([data-theme='dark']):has(.commissions-page) .theme-toggle {
   border-color: rgba(103, 53, 44, 0.42);
   color: #67352c;
   background: rgba(255, 250, 243, 0.3);
