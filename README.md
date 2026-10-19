@@ -25,4 +25,11 @@ An immersive digital gallery and management platform for an independent artist. 
 
 ## 📸 Screenshots
 
-_(Yahan apni 3-4 screenshots drag and drop karna GitHub edit karte waqt)_
+<img width="1917" height="950" alt="image" src="https://github.com/user-attachments/assets/e710084b-3f7b-4474-8977-3e26700ff8c7" />
+<img width="1919" height="892" alt="image" src="https://github.com/user-attachments/assets/8b28b470-c984-425b-a55d-942e836e1e6e" />
+<img width="1918" height="888" alt="image" src="https://github.com/user-attachments/assets/95156786-ca5f-48a3-8ba4-d827fa3a0cc0" />
+<img width="1919" height="880" alt="image" src="https://github.com/user-attachments/assets/08b1b38f-5f9d-4c09-b75c-57c67f8b4e59" />
+
+
+
+
