@@ -29,6 +29,7 @@ An immersive digital gallery and management platform for an independent artist. 
 <img width="1919" height="892" alt="image" src="https://github.com/user-attachments/assets/8b28b470-c984-425b-a55d-942e836e1e6e" />
 <img width="1918" height="888" alt="image" src="https://github.com/user-attachments/assets/95156786-ca5f-48a3-8ba4-d827fa3a0cc0" />
 <img width="1919" height="880" alt="image" src="https://github.com/user-attachments/assets/08b1b38f-5f9d-4c09-b75c-57c67f8b4e59" />
+<img width="1919" height="939" alt="image" src="https://github.com/user-attachments/assets/de7d321c-838c-4c34-a84a-fb5fdda0d352" />
 
 
 
