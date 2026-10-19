@@ -4,8 +4,10 @@ import {
   useEffect,
   useImperativeHandle,
   useRef,
+  useState,
 } from 'react'
-import pondImage from '../assets/kalavista-commission-pond.webp'
+import pondImageDesktop from '../assets/kalavista-commission-pond.webp'
+import pondImageMobile from '../assets/kalavista-pond-mobile.jpg'
 
 const RealWaterPond = forwardRef(function RealWaterPond(
   { children, className = '', style, ...sectionProps },
@@ -16,15 +18,21 @@ const RealWaterPond = forwardRef(function RealWaterPond(
   const isReadyRef = useRef(false)
   const queuedDropsRef = useRef([])
 
+  // 👇 FIX: Pehli baar me hi sahi image utha lo, flash na ho
+  const [activeImage, setActiveImage] = useState(() => {
+    if (typeof window === 'undefined') return pondImageDesktop
+    const isMobile = window.matchMedia(
+      '(max-width: 899px), (pointer: coarse)',
+    ).matches
+    return isMobile ? pondImageMobile : pondImageDesktop
+  })
+
   const sendDrop = useCallback(
     ({ clientX, clientY, radius = 25, strength = 0.09 } = {}) => {
+      // ... (same as before)
       const host = hostRef.current
       const $ = jqueryRef.current
-
-      if (!host || !$ || !isReadyRef.current) {
-        return false
-      }
-
+      if (!host || !$ || !isReadyRef.current) return false
       const bounds = host.getBoundingClientRect()
       const x = Number.isFinite(clientX)
         ? clientX - bounds.left
@@ -32,7 +40,6 @@ const RealWaterPond = forwardRef(function RealWaterPond(
       const y = Number.isFinite(clientY)
         ? clientY - bounds.top
         : bounds.height / 2
-
       try {
         $(host).ripples('drop', x, y, radius, strength)
         return true
@@ -44,119 +51,80 @@ const RealWaterPond = forwardRef(function RealWaterPond(
   )
 
   useEffect(() => {
+    // ... (same as before)
     let cancelled = false
     let $pond = null
     let resizeObserver = null
 
     async function startSimulation() {
       const host = hostRef.current
-
-      if (!host) {
-        return
-      }
+      if (!host) return
 
       try {
-        /*
-          jquery.ripples is a WebGL plugin, not a React component.
-          Importing it here keeps React 19 in charge of the page while the
-          plugin owns only this background element.
-        */
         const jqueryModule = await import('jquery')
         const $ = jqueryModule.default ?? jqueryModule
-
         window.$ = $
         window.jQuery = $
-
         await import('jquery.ripples')
 
-        if (
-          cancelled ||
-          !hostRef.current ||
-          typeof $.fn.ripples !== 'function'
-        ) {
+        if (cancelled || !hostRef.current || typeof $.fn.ripples !== 'function')
           return
-        }
 
         $pond = $(hostRef.current)
-
-        $ // Lower resolution on small / touch screens keeps the
-        // simulation smooth without draining phone batteries.
         const isSmallScreen = window.matchMedia(
           '(max-width: 899px), (pointer: coarse)',
         ).matches
 
         $pond.ripples({
-          imageUrl: pondImage,
-          resolution: isSmallScreen ? 128 : 200,
-          dropRadius: isSmallScreen ? 18 : 24,
-          perturbance: isSmallScreen ? 0.02 : 0.026,
+          imageUrl: activeImage,
+          resolution: isSmallScreen ? 192 : 256,
+          dropRadius: isSmallScreen ? 22 : 26,
+          perturbance: isSmallScreen ? 0.026 : 0.03,
           interactive: false,
         })
 
+        // ... rest of the simulation code is the same
         if (cancelled) {
           $pond.ripples('destroy')
           return
         }
-
         jqueryRef.current = $
         isReadyRef.current = true
-
-        queuedDropsRef.current.splice(0).forEach((drop) => {
-          sendDrop(drop)
-        })
-
+        queuedDropsRef.current.splice(0).forEach((drop) => sendDrop(drop))
         if ('ResizeObserver' in window) {
           resizeObserver = new ResizeObserver(() => {
             try {
               $pond?.ripples('updateSize')
-            } catch {
-              // The simulation may be shutting down during a route change.
-            }
+            } catch {}
           })
-
           resizeObserver.observe(hostRef.current)
         }
       } catch (error) {
-        /*
-          The CSS background image remains visible as a static fallback for
-          devices without the required WebGL float-texture support.
-        */
         console.warn('KalaVista water simulation could not start.', error)
       }
     }
 
     startSimulation()
-
     return () => {
       cancelled = true
       resizeObserver?.disconnect()
-
       if ($pond && isReadyRef.current) {
         try {
           $pond.ripples('destroy')
-        } catch {
-          // The WebGL context may already have been disposed.
-        }
+        } catch {}
       }
-
       isReadyRef.current = false
       jqueryRef.current = null
     }
-  }, [sendDrop])
+  }, [activeImage, sendDrop])
 
   useImperativeHandle(
     ref,
     () => ({
       addDrop(options = {}) {
-        if (sendDrop(options)) {
-          return
-        }
-
+        if (sendDrop(options)) return
         queuedDropsRef.current.push(options)
-
-        if (queuedDropsRef.current.length > 12) {
-          queuedDropsRef.current.shift()
-        }
+        if (queuedDropsRef.current.length > 12) queuedDropsRef.current.shift()
       },
     }),
     [sendDrop],
@@ -167,7 +135,7 @@ const RealWaterPond = forwardRef(function RealWaterPond(
       ref={hostRef}
       className={`real-water-pond ${className}`.trim()}
       style={{
-        backgroundImage: `url("${pondImage}")`,
+        backgroundImage: `url("${activeImage}")`,
         ...style,
       }}
       {...sectionProps}
@@ -178,5 +146,4 @@ const RealWaterPond = forwardRef(function RealWaterPond(
 })
 
 RealWaterPond.displayName = 'RealWaterPond'
-
 export default RealWaterPond

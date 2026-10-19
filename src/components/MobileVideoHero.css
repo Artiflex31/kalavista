@@ -1,0 +1,84 @@
+.mobile-video-hero {
+  position: relative;
+  height: 300vh; /* Scroll karne ke liye lamba space */
+  background: #15274c;
+}
+
+.mobile-video-hero__sticky {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  overflow: hidden;
+  display: flex;
+  align-items: flex-end;
+  padding: 2rem 1.25rem;
+}
+
+.mobile-video-hero__video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
+}
+
+.mobile-video-hero__overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(18, 32, 65, 0.2) 0%,
+    rgba(17, 23, 45, 0.95) 100%
+  );
+  z-index: 1;
+}
+
+.mobile-video-hero__content {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  padding-bottom: 2rem;
+}
+
+.mobile-video-hero__eyebrow {
+  margin: 0 0 0.6rem;
+  color: #f2ca73;
+  font-family: 'Manrope Variable', sans-serif;
+  font-size: 0.6rem;
+  font-weight: 800;
+  letter-spacing: 0.15em;
+}
+
+.mobile-video-hero h1 {
+  margin: 0;
+  color: #fff9ee;
+  font-family: 'Cormorant Garamond Variable', Georgia, serif;
+  font-size: clamp(2.8rem, 12vw, 3.8rem);
+  font-weight: 550;
+  line-height: 0.9;
+  letter-spacing: -0.05em;
+}
+
+.mobile-video-hero p:not(.mobile-video-hero__eyebrow) {
+  margin: 1rem 0 1.5rem;
+  color: rgba(255, 249, 238, 0.8);
+  font-family: 'Manrope Variable', sans-serif;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.mobile-video-hero__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #fff9ee;
+  font-family: 'Manrope Variable', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  text-decoration: none;
+  border-bottom: 1px solid #f2ca73;
+  padding-bottom: 4px;
+}

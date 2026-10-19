@@ -48,25 +48,40 @@
   padding: 24px 10% 0;
 }
 
+/* Logo Container */
 .wordmark {
   display: inline-flex;
-  gap: 8px;
-  align-items: center;
-  color: var(--ink);
+  gap: 0; /* Gap hata diya */
+  align-items: baseline;
+  color: #fffaf0;
   font-family: 'Cormorant Garamond Variable', Georgia, serif;
-  font-size: 1.7rem;
-  font-weight: 600;
-  letter-spacing: -0.04em;
+  font-size: clamp(1.8rem, 2.5vw, 2.4rem);
+  font-weight: 650;
+  letter-spacing: -0.02em; /* Spacing thodi normal ki taaki words mile hue lagein */
+  line-height: 1;
   text-decoration: none;
+  text-shadow: 0 0.12rem 1rem rgba(4, 9, 20, 0.6);
 }
 
+/* Hindi wala 'कला' */
 .wordmark-kala {
-  color: var(--accent);
+  color: #f3cd76;
   font-family: 'Manrope Variable', sans-serif;
-  font-size: 0.8rem;
-  font-weight: 700;
+  font-size: 0.65em;
+  font-weight: 850;
+  letter-spacing: 0.02em;
+  /* Ek chhota sa negative margin taaki Vista se ekdum chipak jaye */
+  margin-right: -0.1em;
 }
 
+/* English wala 'Vista' */
+.wordmark-name {
+  position: relative;
+  font-weight: 650;
+}
+
+/* NOTE: .wordmark-name::after wala poora block DELETE kar diya hai, 
+   jisse underline hamesha ke liye hat gaya hai. */
 .theme-toggle {
   display: inline-flex;
   min-height: 44px;
@@ -1431,15 +1446,23 @@
 /* High-contrast nav links on About and Commissions */
 
 .app:not([data-theme='dark']):has(.about-zoom) .site-navigation .nav-link,
-.app:not([data-theme='dark']):has(.commissions-page) .site-navigation .nav-link {
+.app:not([data-theme='dark']):has(.commissions-page)
+  .site-navigation
+  .nav-link {
   color: #67352c !important;
   opacity: 1;
 }
 
 .app:not([data-theme='dark']):has(.about-zoom) .site-navigation .nav-link:hover,
-.app:not([data-theme='dark']):has(.about-zoom) .site-navigation .nav-link.active,
-.app:not([data-theme='dark']):has(.commissions-page) .site-navigation .nav-link:hover,
-.app:not([data-theme='dark']):has(.commissions-page) .site-navigation .nav-link.active {
+.app:not([data-theme='dark']):has(.about-zoom)
+  .site-navigation
+  .nav-link.active,
+.app:not([data-theme='dark']):has(.commissions-page)
+  .site-navigation
+  .nav-link:hover,
+.app:not([data-theme='dark']):has(.commissions-page)
+  .site-navigation
+  .nav-link.active {
   color: #ad4939 !important;
 }
 

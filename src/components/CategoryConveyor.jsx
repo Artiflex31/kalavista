@@ -71,18 +71,20 @@ function useIsCompact() {
 function MobileCategoryGrid({ categories, onSelectCategory, artworks }) {
   return (
     <section
-      className="category-mobile-grid"
+      className="category-mobile-carousel"
       aria-labelledby="category-mobile-title"
     >
-      <header className="category-mobile-grid__header">
-        <p className="category-mobile-grid__eyebrow">THE KALAVISTA ARCHIVE</p>
+      <header className="category-mobile-carousel__header">
+        <p className="category-mobile-carousel__eyebrow">
+          THE KALAVISTA ARCHIVE
+        </p>
         <h1 id="category-mobile-title">Browse the studio.</h1>
-        <p className="category-mobile-grid__intro">
-          Tap any category to see the works inside.
+        <p className="category-mobile-carousel__intro">
+          Swipe left or right to explore.
         </p>
       </header>
 
-      <ul className="category-mobile-grid__list">
+      <div className="category-mobile-carousel__track">
         {categories.map((category, index) => {
           const artworkCount = category.count ?? 0
           const artworkCountText =
@@ -94,35 +96,37 @@ function MobileCategoryGrid({ categories, onSelectCategory, artworks }) {
           const cardImage = getCardArtwork(category, index, artworks)
 
           return (
-            <li key={category.value}>
-              <button
-                className="category-mobile-grid__card"
-                type="button"
-                onClick={() => onSelectCategory(category.value)}
-                style={{ '--card-accent': category.accent ?? '#9c4135' }}
+            <button
+              key={category.value}
+              className="category-mobile-carousel__card"
+              type="button"
+              onClick={() => onSelectCategory(category.value)}
+              style={{ '--card-accent': category.accent ?? '#9c4135' }}
+            >
+              <span
+                className="category-mobile-carousel__art"
+                aria-hidden="true"
               >
-                <span className="category-mobile-grid__art" aria-hidden="true">
-                  {cardImage ? (
-                    <img src={cardImage} alt="" loading="lazy" />
-                  ) : null}
-                </span>
+                {cardImage ? (
+                  <img src={cardImage} alt="" loading="lazy" />
+                ) : null}
+              </span>
 
-                <span className="category-mobile-grid__body">
-                  <strong>{category.label}</strong>
-                  <small>{artworkCountText}</small>
-                </span>
+              <span className="category-mobile-carousel__body">
+                <strong>{category.label}</strong>
+                <small>{artworkCountText}</small>
+              </span>
 
-                <span
-                  className="category-mobile-grid__arrow"
-                  aria-hidden="true"
-                >
-                  ↗
-                </span>
-              </button>
-            </li>
+              <span
+                className="category-mobile-carousel__arrow"
+                aria-hidden="true"
+              >
+                ↗
+              </span>
+            </button>
           )
         })}
-      </ul>
+      </div>
     </section>
   )
 }

@@ -1417,37 +1417,101 @@
   font-size: 0.6rem;
   letter-spacing: 0.1em;
 }
-
+/* =========================================
+   FINAL FIX: Admin Tabs Toggle (Mobile)
+   ========================================= */
 @media (max-width: 760px) {
+  .admin-tabs {
+    border-bottom: none;
+    background: transparent;
+  }
+
   .admin-tabs__toggle {
-    display: inline-flex;
-    justify-content: space-between;
-  }
-
-  .admin-tabs__list {
-    display: none;
-    flex-direction: column;
-    gap: 0;
-    padding-bottom: 12px;
-  }
-
-  .admin-tabs__list[data-open='true'] {
-    display: flex;
-  }
-
-  .admin-tabs__button {
+    display: flex !important;
+    justify-content: flex-start !important; /* Icon aur text left me */
+    align-items: center;
+    gap: 12px;
     width: 100%;
-    justify-content: flex-start;
-    border-bottom: 0;
-    border-left: 2px solid transparent;
-    padding: 12px 10px;
+    padding: 14px 18px;
+    margin-bottom: 16px;
+
+    background: #fffdf9;
+    border: 1px solid rgba(61, 42, 48, 0.15);
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+
+    color: var(--ink, #2d2229);
+    font-family: 'Manrope Variable', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 180ms ease;
   }
 
-  .admin-tabs__button--active {
-    border-left-color: var(--accent, #9c4135);
+  .admin-tabs__toggle span {
+    font-size: 1.2rem;
+    line-height: 1;
+    color: var(--accent, #9c4135); /* Icon ko theme color */
+  }
+
+  .app[data-theme='dark'] .admin-tabs__toggle {
+    background: rgba(18, 31, 51, 0.9);
+    border-color: rgba(255, 243, 227, 0.18);
+    color: #fff5e9;
+  }
+
+  .app[data-theme='dark'] .admin-tabs__toggle span {
+    color: #f2ca73;
   }
 }
 
+/* =========================================
+   Password Input & Toggle Icon (Login Page)
+   ========================================= */
+.password-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.password-input-wrapper input {
+  width: 100%;
+  padding-right: 44px; /* Icon ke liye jagah */
+}
+
+.password-toggle-btn {
+  position: absolute;
+  right: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  color: var(--muted, #675c60);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition:
+    color 180ms ease,
+    background 180ms ease;
+}
+
+.password-toggle-btn:hover {
+  color: var(--accent, #9c4135);
+  background: rgba(156, 65, 53, 0.08);
+}
+
+.app[data-theme='dark'] .password-toggle-btn {
+  color: #a3b1c6;
+}
+
+.app[data-theme='dark'] .password-toggle-btn:hover {
+  color: #f2ca73;
+  background: rgba(242, 202, 115, 0.1);
+}
 /* Enquiry card controls + delete */
 
 .admin-enquiry-card__controls {
@@ -1682,4 +1746,57 @@
   border-color: rgba(247, 241, 232, 0.25);
   color: #f7f1e8;
   background: rgba(4, 15, 31, 0.48);
+}
+/* =========================================
+   FIX: Hide/Show Tab List on Mobile
+   ========================================= */
+@media (max-width: 760px) {
+  /* Tabs ko by-default chhupa do */
+  .admin-tabs__list {
+    display: none;
+    flex-direction: column;
+    gap: 0;
+    padding: 10px;
+    background: #fffdf9;
+    border: 1px solid rgba(61, 42, 48, 0.15);
+    border-top: none;
+    border-radius: 0 0 12px 12px;
+    margin-top: -16px; /* Button ke saath touch karne ke liye */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+  }
+
+  /* Jab hamburger click ho (data-open="true"), tabhi dikhao */
+  .admin-tabs__list[data-open='true'] {
+    display: flex;
+  }
+
+  /* Tabs ke buttons ko mobile ke liye set karo */
+  .admin-tabs__button {
+    width: 100%;
+    justify-content: flex-start;
+    border-bottom: 0;
+    border-left: 3px solid transparent;
+    padding: 14px 12px;
+    color: var(--ink, #2d2229);
+    border-radius: 8px;
+  }
+
+  .admin-tabs__button--active {
+    border-left-color: var(--accent, #9c4135);
+    background: rgba(156, 65, 53, 0.05);
+    color: var(--accent, #9c4135);
+  }
+
+  /* Dark Mode */
+  .app[data-theme='dark'] .admin-tabs__list {
+    background: rgba(18, 31, 51, 0.95);
+    border-color: rgba(255, 243, 227, 0.18);
+  }
+  .app[data-theme='dark'] .admin-tabs__button {
+    color: #fff5e9;
+  }
+  .app[data-theme='dark'] .admin-tabs__button--active {
+    color: #f2ca73;
+    background: rgba(242, 202, 115, 0.1);
+  }
 }

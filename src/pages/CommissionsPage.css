@@ -1570,29 +1570,40 @@
   blends into the deep teal instead of showing obvious stretching.
   Ripples still run over the whole section.
 */
+/* Mobile ONLY: Fix distortion and hide cards */
 @media (max-width: 899px), (pointer: coarse) {
-  .real-water-pond.commissions-page__request::before {
-    position: absolute;
-    inset: 0;
-    z-index: 0;
-    content: '';
-    background: linear-gradient(
-      180deg,
-      rgba(12, 79, 83, 0) 0%,
-      rgba(12, 79, 83, 0) 30%,
-      rgba(12, 79, 83, 0.35) 55%,
-      rgba(12, 79, 83, 0.72) 80%,
-      rgba(12, 79, 83, 0.92) 100%
-    );
-    pointer-events: none;
+  /* 1. Cards ko hide karo */
+  .commission-options-wrapper {
+    display: none !important;
   }
 
-  /* Keep the canvas above the gradient but below the content. */
-  .real-water-pond.commissions-page__request > canvas {
-    z-index: 0 !important;
+  /* 2. Main container ko sirf 1 screen (100vh) ka banao aur lock karo */
+  .real-water-pond.commissions-page__request {
+    height: 100svh !important;
+    max-height: 100svh !important;
+    min-height: 100svh !important;
+    overflow: hidden !important; /* Background ko stretch hone se roko */
+    background-size: cover !important;
+    background-position: center !important;
+    background-attachment: scroll !important; /* Fixed hata do, mobile pe kaam nahi karta */
   }
 
+  /* 3. Form wale content ko us 100vh ke andar scroll karo */
   .commission-water__content {
-    z-index: 1;
+    height: 100svh !important;
+    overflow-y: auto !important; /* Sirf content scroll hoga, background nahi */
+    -webkit-overflow-scrolling: touch;
+    display: block !important;
+    padding: 6rem 1.25rem 2rem 1.25rem !important;
+  }
+
+  /* 4. Canvas ko container ke andar absolute rakho taaki wo stretch na ho */
+  .real-water-pond > canvas {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    z-index: 0 !important;
   }
 }

@@ -128,9 +128,41 @@ function App() {
             : 'site-header--page'
         }`}
       >
-        <Link className="wordmark" to="/" aria-label="KalaVista home">
-          <span className="wordmark-kala">कला</span>
-          <span>KalaVista</span>
+        <Link
+          className="wordmark"
+          to="/"
+          aria-label="KalaVista home"
+          style={{
+            display: 'inline-flex',
+            alignItems: 'baseline',
+            textDecoration: 'none',
+            gap: 0,
+          }}
+        >
+          <span
+            style={{
+              color: '#f3cd76',
+              fontFamily: 'Manrope Variable, sans-serif',
+              fontSize: '0.65em',
+              fontWeight: 850,
+              marginRight: '-0.05em', // Gap hatane ke liye
+            }}
+          >
+            कला
+          </span>
+
+          <span
+            style={{
+              color: '#fffaf0',
+              fontFamily: 'Cormorant Garamond Variable, Georgia, serif',
+              fontSize: '1em',
+              fontWeight: 650,
+              letterSpacing: '-0.02em',
+              textDecoration: 'none', // Underline hatane ke liye
+            }}
+          >
+            Vista
+          </span>
         </Link>
 
         <nav className="site-navigation" aria-label="Primary navigation">

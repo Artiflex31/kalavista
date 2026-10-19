@@ -256,40 +256,40 @@ function CommissionsPage() {
               gentle first direction for your commission.
             </p>
 
-            <div
-              className="commission-options"
-              aria-label="Choose a commission type"
-            >
-              {commissionOptions.map((option) => {
-                const isSelected = selectedType === option.value
-
-                return (
-                  <button
-                    className={
-                      isSelected
-                        ? 'commission-option commission-option--selected'
-                        : 'commission-option'
-                    }
-                    key={option.value}
-                    type="button"
-                    aria-pressed={isSelected}
-                    style={{ '--option-colour': option.colour }}
-                    onClick={(event) => handleOptionClick(event, option.value)}
-                  >
-                    <span>{option.number}</span>
-
-                    <div>
-                      <strong>{option.value}</strong>
-                      <p>{option.description}</p>
-                    </div>
-
-                    <i aria-hidden="true">↗</i>
-                  </button>
-                )
-              })}
+            <div className="commission-options-wrapper">
+              <div
+                className="commission-options"
+                aria-label="Choose a commission type"
+              >
+                {commissionOptions.map((option) => {
+                  const isSelected = selectedType === option.value
+                  return (
+                    <button
+                      className={
+                        isSelected
+                          ? 'commission-option commission-option--selected'
+                          : 'commission-option'
+                      }
+                      key={option.value}
+                      type="button"
+                      aria-pressed={isSelected}
+                      style={{ '--option-colour': option.colour }}
+                      onClick={(event) =>
+                        handleOptionClick(event, option.value)
+                      }
+                    >
+                      <span>{option.number}</span>
+                      <div>
+                        <strong>{option.value}</strong>
+                        <p>{option.description}</p>
+                      </div>
+                      <i aria-hidden="true">↗</i>
+                    </button>
+                  )
+                })}
+              </div>
             </div>
           </div>
-
           <form
             className="commission-form"
             onSubmit={handleSubmit}

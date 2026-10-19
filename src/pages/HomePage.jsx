@@ -1,16 +1,11 @@
-import { lazy, Suspense, useEffect, useState } from 'react'
+import { lazy, Suspense, useState } from 'react'
 import FeaturedWorks from '../components/FeaturedWorks'
-import HomeStaticHero from '../components/HomeStaticHero'
+import MobileParallaxHero from '../components/MobileParallaxHero'
 
-// Lazy-load the 3D journey so its three.js bundle only downloads
-// on capable devices. Mobile and reduced-motion visitors never pay for it.
 const ArtAscent = lazy(() => import('../components/ArtAscent'))
 
 function canRenderAscent() {
-  if (typeof window === 'undefined') {
-    return false
-  }
-
+  if (typeof window === 'undefined') return false
   return (
     window.matchMedia('(min-width: 761px) and (pointer: fine)').matches &&
     !window.matchMedia('(prefers-reduced-motion: reduce)').matches
@@ -18,20 +13,26 @@ function canRenderAscent() {
 }
 
 function HomePage() {
-  const [showAscent, setShowAscent] = useState(false)
-
-  useEffect(() => {
-    setShowAscent(canRenderAscent())
-  }, [])
+  const [showAscent] = useState(() => canRenderAscent())
 
   return (
     <>
       {showAscent ? (
-        <Suspense fallback={<HomeStaticHero />}>
+        <Suspense
+          fallback={
+            <div
+              style={{
+                height: '100svh',
+                width: '100%',
+                backgroundColor: '#15274c', // ✅ Sirf dark background
+              }}
+            />
+          }
+        >
           <ArtAscent />
         </Suspense>
       ) : (
-        <HomeStaticHero />
+        <MobileParallaxHero />
       )}
       <FeaturedWorks />
     </>
