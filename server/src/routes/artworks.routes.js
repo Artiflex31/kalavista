@@ -61,6 +61,7 @@ const artworkSchema = z.object({
   collection: z.string().trim().max(100).optional(),
   moods: z.array(z.string().trim().min(1).max(40)).default([]),
   categories: z.array(z.string().trim().min(1).max(60)).default([]),
+  colors: z.array(z.string().trim().min(1).max(30)).default([]),
   availability: z
     .enum(['AVAILABLE', 'RESERVED', 'SOLD', 'NOT_FOR_SALE'])
     .default('AVAILABLE'),
@@ -265,6 +266,7 @@ router.post('/', requireAdmin, async (req, res, next) => {
         collection: data.collection || null,
         moods: data.moods,
         categories: data.categories,
+        colors: data.colors,
         availability: data.availability,
         priceInPaise: data.priceInPaise ?? null,
         currency: data.currency.toUpperCase(),
@@ -319,6 +321,14 @@ router.delete('/:id', requireAdmin, async (req, res, next) => {
       message: `"${artwork.title}" was removed from KalaVista.`,
     })
   } catch (error) {
+    // Prisma Error P2003 = Foreign Key Constraint Failed
+    if (error.code === 'P2003') {
+      return res.status(400).json({
+        success: false,
+        message:
+          'Cannot delete this artwork because it has active orders or commission enquiries attached to it. Please archive it instead.',
+      })
+    }
     next(error)
   }
 })

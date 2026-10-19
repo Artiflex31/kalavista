@@ -9,7 +9,7 @@ import commissionTrackingRouter from './routes/commission-tracking.routes.js'
 import categoriesRouter from './routes/categories.routes.js'
 import { handleRazorpayWebhook } from './routes/razorpay-webhook.routes.js'
 import geminiRouter from './routes/gemini.routes.js'
-
+import curatorRouter from './routes/curator.routes.js'
 const app = express()
 
 const allowedOrigins = [
@@ -53,6 +53,7 @@ app.use('/api/commission-payments', commissionPaymentsRouter)
 app.use('/api/commission-tracking', commissionTrackingRouter)
 app.use('/api/categories', categoriesRouter)
 app.use('/api/ai', geminiRouter)
+app.use('/api/curator', curatorRouter)
 app.use((request, response) => {
   response.status(404).json({
     success: false,

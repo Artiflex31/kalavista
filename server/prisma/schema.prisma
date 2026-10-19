@@ -23,6 +23,7 @@ model Artwork {
   collection   String?
   moods        String[]
   categories   String[]
+  colors       String[]            @default([]) 
   availability ArtworkAvailability @default(AVAILABLE)
   priceInPaise Int?
   currency     String              @default("INR")
@@ -34,6 +35,7 @@ model Artwork {
   updatedAt    DateTime            @updatedAt
   enquiries CommissionEnquiry[]
   orders ArtworkOrder[]
+  embedding    Unsupported("vector(768)")?
 }
 enum EnquiryStatus {
   NEW
