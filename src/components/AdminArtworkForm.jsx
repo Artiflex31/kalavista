@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { ARTWORK_COLORS } from '../lib/artworkColors'
 import '../pages/AdminPages.css'
 
 const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:5000'
@@ -13,6 +14,7 @@ const initialForm = {
   availability: 'AVAILABLE',
   moods: '',
   categorySlugs: [],
+  colors: [],
   alt: '',
   story: '',
   isFeatured: false,
@@ -85,6 +87,17 @@ function AdminArtworkForm({ token, onArtworkCreated }) {
         categorySlugs: has
           ? currentForm.categorySlugs.filter((item) => item !== slug)
           : [...currentForm.categorySlugs, slug],
+      }
+    })
+  }
+  function toggleColor(colorKey) {
+    setForm((currentForm) => {
+      const has = currentForm.colors.includes(colorKey)
+      return {
+        ...currentForm,
+        colors: has
+          ? currentForm.colors.filter((c) => c !== colorKey)
+          : [...currentForm.colors, colorKey],
       }
     })
   }
@@ -253,6 +266,7 @@ function AdminArtworkForm({ token, onArtworkCreated }) {
         collection: form.collection.trim() || null,
         moods: splitList(form.moods),
         categories: form.categorySlugs,
+        colors: form.colors,
         availability: form.availability,
         priceInPaise: form.priceInRupees
           ? Math.round(Number(form.priceInRupees) * 100)
@@ -450,6 +464,31 @@ function AdminArtworkForm({ token, onArtworkCreated }) {
               placeholder="Warm, Quiet, Reflective"
             />
           </label>
+          <div className="admin-form-field admin-form-field--wide">
+            <span>Colors</span>
+            <small>Tap to select. You can pick more than one.</small>
+
+            <div className="admin-color-picker">
+              {ARTWORK_COLORS.map((color) => {
+                const isSelected = form.colors.includes(color.key)
+                return (
+                  <button
+                    key={color.key}
+                    type="button"
+                    className={`admin-color-chip ${
+                      isSelected ? 'admin-color-chip--active' : ''
+                    }`}
+                    aria-pressed={isSelected}
+                    style={{ '--chip-color': color.hex }}
+                    onClick={() => toggleColor(color.key)}
+                  >
+                    <span className="admin-color-chip__swatch" />
+                    {color.label}
+                  </button>
+                )
+              })}
+            </div>
+          </div>
 
           <div className="admin-form-field admin-form-field--wide">
             <span>Categories</span>

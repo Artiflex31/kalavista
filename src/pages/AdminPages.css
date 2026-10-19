@@ -1620,3 +1620,66 @@
     width: 100%;
   }
 }
+/* Color chips in admin forms */
+
+.admin-color-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.admin-color-chip {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  border: 1px solid rgba(79, 48, 64, 0.22);
+  border-radius: 999px;
+  padding: 8px 14px 8px 10px;
+  color: #352332;
+  background: rgba(255, 255, 255, 0.62);
+  font-family: 'Manrope Variable', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    border-color 180ms ease,
+    background 180ms ease,
+    transform 120ms ease;
+}
+
+.admin-color-chip:hover {
+  border-color: var(--chip-color);
+  transform: translateY(-1px);
+}
+
+.admin-color-chip:focus-visible {
+  outline: 3px solid var(--chip-color);
+  outline-offset: 3px;
+}
+
+.admin-color-chip__swatch {
+  display: block;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--chip-color);
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.12);
+}
+
+.admin-color-chip--active {
+  border-color: var(--chip-color);
+  color: #fffaf5;
+  background: var(--chip-color);
+}
+
+.admin-color-chip--active .admin-color-chip__swatch {
+  background: #fffaf5;
+  box-shadow: none;
+}
+
+.app[data-theme='dark'] .admin-color-chip {
+  border-color: rgba(247, 241, 232, 0.25);
+  color: #f7f1e8;
+  background: rgba(4, 15, 31, 0.48);
+}

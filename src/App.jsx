@@ -25,6 +25,7 @@ import RefundPage from './pages/legal/RefundPage'
 import ShippingPage from './pages/legal/ShippingPage'
 import ContactPage from './pages/legal/ContactPage'
 import NotFoundPage from './pages/NotFoundPage'
+import CuratorPage from './pages/CuratorPage'
 import './App.css'
 
 const navigationItems = [
@@ -32,6 +33,7 @@ const navigationItems = [
   { to: '/gallery', label: 'Gallery' },
   { to: '/about', label: 'About' },
   { to: '/commissions', label: 'Commissions' },
+  { to: '/curator', label: 'Ask Kala' },
 ]
 
 function getInitialTheme() {
@@ -171,6 +173,7 @@ function App() {
           }
         />
         <Route path="/gallery" element={<GalleryPage />} />
+        <Route path="/curator" element={<CuratorPage />} />
         <Route path="/about" element={<AboutPage />} />
         <Route path="/commissions" element={<CommissionsPage />} />
         <Route path="/artworks/:slug" element={<ArtworkDetailPage />} />

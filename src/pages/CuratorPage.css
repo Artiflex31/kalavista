@@ -1,0 +1,174 @@
+.curator-page {
+  min-height: 100svh;
+  padding: clamp(120px, 14vw, 170px) clamp(20px, 5vw, 60px) 80px;
+  background: var(--surface, #f5efe6);
+  color: var(--ink, #2b2028);
+}
+
+.curator-page__inner {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.curator-page__eyebrow {
+  margin: 0 0 12px;
+  color: var(--accent, #a84d3f);
+  font-family: 'Manrope Variable', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+.curator-page h1 {
+  margin: 0;
+  font-family: 'Cormorant Garamond Variable', Georgia, serif;
+  font-size: clamp(3rem, 7vw, 5rem);
+  font-weight: 550;
+  letter-spacing: -0.05em;
+  line-height: 0.92;
+}
+
+.curator-page__intro {
+  max-width: 56ch;
+  margin: 20px 0 40px;
+  color: var(--muted, #7a6a6a);
+  font-family: 'Manrope Variable', sans-serif;
+  font-size: 1rem;
+  line-height: 1.7;
+}
+
+.curator-form {
+  display: flex;
+  gap: 12px;
+  max-width: 800px;
+  margin-bottom: 30px;
+}
+
+.curator-form input {
+  flex: 1;
+  min-height: 56px;
+  border: 1px solid var(--line, rgba(61, 42, 48, 0.2));
+  border-radius: 999px;
+  padding: 0 24px;
+  color: var(--ink, #2b2028);
+  background: var(--surface, #fffdf9);
+  font-family: 'Manrope Variable', sans-serif;
+  font-size: 1rem;
+}
+
+.curator-form input:focus {
+  outline: none;
+  border-color: var(--accent, #a84d3f);
+  box-shadow: 0 0 0 3px rgba(168, 77, 63, 0.15);
+}
+
+.curator-form button {
+  min-height: 56px;
+  border: 1px solid var(--accent, #a84d3f);
+  border-radius: 999px;
+  padding: 0 32px;
+  color: #fffaf3;
+  background: var(--accent, #a84d3f);
+  font-family: 'Manrope Variable', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 180ms ease;
+}
+
+.curator-form button:hover:not(:disabled) {
+  background: #8a3f33;
+}
+
+.curator-form button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.curator-message {
+  margin: 0 0 30px;
+  color: var(--muted, #7a6a6a);
+  font-family: 'Manrope Variable', sans-serif;
+  font-size: 0.9rem;
+}
+
+.curator-results {
+  margin-top: 40px;
+  padding-top: 40px;
+  border-top: 1px solid var(--line, rgba(61, 42, 48, 0.15));
+}
+
+.app[data-theme='dark'] .curator-form input {
+  background: rgba(27, 41, 64, 0.7);
+  color: #fffaf0;
+  border-color: rgba(255, 250, 243, 0.2);
+}
+
+@media (max-width: 640px) {
+  .curator-form {
+    flex-direction: column;
+  }
+}
+/* LLM Answer Box */
+.curator-answer-box {
+  max-width: 800px;
+  margin: 30px 0;
+  padding: 24px;
+  border-left: 4px solid var(--accent, #a84d3f);
+  background: rgba(255, 250, 243, 0.6);
+  border-radius: 0 12px 12px 0;
+}
+
+.app[data-theme='dark'] .curator-answer-box {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.curator-answer-label {
+  margin: 0 0 8px;
+  color: var(--accent, #a84d3f);
+  font-family: 'Manrope Variable', sans-serif;
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+}
+
+.curator-answer-text {
+  margin: 0;
+  color: var(--ink, #2b2028);
+  font-family: 'Cormorant Garamond Variable', Georgia, serif;
+  font-size: 1.35rem;
+  font-style: italic;
+  line-height: 1.5;
+}
+
+.app[data-theme='dark'] .curator-answer-text {
+  color: #f7f1e8;
+}
+
+/* Results wrapper */
+.curator-results-wrapper {
+  margin-top: 40px;
+  padding-top: 40px;
+  border-top: 1px solid var(--line, rgba(61, 42, 48, 0.15));
+}
+
+.curator-results-label {
+  margin: 0 0 20px;
+  color: var(--muted, #7a6a6a);
+  font-family: 'Manrope Variable', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+}
+.curator-answer-text a {
+  color: var(--accent, #a84d3f);
+  text-decoration: underline;
+  font-weight: 600;
+}
+
+.curator-answer-text a:hover {
+  color: #8a3f33;
+}

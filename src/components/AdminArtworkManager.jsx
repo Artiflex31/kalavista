@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { ARTWORK_COLORS } from '../lib/artworkColors'
 import '../pages/AdminPages.css'
 
 const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:5000'
@@ -31,6 +32,7 @@ function getEditForm(artwork) {
     collection: artwork.collection ?? '',
     moods: (artwork.moods ?? []).join(', '),
     categorySlugs: artwork.categories ?? [],
+    colors: artwork.colors ?? [],
     availability: artwork.availability ?? 'AVAILABLE',
     priceInRupees: artwork.priceInPaise
       ? String(artwork.priceInPaise / 100)
@@ -139,6 +141,18 @@ function AdminArtworkManager({ token, refreshKey }) {
       }
     })
   }
+  function toggleEditColor(colorKey) {
+    setEditForm((current) => {
+      if (!current) return current
+      const has = current.colors.includes(colorKey)
+      return {
+        ...current,
+        colors: has
+          ? current.colors.filter((c) => c !== colorKey)
+          : [...current.colors, colorKey],
+      }
+    })
+  }
 
   async function uploadReplacementImage() {
     const uploadData = new FormData()
@@ -195,6 +209,7 @@ function AdminArtworkManager({ token, refreshKey }) {
         collection: editForm.collection.trim(),
         moods: splitList(editForm.moods),
         categories: editForm.categorySlugs,
+        colors: editForm.colors,
         availability: editForm.availability,
         priceInPaise: editForm.priceInRupees
           ? Math.round(Number(editForm.priceInRupees) * 100)
@@ -244,9 +259,7 @@ function AdminArtworkManager({ token, refreshKey }) {
       `Delete "${artwork.title}"?\n\nThis removes it from your KalaVista gallery.`,
     )
 
-    if (!shouldDelete) {
-      return
-    }
+    if (!shouldDelete) return
 
     setDeletingId(artwork.id)
     setMessage('')
@@ -275,7 +288,11 @@ function AdminArtworkManager({ token, refreshKey }) {
 
       setMessage(result.message)
     } catch (error) {
-      setMessage(error.message ?? 'Could not delete artwork.')
+      const errorMsg = error.message ?? 'Could not delete artwork.'
+      setMessage(errorMsg)
+
+      // 👇 YE NAYA CODE HAI: UI Alert
+      window.alert(`Error: ${errorMsg}`)
     } finally {
       setDeletingId(null)
     }
@@ -372,7 +389,15 @@ function AdminArtworkManager({ token, refreshKey }) {
                 })}
               </div>
             </div>
-
+            <label className="admin-form-field">
+              <span>Title *</span>
+              <input
+                name="title"
+                value={editForm.title}
+                onChange={updateEditField}
+                required
+              />
+            </label>
             <label className="admin-form-field">
               <span>Year *</span>
               <input
@@ -381,6 +406,15 @@ function AdminArtworkManager({ token, refreshKey }) {
                 min="1900"
                 max="2100"
                 value={editForm.year}
+                onChange={updateEditField}
+                required
+              />
+            </label>
+            <label className="admin-form-field">
+              <span>Medium *</span>
+              <input
+                name="medium"
+                value={editForm.medium}
                 onChange={updateEditField}
                 required
               />
@@ -464,6 +498,31 @@ function AdminArtworkManager({ token, refreshKey }) {
                 onChange={updateEditField}
               />
             </label>
+            <div className="admin-form-field admin-form-field--wide">
+              <span>Colors</span>
+              <small>Tap to select. You can pick more than one.</small>
+
+              <div className="admin-color-picker">
+                {ARTWORK_COLORS.map((color) => {
+                  const isSelected = (editForm.colors ?? []).includes(color.key)
+                  return (
+                    <button
+                      key={color.key}
+                      type="button"
+                      className={`admin-color-chip ${
+                        isSelected ? 'admin-color-chip--active' : ''
+                      }`}
+                      aria-pressed={isSelected}
+                      style={{ '--chip-color': color.hex }}
+                      onClick={() => toggleEditColor(color.key)}
+                    >
+                      <span className="admin-color-chip__swatch" />
+                      {color.label}
+                    </button>
+                  )
+                })}
+              </div>
+            </div>
 
             <label className="admin-form-field admin-form-field--wide">
               <span>Image description</span>

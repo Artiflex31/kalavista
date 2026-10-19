@@ -4,6 +4,7 @@ import { useSearchParams } from 'react-router'
 import CategoryConveyor from '../components/CategoryConveyor'
 import artworks from '../data/artworks'
 import useFavourites from '../hooks/useFavourites'
+import { ARTWORK_COLORS } from '../lib/artworkColors'
 import {
   buildAvailabilityOptions,
   buildMediumOptions,
@@ -38,6 +39,7 @@ function getArtworkSearchText(artwork) {
     artwork.availability ?? '',
     ...(artwork.moods ?? []),
     ...(artwork.categories ?? []),
+    ...(artwork.colors ?? []),
   ]
     .join(' ')
     .toLowerCase()
@@ -81,6 +83,7 @@ function GalleryPage() {
   const [apiError, setApiError] = useState('')
   const [reloadCount, setReloadCount] = useState(0)
   const [isSlowLoad, setIsSlowLoad] = useState(false)
+  const [selectedColor, setSelectedColor] = useState('all')
   const { slugs: favouriteSlugs } = useFavourites()
 
   // Load artworks from the API.
@@ -241,6 +244,10 @@ function GalleryPage() {
       const matchesMood =
         selectedMood === 'All' || (artwork.moods ?? []).includes(selectedMood)
 
+      const matchesColor =
+        selectedColor === 'all' ||
+        (artwork.colors ?? []).includes(selectedColor)
+
       const matchesSearch =
         normalizedQuery === '' ||
         getArtworkSearchText(artwork).includes(normalizedQuery)
@@ -250,6 +257,7 @@ function GalleryPage() {
       return (
         matchesSelectedCategory &&
         matchesMood &&
+        matchesColor &&
         matchesSearch &&
         matchesAvailability(artwork, selectedAvailability) &&
         matchesMedium(artwork, selectedMedium) &&
@@ -263,6 +271,7 @@ function GalleryPage() {
     savedOnly,
     searchQuery,
     selectedAvailability,
+    selectedColor,
     selectedMedium,
     selectedMood,
   ])
@@ -271,6 +280,7 @@ function GalleryPage() {
     searchQuery.trim() !== '' ||
     selectedMood !== 'All' ||
     selectedCategory !== 'all' ||
+    selectedColor !== 'all' ||
     selectedAvailability !== 'all' ||
     selectedMedium !== 'all' ||
     savedOnly
@@ -320,6 +330,7 @@ function GalleryPage() {
     setSelectedMood('All')
     setSelectedAvailability('all')
     setSelectedMedium('all')
+    setSelectedColor('all')
     setSavedOnly(false)
     setSelectedCategory('all')
   }
@@ -412,24 +423,6 @@ function GalleryPage() {
             onChange={(event) => setSearchQuery(event.target.value)}
             placeholder="Search title, medium, collection..."
           />
-        </div>
-
-        <div
-          className="gallery-filter-list"
-          role="group"
-          aria-label="Filter artworks by mood"
-        >
-          {moodOptions.map((mood) => (
-            <button
-              aria-pressed={selectedMood === mood}
-              className="filter-chip"
-              key={mood}
-              onClick={() => setSelectedMood(mood)}
-              type="button"
-            >
-              {mood}
-            </button>
-          ))}
         </div>
 
         <div className="gallery-filter-row">
