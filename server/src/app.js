@@ -25,9 +25,20 @@ const allowedOrigins = [
 app.use(
   cors({
     origin: (origin, callback) => {
-      // Allow requests without an Origin header (curl, server-to-server).
+      // Allow requests without an Origin header (curl, mobile apps).
       if (!origin) return callback(null, true)
+
+      // Check if it's in the allowed list
       if (allowedOrigins.includes(origin)) return callback(null, true)
+
+      // ✨ NAYA CODE: Flutter Web (Chrome) ke kisi bhi localhost port ko allow karo
+      if (
+        origin.startsWith('http://localhost:') ||
+        origin.startsWith('http://127.0.0.1:')
+      ) {
+        return callback(null, true)
+      }
+
       // Do not throw — just omit CORS headers.
       return callback(null, false)
     },
